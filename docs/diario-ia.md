@@ -18,7 +18,7 @@ Registro de las consultas hechas a la IA durante el desarrollo del proyecto: qu�
 Antes de empezar a programar quería asegurarme de que la base de datos era correcta, porque de cada tabla sale un Modelo y un DAO. Si el diseño está mal, todo lo demás estará mal.
 
 ### Qué he aprendido
-
+Que antes de ponerme a programar tengo que tener bien la base de datos, porque si una tabla está mal luego el error lo arrastras a los modelos y a los DAO. Y que no hay que repetir datos entre tablas: se enlazan con la clave y listo.
 
 ---
 
@@ -38,7 +38,7 @@ Antes de empezar a programar quería asegurarme de que la base de datos era corr
 El profesor propone una estructura concreta, así que había que ajustar la propuesta a ella en lugar de usar una estructura propia.
 
 ### Qué he aprendido
-
+Que si el profe da una estructura hay que seguirla y no inventarse otra. Y que Composer no es un gestor de plantillas como pone el enunciado, es un gestor de dependencias: sirve para instalar librerías como Twig.
 
 ---
 
@@ -57,7 +57,7 @@ El profesor propone una estructura concreta, así que había que ajustar la prop
 Tener el proyecto versionado desde el principio para poder guardar el progreso, volver atrás si algo se rompe y entregarlo.
 
 ### Qué he aprendido
-
+Que si ya tengo el proyecto en local no hay que crear el repo con README, porque luego da conflicto al hacer el primer push. Y que es mejor subirlo desde el principio para poder volver atrás si rompo algo.
 
 ---
 
@@ -65,7 +65,7 @@ Tener el proyecto versionado desde el principio para poder guardar el progreso, 
 **Fecha:** 30/10/2026
 
 ### Prompt
-> Escríbeme un Dockerfile lo más sencillo posible para mi proyecto con PHP 8.2 y Apache que incluya: extensión PDO MySQL, Xdebug configurado desde `docker/xdebug.ini`, DocumentRoot apuntando a `public/` y que todas las rutas pasen por `index.php` para el Router. Comenta cada instrucción.
+> Escríbeme un Dockerfile lo más sencillo posible para mi proyecto con PHP 8.2 y Apache que incluya: extensión PDO MySQL, Xdebug configurado desde `../xdebug.ini`, DocumentRoot apuntando a `public/` y que todas las rutas pasen por `index.php` para el Router. Comenta cada instrucción.
 
 ### Resultado
 - Dockerfile mínimo basado en `php:8.2-apache`, con `pdo_mysql` y Xdebug instalados, `sed` para cambiar el DocumentRoot a `public/` y `FallbackResource /index.php` (que evita necesitar `.htaccess` y `mod_rewrite`).
@@ -76,7 +76,7 @@ Tener el proyecto versionado desde el principio para poder guardar el progreso, 
 El proyecto tiene que desplegarse con Docker y necesitaba la imagen de PHP + Apache configurada para la estructura del proyecto.
 
 ### Qué he aprendido
-
+Que el Dockerfile es como una receta para montar el servidor: partes de una imagen con PHP y Apache y le vas añadiendo lo que necesitas (PDO, Xdebug...). Y que cuanto más simple, mejor; no hay que meter cosas que no hacen falta.
 
 ---
 
@@ -84,7 +84,7 @@ El proyecto tiene que desplegarse con Docker y necesitaba la imagen de PHP + Apa
 **Fecha:** 30/10/2026
 
 ### Prompt
-> Escríbeme un `docker-compose.yml` sencillo con dos servicios: la app (construida con `docker/Dockerfile`) y MySQL 8. Monta el código como volumen, carga automáticamente los `.sql` de la carpeta `database/` al crear la base de datos y pasa las credenciales a PHP mediante variables de entorno. Explícame cómo levantarlo.
+> Escríbeme un `docker-compose.yml` sencillo con dos servicios: la app (construida con `../Dockerfile`) y MySQL 8. Monta el código como volumen, carga automáticamente los `.sql` de la carpeta `database/` al crear la base de datos y pasa las credenciales a PHP mediante variables de entorno. Explícame cómo levantarlo.
 
 ### Resultado
 - `docker-compose.yml` con los servicios `app` (puerto 8080) y `db` (MySQL 8.0, puerto 3306, volumen persistente).
@@ -96,6 +96,9 @@ El proyecto tiene que desplegarse con Docker y necesitaba la imagen de PHP + Apa
 Levantar todo el entorno (servidor y base de datos) con un solo comando, como pide la entrega de infraestructura.
 
 ### Qué he aprendido
+Que con docker-compose levanto el servidor y la base de datos a la vez con un solo comando. Y que los .sql de `database/` solo se ejecutan la primera vez; si quiero que se vuelvan a cargar tengo que hacer `down -v`, que borra los datos.
+
+---
 
 ## 03/11/2026
 
@@ -111,7 +114,7 @@ Carpeta `templates/` en la raíz del proyecto, fuera de `public/`, dividida en `
 Tener las plantillas fuera de la carpeta pública para que Apache no las sirva directamente y separar bien la capa de vista.
 
 **Qué he aprendido:**
-
+Que las plantillas de Twig no van en `public/` porque nadie tiene que poder abrirlas desde el navegador, solo PHP. Y que conviene separarlas en layout, partials y pages para no repetir código.
 
 ---
 
@@ -127,7 +130,7 @@ CSS en `public/assets/css/` separado en `variables.css`, `base.css`, `layout.css
 El CSS sí tiene que ser accesible desde el navegador, a diferencia de las plantillas.
 
 **Qué he aprendido:**
-
+Que el CSS, al revés que las plantillas, sí va dentro de `public/` porque el navegador lo tiene que descargar. Y que con el `block styles` cada página puede meter su propio CSS sin tocar la base.
 
 ---
 
@@ -143,7 +146,7 @@ La ruta era relativa e incluía `public/`, que es la raíz web y no aparece en l
 Corregir el error y no acabar con etiquetas `<html>` duplicadas al incluir los partials.
 
 **Qué he aprendido:**
-
+Que `public/` no aparece en la URL porque es la raíz de la web, y que las rutas tienen que empezar por `/` para que no se rompan en otras páginas. También que un partial es solo un trozo de página, sin `html`, `head` ni `body`.
 
 ---
 
@@ -159,7 +162,7 @@ Layout base con bloques `title`, `styles`, `content` y `scripts`. Header dinámi
 Tener la estructura común de todas las páginas antes de empezar con las vistas concretas.
 
 **Qué he aprendido:**
-
+Que con `extends` y `block` hago una plantilla base y las demás páginas solo rellenan los huecos. Y que con un `if` en Twig puedo enseñar cosas distintas según si hay sesión o si el usuario es admin.
 
 ---
 
@@ -175,7 +178,7 @@ Tener la estructura común de todas las páginas antes de empezar con las vistas
 Poder ver las plantillas en el navegador antes de tener el login y los controladores.
 
 **Qué he aprendido:**
-
+Que `index.php` es la única puerta de entrada a la web y desde ahí se decide qué página enseñar según la URL. Y que puedo simular un usuario logueado para probar cosas antes de tener el login hecho.
 
 ---
 
@@ -195,7 +198,7 @@ Poder ver las plantillas en el navegador antes de tener el login y los controlad
 Dejar el entorno Docker funcionando con la configuración proporcionada por el profesor.
 
 **Qué he aprendido:**
-
+Que los volúmenes con nombre hay que declararlos abajo del todo en el docker-compose, que si un puerto está pillado lo cambio por fuera (3307) sin tocar nada por dentro, y que el 403 era porque Apache no apuntaba a `public/`. Leyendo bien el error casi siempre sabes dónde está el fallo.
 
 ---
 
@@ -211,7 +214,7 @@ Faltaba crear `templates/layout/base.html.twig` y renombrar `footer.html` a `foo
 Que la página de inicio se renderice completa.
 
 **Qué he aprendido:**
-
+Que Twig busca los archivos con el nombre exacto, así que si no acaban en `.html.twig` no los encuentra. Los errores de Twig te dicen qué archivo falta y en qué línea; solo hay que leerlos.
 
 ---
 
@@ -227,7 +230,7 @@ Varias propuestas (TruequePro, HoraXHora, Banco de Oficios, Truekia...). Elegido
 Darle identidad al proyecto y no repetir el nombre en todas las plantillas.
 
 **Qué he aprendido:**
-
+Que con `addGlobal` pongo una variable disponible en todas las plantillas, así si cambio el nombre de la app solo lo toco en un sitio.
 
 ---
 
@@ -243,7 +246,7 @@ Darle identidad al proyecto y no repetir el nombre en todas las plantillas.
 Cumplir el requisito de CSS3 nativo con variables y diseño adaptativo, y tener una portada para enseñar.
 
 **Qué he aprendido:**
-
+Que las variables CSS se definen una vez en `:root` y se usan con `var()`, así cambio un color y cambia en toda la web. También la diferencia entre `em`, `rem` y `px`, y que los estilos que se usan en todas las páginas van en `base.css`.
 
 ---
 
@@ -261,6 +264,7 @@ Cumplir el requisito de CSS3 nativo con variables y diseño adaptativo, y tener 
 Mantener el código limpio y accesible de cara a la corrección.
 
 **Qué he aprendido:**
+Que lo de SonarLint no son errores, son avisos para dejar el código más limpio. Lo de `prefers-reduced-motion` no lo conocía: hay gente que tiene quitadas las animaciones en su sistema y la web lo tiene que respetar.
 
 ---
 
@@ -281,7 +285,7 @@ Mantener el código limpio y accesible de cara a la corrección.
 Tener la base de datos creada y con datos para poder probar el resto de la aplicación, y cumplir el entregable del script `.sql` con seeds.
 
 **Qué he aprendido:**
-
+Que con `CHECK` la base de datos no deja meter datos raros (saldo negativo, una puntuación de 7...). Que las contraseñas nunca se guardan tal cual, van hasheadas. Y que el `ON DELETE CASCADE` te puede borrar más cosas de las que crees.
 
 ---
 
@@ -297,7 +301,7 @@ Son los datos de prueba iniciales que se insertan al crear la base de datos. Sep
 Entender un término que pide el enunciado en los entregables.
 
 **Qué he aprendido:**
-
+Que los seeds son los datos de prueba para que la base de datos no esté vacía al arrancar. Así el profe puede probarlo todo sin tener que crear usuarios a mano.
 
 ---
 
@@ -313,7 +317,7 @@ Host `localhost`, puerto el publicado en `docker-compose.yml`, usuario y contras
 Poder ver y consultar las tablas desde el IDE.
 
 **Qué he aprendido:**
-
+Que desde fuera de Docker me conecto con `localhost` y el puerto que he publicado, pero la app por dentro usa el nombre del servicio (`db`). Y que sin el driver descargado PhpStorm no puede conectar.
 
 ---
 
@@ -335,7 +339,7 @@ En un primer momento la IA escribió los archivos directamente en mi proyecto si
 Tener la conexión que usarán todos los DAO antes de empezar con los modelos.
 
 **Qué he aprendido:**
-
+Que con el Singleton solo se crea una conexión y todos los DAO usan la misma. Que las contraseñas de la base de datos no van escritas en el código, se leen de las variables de entorno. Que con el autoload de Composer no hace falta hacer `require` de cada clase. Y que tengo que vigilar lo que hace la IA y decidir yo qué entra en mi proyecto.
 
 ---
 
@@ -351,7 +355,7 @@ Al pegar código, PhpStorm elimina la última línea vacía. Se arregla añadié
 Quitar el aviso de SonarLint y no tener que corregirlo en cada archivo.
 
 **Qué he aprendido:**
-
+Que PhpStorm se puede configurar para que haga cosas solo al guardar, como dejar la línea vacía del final, y así me ahorro corregirlo a mano cada vez.
 
 ---
 
@@ -367,7 +371,7 @@ Comandos `git add`, `git commit` y `git push`, con la recomendación de revisar 
 Subir el trabajo al repositorio de GitHub.
 
 **Qué he aprendido:**
-
+Que antes de hacer commit es mejor mirar `git status` para ver qué se va a subir, y que poner `feat:`, `docs:` o `chore:` en los mensajes hace que el historial se entienda mejor.
 
 ---
 
@@ -386,6 +390,6 @@ Es un diagrama de arquitectura, no el diagrama de clases MVC que pide el enuncia
 Tener una visión general del proyecto para la documentación.
 
 **Qué he aprendido:**
-
+Que un diagrama de arquitectura y uno de clases no son lo mismo: uno enseña cómo va una petición por las capas y el otro las clases con sus atributos y métodos. Y que en MVC cada capa tiene su trabajo: la vista enseña, el controlador decide y el modelo se encarga de los datos.
 
 ---

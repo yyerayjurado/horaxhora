@@ -5,5 +5,5 @@ RUN docker-php-ext-install pdo_mysql \
     && pecl install xdebug \
     && a2enmod rewrite
 
-COPY docker/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf
+COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
