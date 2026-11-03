@@ -28,7 +28,7 @@ El intercambio **no tiene que ser recíproco** entre las mismas dos personas:
 
 ```
 Ana arregla el ordenador de Luis      →  Ana gana 20 puntos
-Ana usa esos puntos con Marta (clases) →  Ana gasta 20 puntos, Marta los gana
+Ana usa esos puntos con Marta (clases) →  Ana gasta 20 puntos, Marta los gana.
 ```
 
 Cada usuario acumula puntos prestando servicios a cualquier miembro y los canjea después con quien quiera.
