@@ -1,0 +1,93 @@
+/* * Header fijo arriba */
+.site-header {
+    background: var(--color-superficie);
+    border-bottom: 1px solid var(--color-borde);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 16px;
+}
+
+.navbar__logo {
+    font-weight: 800;
+    font-size: 1.3em;
+    color: var(--color-primario);
+    text-decoration: none;
+}
+
+/* * Enlaces del menú */
+.navbar__links {
+    display: flex;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar__links a {
+    color: var(--color-texto);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 4px 0;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.navbar__links a:hover,
+.navbar__links a.is-active {
+    color: var(--color-primario);
+    border-bottom-color: var(--color-primario);
+}
+
+/* * Zona del usuario */
+.navbar__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar__puntos {
+    background: var(--color-secundario);
+    color: #fff;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+.navbar__perfil {
+    color: var(--color-texto);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.navbar__perfil:hover {
+    color: var(--color-primario);
+}
+
+/* * Botón hamburguesa (solo móvil) */
+.navbar__toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: 0;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.navbar__toggle span {
+    width: 24px;
+    height: 2px;
+    background: var(--color-texto);
+    border-radius: 2px;
+}

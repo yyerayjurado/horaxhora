@@ -1,8 +1,9 @@
 FROM php:8.2-apache
 
-# * PDO MySQL para los DAO
-RUN docker-php-ext-install pdo_mysql
+# * PDO MySQL, Xdebug y mod_rewrite en una sola capa
+RUN docker-php-ext-install pdo_mysql \
+    && pecl install xdebug \
+    && a2enmod rewrite
 
-# * Xdebug
-RUN pecl install xdebug && docker-php-ext-enable xdebug
 COPY docker/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY docker/apache.conf /etc/apache2/sites-available/000-default.conf

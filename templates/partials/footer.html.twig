@@ -1,0 +1,21 @@
+{# * Footer común #}
+<footer class="site-footer">
+    <div class="footer__contenido">
+        <div class="footer__marca">
+            <span class="footer__logo">{{ app_nombre }}</span>
+            <p>Intercambia tu tiempo y tus conocimientos con otros profesionales.</p>
+        </div>
+
+        <nav class="footer__nav" aria-label="Enlaces del pie">
+            <ul>
+                <li><a href="/servicios">Servicios</a></li>
+                <li><a href="/como-funciona">Cómo funciona</a></li>
+                {% if not usuario %}
+                    <li><a href="/registro">Únete</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <p class="footer__copy">&copy; {{ "now"|date("Y") }} {{ app_nombre }} · Proyecto DAW</p>
+</footer>

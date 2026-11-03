@@ -1,0 +1,36 @@
+{# * Header común. Usa las variables globales "app_nombre", "usuario" y "pagina_actual" #}
+<header class="site-header">
+    <nav class="navbar" aria-label="Navegación principal">
+        <a href="/" class="navbar__logo">{{ app_nombre }}</a>
+
+        <button class="navbar__toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Abrir menú">
+            <span></span><span></span><span></span>
+        </button>
+
+        <ul class="navbar__links" id="nav-links">
+            <li><a href="/" class="{{ pagina_actual == 'inicio' ? 'is-active' }}">Inicio</a></li>
+            <li><a href="/servicios" class="{{ pagina_actual == 'servicios' ? 'is-active' }}">Servicios</a></li>
+
+            {% if usuario %}
+                <li><a href="/ofertas/crear" class="{{ pagina_actual == 'crear-oferta' ? 'is-active' }}">Crear Oferta</a></li>
+                <li><a href="/agenda" class="{{ pagina_actual == 'agenda' ? 'is-active' }}">Mi Agenda</a></li>
+
+                {# ! Solo visible para el administrador #}
+                {% if usuario.rol == 'ADMIN' %}
+                    <li><a href="/admin" class="{{ pagina_actual == 'admin' ? 'is-active' }}">Panel Admin</a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+
+        <div class="navbar__user">
+            {% if usuario %}
+                <span class="navbar__puntos" id="saldo-puntos">{{ usuario.puntos_saldo }} pts</span>
+                <a href="/perfil" class="navbar__perfil">{{ usuario.nombre }}</a>
+                <a href="/logout" class="btn btn--secundario">Salir</a>
+            {% else %}
+                <a href="/login" class="btn btn--secundario">Entrar</a>
+                <a href="/registro" class="btn btn--primario">Registrarse</a>
+            {% endif %}
+        </div>
+    </nav>
+</header>

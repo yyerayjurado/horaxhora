@@ -1,0 +1,82 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Inicio | {{ app_nombre }}{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="/assets/css/inicio.css">
+{% endblock %}
+
+{% block content %}
+
+    {# * Hero #}
+    <section class="hero">
+        <h1 class="hero__titulo">Tu tiempo vale <span>CÁMBIALO.</span></h1>
+        <p class="hero__texto">
+            Ofrece tus servicios a la comunidad, gana puntos por cada hora y úsalos
+            para contratar lo que necesites de otros profesionales.
+        </p>
+
+        <div class="hero__acciones">
+            {% if usuario %}
+                <a href="/servicios" class="btn btn--primario">Buscar servicios</a>
+                <a href="/ofertas/crear" class="btn btn--secundario">Ofrecer un servicio</a>
+            {% else %}
+                <a href="/registro" class="btn btn--primario">Únete y recibe 50 puntos</a>
+                <a href="/servicios" class="btn btn--secundario">Ver servicios</a>
+            {% endif %}
+        </div>
+    </section>
+
+    {# * Cómo funciona #}
+    <section class="pasos" aria-labelledby="titulo-pasos">
+        <h2 id="titulo-pasos">Cómo funciona</h2>
+
+        <ol class="pasos__lista">
+            <li class="paso">
+                <span class="paso__numero">1</span>
+                <h3>Ofrece lo que sabes hacer</h3>
+                <p>Elige servicios del catálogo y pon tu tarifa en puntos por hora.</p>
+            </li>
+            <li class="paso">
+                <span class="paso__numero">2</span>
+                <h3>Gana puntos</h3>
+                <p>Cada hora que trabajas para alguien de la comunidad suma a tu saldo.</p>
+            </li>
+            <li class="paso">
+                <span class="paso__numero">3</span>
+                <h3>Canjéalos</h3>
+                <p>Usa tus puntos para contratar a cualquier otro profesional.</p>
+            </li>
+        </ol>
+    </section>
+
+    {# * Categorías. TODO: pasar "categorias" desde el controlador con el DAO #}
+    <section class="categorias" aria-labelledby="titulo-categorias">
+        <h2 id="titulo-categorias">Explora por categoría</h2>
+
+        <ul class="categorias__grid">
+            {% for categoria in categorias|default([
+                {id_categoria: 1, nombre: 'Hogar y reparaciones'},
+                {id_categoria: 2, nombre: 'Clases y formación'},
+                {id_categoria: 3, nombre: 'Informática'},
+                {id_categoria: 4, nombre: 'Electricidad'}
+            ]) %}
+                <li>
+                    <a href="/servicios?categoria={{ categoria.id_categoria }}" class="categoria">
+                        {{ categoria.nombre }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    {# * Llamada a la acción final (solo sin sesión) #}
+    {% if not usuario %}
+        <section class="cta">
+            <h2>¿Empiezas hoy?</h2>
+            <p>Regístrate gratis y empieza con 50 puntos de bienvenida.</p>
+            <a href="/registro" class="btn btn--primario">Crear cuenta</a>
+        </section>
+    {% endif %}
+
+{% endblock %}

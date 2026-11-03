@@ -1,0 +1,57 @@
+.site-footer {
+    background: var(--color-superficie);
+    border-top: 1px solid var(--color-borde);
+    padding: 32px 16px 16px;
+    margin-top: 48px;
+}
+
+.footer__contenido {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer__logo {
+    font-weight: 800;
+    font-size: 1.2em;
+    color: var(--color-primario);
+}
+
+.footer__marca p {
+    color: var(--color-texto-suave);
+    margin: 8px 0 0;
+    max-width: 320px;
+}
+
+.footer__nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.footer__nav a {
+    color: var(--color-texto);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer__nav a:hover {
+    color: var(--color-primario);
+}
+
+.footer__copy {
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--color-texto-suave);
+    border-top: 1px solid var(--color-borde);
+    max-width: 1200px;
+    margin: 24px auto 0;
+    padding-top: 16px;
+}
