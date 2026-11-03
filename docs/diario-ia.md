@@ -261,4 +261,131 @@ Cumplir el requisito de CSS3 nativo con variables y diseño adaptativo, y tener 
 Mantener el código limpio y accesible de cara a la corrección.
 
 **Qué he aprendido:**
+
+---
+
+## 03/11/2026 · 12:31
+
+### 11. Script de la base de datos a partir del modelo E-R
+
+**Prompt:**
+> A partir del modelo Entidad-Relación y el script SQL del anexo del enunciado, genera la estructura de la base de datos en MySQL y unos datos de prueba coherentes. Sepáralo en dos archivos, `01_schema.sql` (tablas) y `02_seeds.sql` (datos), para que Docker los ejecute en orden al crear el contenedor.
+
+**Resultado:**
+- `01_schema.sql` con las 6 tablas del anexo y restricciones `CHECK` añadidas (saldo no negativo, horas y tarifas mayores que 0, puntuación de 1 a 5) y un índice por estado en las solicitudes.
+- `02_seeds.sql` con 1 administrador, 4 profesionales, 4 categorías, 8 servicios, 8 ofertas (una desactivada), una solicitud de cada estado y valoraciones solo en las completadas. Los saldos cuadran con los trueques completados. Contraseña de prueba `1234` guardada con bcrypt para que funcione con `password_verify`.
+- `SET NAMES utf8mb4` al principio para que los acentos se importen bien.
+- Aviso: el `ON DELETE CASCADE` del anexo borra el historial de trueques si se elimina un usuario. Para la moderación conviene dar de baja con un campo `activo` en vez de un `DELETE`.
+
+**Motivo:**
+Tener la base de datos creada y con datos para poder probar el resto de la aplicación, y cumplir el entregable del script `.sql` con seeds.
+
+**Qué he aprendido:**
+
+
+---
+
+### 12. Qué son los seeds
+
+**Prompt:**
+> ¿Qué son los "seeds" de una base de datos y para qué sirven en este proyecto?
+
+**Resultado:**
+Son los datos de prueba iniciales que se insertan al crear la base de datos. Separan el *contenido* (`02_seeds.sql`) de la *estructura* (`01_schema.sql`), permiten probar la aplicación nada más levantarla, facilitan la corrección al profesor y se pueden restaurar con `docker compose down -v` + `up -d`.
+
+**Motivo:**
+Entender un término que pide el enunciado en los entregables.
+
+**Qué he aprendido:**
+
+
+---
+
+### 13. Conectar PhpStorm a la base de datos de Docker
+
+**Prompt:**
+> ¿Qué datos tengo que poner en "Data Sources and Drivers" de PhpStorm para conectarme a la base de datos MySQL que corre en Docker?
+
+**Resultado:**
+Host `localhost`, puerto el publicado en `docker-compose.yml`, usuario y contraseña `usuario`, base de datos `sistema_trueque`. Descargar antes el driver de MySQL y comprobar con *Test Connection*. Soluciones a los errores típicos (contenedor parado, acceso denegado, `allowPublicKeyRetrieval`).
+
+**Motivo:**
+Poder ver y consultar las tablas desde el IDE.
+
+**Qué he aprendido:**
+
+
+---
+
+### 14. Conexión PDO a la base de datos
+
+**Prompt:**
+> Explícame cómo crear la conexión a la base de datos con PDO usando el patrón Singleton dentro de la capa DAO, leyendo los datos de conexión de las variables de entorno de Docker y cargando las clases con el autoload de Composer.
+
+**Resultado:**
+- `src/Dao/BD.php`: clase `final` con constructor privado y método estático `getConexion()` que crea la conexión PDO una sola vez. Lee `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASS` con `getenv()`, usa `charset=utf8mb4` y activa excepciones, `FETCH_ASSOC` y consultas preparadas reales. Si falla, lanza un error genérico sin mostrar datos del servidor.
+- `composer.json` con autoload PSR-4 (`App\` → `src/`) y `composer dump-autoload`.
+- `public/.htaccess` para que todas las rutas pasen por `index.php`.
+- Ruta temporal `/test-bd` en `index.php`. Resultado: conexión correcta con los 5 usuarios de los seeds.
+
+**Uso de la IA:**
+En un primer momento la IA escribió los archivos directamente en mi proyecto sin que se lo pidiera. Le pedí que lo deshiciera, me pasó el código en el chat y lo incorporé yo a mano.
+
+**Motivo:**
+Tener la conexión que usarán todos los DAO antes de empezar con los modelos.
+
+**Qué he aprendido:**
+
+
+---
+
+### 15. Salto de línea al final de los archivos
+
+**Prompt:**
+> SonarLint me sigue marcando "Add a new line at the end of this file" en `index.php`. ¿Cómo lo arreglo y cómo hago que PhpStorm lo haga solo al guardar?
+
+**Resultado:**
+Al pegar código, PhpStorm elimina la última línea vacía. Se arregla añadiéndola a mano, y de forma permanente activando *Settings → Editor → General → On Save → "Ensure every saved file ends with a line break"*.
+
+**Motivo:**
+Quitar el aviso de SonarLint y no tener que corregirlo en cada archivo.
+
+**Qué he aprendido:**
+
+
+---
+
+### 16. Commit y push de los cambios
+
+**Prompt:**
+> Dame los comandos para hacer commit y push de los cambios de hoy, con mensajes de commit claros.
+
+**Resultado:**
+Comandos `git add`, `git commit` y `git push`, con la recomendación de revisar antes `git status` y la opción de separar los cambios en varios commits (base de datos, conexión, rutas) para que el historial sea más claro.
+
+**Motivo:**
+Subir el trabajo al repositorio de GitHub.
+
+**Qué he aprendido:**
+
+
+---
+
+### 17. Diagrama de la arquitectura MVC
+
+**Prompt:**
+> Genera una imagen de la arquitectura MVC + DAO de mi proyecto con las carpetas reales, organizada en capas apiladas (Vista, Controlador, Modelo) y marcando qué partes están hechas y cuáles pendientes.
+
+**Resultado:**
+Diagrama en PNG y SVG con el navegador arriba, las capas Vista (`templates/`, `public/assets/`), Control (entrada, Router, controladores de páginas y API) y Modelo (`src/Models/`, `src/Dao/`), y MySQL abajo. Lo pendiente aparece con borde discontinuo. Una primera versión con flujo numerado se descartó por tener demasiadas flechas.
+
+**Nota:**
+Es un diagrama de arquitectura, no el diagrama de clases MVC que pide el enunciado. Ese se hará cuando estén los modelos y los DAO.
+
+**Motivo:**
+Tener una visión general del proyecto para la documentación.
+
+**Qué he aprendido:**
+
+
 ---
