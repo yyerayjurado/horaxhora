@@ -261,5 +261,4 @@ Cumplir el requisito de CSS3 nativo con variables y diseño adaptativo, y tener 
 Mantener el código limpio y accesible de cara a la corrección.
 
 **Qué he aprendido:**
-
 ---
