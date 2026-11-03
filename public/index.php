@@ -2,8 +2,9 @@
 declare(strict_types=1);
 
 // * Autoload de Composer (carga Twig y clases de src/)
-require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
+use App\Dao\BD;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -28,9 +29,8 @@ if (isset($_GET['salir'])) {
     unset($_SESSION['usuario']);
 }
 
-// * Nombre de la app disponible en todas las plantillas
+// * Variables disponibles en todas las plantillas
 $twig->addGlobal('app_nombre', 'HoraXHora');
-
 $twig->addGlobal('usuario', $_SESSION['usuario'] ?? null);
 
 // * Router mínimo. Luego cada caso llamará a su controlador
@@ -43,6 +43,12 @@ switch ($ruta) {
 
     case '/servicios':
         echo $twig->render('pages/inicio.html.twig', ['pagina_actual' => 'servicios']);
+        break;
+
+    // TODO: borrar cuando haya DAOs. Solo comprueba que la conexión funciona
+    case '/test-bd':
+        $total = BD::getConexion()->query('SELECT COUNT(*) FROM usuarios')->fetchColumn();
+        echo "✅ Conexión OK. Usuarios en la base de datos: {$total}";
         break;
 
     default:
