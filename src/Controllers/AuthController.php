@@ -32,13 +32,15 @@ class AuthController
             $usuario = (new UsuarioDao())->buscarPorEmail($email);
 
             // ! La contraseña está guardada con hash, por eso password_verify y no ===
-            if ($usuario && password_verify($password, $usuario['password'])) {
+            // ! CAMBIO (Claude): $usuario ahora es un objeto Usuario, por eso se usan getters en vez de ['...']
+            if ($usuario && password_verify($password, $usuario->getPassword())) {
                 // * Guardar datos en la sesión (nunca la contraseña)
+                // * Sigue siendo un array porque Twig lo lee directamente (usuario.nombre)
                 $_SESSION['usuario'] = [
-                    'id'           => $usuario['id_usuario'],
-                    'nombre'       => $usuario['nombre'],
-                    'rol'          => $usuario['rol'],
-                    'puntos_saldo' => $usuario['puntos_saldo'],
+                    'id'           => $usuario->getId(),
+                    'nombre'       => $usuario->getNombre(),
+                    'rol'          => $usuario->getRol(),
+                    'puntos_saldo' => $usuario->getPuntosSaldo(),
                 ];
 
                 header('Location: /');
