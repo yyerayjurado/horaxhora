@@ -1,48 +1,65 @@
 <?php
-    // * Autoload de Composer (carga Twig y clases de src/)
-    require_once __DIR__ . '/../vendor/autoload.php';
+declare(strict_types=1);
 
-    use App\Controllers\AuthController;
-    use App\Router;
-    use Twig\Environment;
-    use Twig\Loader\FilesystemLoader;
+namespace App;
 
-    session_start();
+use App\Controllers\AuthController;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
-    // * Configuración de Twig
-    $loader = new FilesystemLoader(__DIR__ . '/../templates');
-    $twig = new Environment($loader, [
-        'cache' => false, // ! Pon una ruta de caché en producción
-        'debug' => true,
-    ]);
+class Router
+{
+    private Environment $twig;
 
-    // * Variables disponibles en todas las plantillas
-    $twig->addGlobal('app_nombre', 'HoraXHora');
-    $twig->addGlobal('usuario', $_SESSION['usuario'] ?? null);
+    public function __construct()
+    {
+        session_start();
 
-    $router = new Router();
+        // * Configuración de Twig
+        $loader = new FilesystemLoader(__DIR__ . '/../templates');
+        $this->twig = new Environment($loader);
 
-    // * Páginas
-    $router->get('/', function () use ($twig) {
-        echo $twig->render('pages/inicio.html.twig', ['pagina_actual' => 'inicio']);
-    });
+        // * Variables disponibles en todas las plantillas
+        $this->twig->addGlobal('app_nombre', 'HoraXHora');
+        $this->twig->addGlobal('usuario', $_SESSION['usuario'] ?? null);
+    }
 
-    $router->get('/servicios', function () use ($twig) {
-        echo $twig->render('pages/inicio.html.twig', ['pagina_actual' => 'servicios']);
-    });
+    public function dispatch(): void
+    {
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-    // * Login: GET muestra el formulario y POST lo procesa (los dos van al mismo método)
-    $router->get('/login', function () use ($twig) {
-        (new AuthController($twig))->login();
-    });
+        // * Fragmenta la URL. Ejemplo: "/login" -> ['login']
+        $segments = explode('/', trim($uri, '/'));
 
-    $router->post('/login', function () use ($twig) {
-        (new AuthController($twig))->login();
-    });
+        $primerSegmento = $segments[0];
 
-    $router->get('/logout', function () use ($twig) {
-        (new AuthController($twig))->logout();
-    });
+        switch ($primerSegmento) {
+            case '':
+                echo $this->twig->render('pages/inicio.html.twig', ['pagina_actual' => 'inicio']);
+                break;
 
-    // * Busca la ruta pedida y la ejecuta
-    $router->ejecutar();
+            case 'servicios':
+                echo $this->twig->render('pages/inicio.html.twig', ['pagina_actual' => 'servicios']);
+                break;
+
+            // * GET muestra el formulario y POST lo procesa
+            case 'login':
+                (new AuthController($this->twig))->login();
+                break;
+
+            case 'logout':
+                (new AuthController($this->twig))->logout();
+                break;
+
+            default:
+                $this->responderError(404, 'Página no encontrada');
+                break;
+        }
+    }
+
+    private function responderError(int $codigo, string $mensaje): void
+    {
+        http_response_code($codigo);
+        echo $mensaje;
+    }
+}
