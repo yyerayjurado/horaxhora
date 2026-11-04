@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ app_nombre }}{% endblock %}</title>
 
+    {# * Fuente de Google Fonts (Plus Jakarta Sans). Va antes que los CSS para que cargue cuanto antes #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
     {# * Rutas desde public/, que es la raíz web #}
     <link rel="stylesheet" href="/assets/css/variables.css">
     <link rel="stylesheet" href="/assets/css/base.css">
-    <link rel="stylesheet" href="/assets/css/layout.css">
     <link rel="stylesheet" href="/assets/css/header.css">
     <link rel="stylesheet" href="/assets/css/footer.css">
 
@@ -23,8 +27,6 @@
     </main>
 
     {% include 'partials/footer.html.twig' %}
-
-    <script src="/assets/js/header.js" defer></script>
 
     {# * Cada página puede añadir su propio JS aquí #}
     {% block scripts %}{% endblock %}
