@@ -406,7 +406,7 @@ Un `AuthController` con los métodos `login()` (muestra el formulario por GET y 
 Tener la autenticación funcionando, que es la base para el resto de partes privadas (agenda, ofertas, panel admin).
 
 **Qué he aprendido:**
-
+Que la contraseña no se compara con `===` porque en la base de datos está guardada con hash, y que para eso está `password_verify()`. También que en la sesión nunca se guarda la contraseña, solo los datos que necesito enseñar, y que con `header('Location')` y `exit()` mando al usuario a otra página.
 
 ---
 
@@ -422,7 +422,7 @@ Tener la autenticación funcionando, que es la base para el resto de partes priv
 Que todas las consultas del proyecto sigan el mismo patrón visto en clase.
 
 **Qué he aprendido:**
-
+Que cuando el dato viene del usuario hay que usar `prepare()` y no `query()`, porque si no me pueden hacer inyección SQL. Y que el operador `?:` es una forma corta de un `if`: si lo de la izquierda vale algo lo devuelve, y si no, devuelve lo de la derecha.
 
 ---
 
@@ -438,7 +438,7 @@ Se revisó el autoload PSR-4 (nombre de carpeta, archivo y `namespace`). Se aña
 Poder probar el login y dejar el entorno Docker preparado para cualquiera que clone el repositorio.
 
 **Qué he aprendido:**
-
+Que el error `Class not found` casi siempre es porque el nombre de la carpeta, del archivo o del `namespace` no coincide, no por Composer. Y que en el `Dockerfile` las rutas de los `COPY` van desde el contexto del build, no desde la carpeta donde está el `Dockerfile`.
 
 ---
 
@@ -454,7 +454,7 @@ Clase `Router` con los métodos `get()`, `post()` y `ejecutar()`, que guarda las
 Separar el enrutado en su propia clase, como pide la estructura del proyecto, y preparar las rutas con datos (detalle de servicio, solicitudes...).
 
 **Qué he aprendido:**
-
+Que con el `.htaccess` todas las URLs pasan por `index.php` y por eso puedo tener rutas amigables como `/login` en vez de `index.php?pagina=login`. Y que un router es lo que mira la URL y decide qué controlador ejecutar.
 
 ---
 
@@ -470,7 +470,7 @@ Explicación de que `strict_types` impide que PHP convierta tipos solo (por eso 
 Entender el código que uso y no romper requisitos del enunciado.
 
 **Qué he aprendido:**
-
+Que `declare(strict_types=1)` hace que PHP no cambie los tipos solo y salte un error si no coinciden, por eso los datos de la URL hay que pasarlos a `(int)`. Y que no hace falta un autoloader propio si ya uso el de Composer.
 
 ---
 
@@ -486,7 +486,7 @@ Entender el código que uso y no romper requisitos del enunciado.
 Que el login tenga un diseño propio y coherente con el resto de la web, cumpliendo la regla de no usar frameworks ni preprocesadores.
 
 **Qué he aprendido:**
-
+Que SCSS no es CSS normal (tiene `$variables` y anidación) y hay que pasarlo a CSS nativo. También que si pongo estilos en el `body` o en `*` dentro del CSS de una página, me puede romper el header y el footer de toda la web.
 
 ---
 
@@ -502,7 +502,7 @@ Se eligió Plus Jakarta Sans (Google Fonts) frente a Inter, Manrope o la fuente 
 Unificar la letra de toda la web y darle una imagen más moderna.
 
 **Qué he aprendido:**
-
+Que una fuente de Google Fonts se carga con un `<link>` en el `<head>` y luego se usa en el CSS, y que conviene ponerla en una variable para cambiarla en un solo sitio. Y que si no veo los cambios del CSS muchas veces es la caché del navegador y se arregla con `Cmd + Shift + R`.
 
 ---
 
@@ -518,6 +518,22 @@ La web funcionaba, pero había dos fallos: `Router.php` contenía el código del
 Comprobar que la organización del proyecto es correcta antes de seguir añadiendo funcionalidades.
 
 **Qué he aprendido:**
+Que PSR-4 es la regla que dice que el `namespace` tiene que coincidir con la carpeta y el nombre de la clase con el del archivo, y que el autoload de Composer es lo que la aplica. También que en Mac funciona aunque las mayúsculas no coincidan, pero en Linux no.
 
+---
+
+### 26. Router adaptado al modelo del profesor
+
+**Prompt:**
+> Este es el `index.php` y el `Router.php` de mi profesor. Adapta mi router a su forma de hacerlo (una clase con `dispatch()` y un `switch` por segmentos de la URL), con mis rutas actuales y dejándolo en `src/Router.php`, sin complicarlo.
+
+**Resultado:**
+`index.php` reducido a cargar el autoload, crear el `Router` y llamar a `dispatch()`. La clase `Router` (en `src/Router.php`, namespace `App`) arranca la sesión, prepara Twig, parte la URL en segmentos con `explode` y decide con un `switch` qué hacer para `/`, `/servicios`, `/login` y `/logout`, con `responderError()` para el 404. Se descartaron una versión con expresiones regulares y otra con todas las rutas futuras y un mapa de la API, por ser demasiado complicadas para lo que hace falta ahora.
+
+**Motivo:**
+Seguir el mismo modelo que usa el profesor y tener el enrutado en una clase, dejando el `index.php` lo más limpio posible.
+
+**Qué he aprendido:**
+Que con `explode('/', trim($uri, '/'))` la URL se parte en trozos y con el primero sé a qué página quiere ir el usuario. Y que es mejor ir añadiendo un `case` por cada página cuando la hago que meter de golpe rutas que todavía no existen.
 
 ---
