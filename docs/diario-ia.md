@@ -69,7 +69,7 @@ Que si ya tengo el proyecto en local no hay que crear el repo con README, porque
 
 ### Resultado
 - Dockerfile mínimo basado en `php:8.2-apache`, con `pdo_mysql` y Xdebug instalados, `sed` para cambiar el DocumentRoot a `public/` y `FallbackResource /index.php` (que evita necesitar `.htaccess` y `mod_rewrite`).
-- `xdebug.ini` preparado para VS Code (`client_host=host.docker.internal`, puerto 9003).
+- `../xdebug.ini` preparado para VS Code (`client_host=host.docker.internal`, puerto 9003).
 - La primera versión era más completa (Composer dentro del contenedor, paquetes del sistema). Se simplificó porque Composer ya está en el Mac y `vendor/` entra por el volumen.
 
 ### Motivo
@@ -191,7 +191,7 @@ Que `index.php` es la única puerta de entrada a la web y desde ahí se decide q
 - Declarar `volumes: db_data:` a nivel raíz del `docker-compose.yml`.
 - Cambiar el puerto de MySQL a `3307:3306` porque el 3306 ya estaba en uso en el Mac.
 - El 403 venía de que Apache servía la raíz del proyecto en vez de `public/`. Se soluciona copiando el `apache.conf` del profesor (DocumentRoot en `/var/www/html/public` y `AllowOverride All`) y activando `mod_rewrite` en el Dockerfile.
-- Usar el `xdebug.ini` del profesor sin `docker-php-ext-enable` para no cargar Xdebug dos veces.
+- Usar el `../xdebug.ini` del profesor sin `docker-php-ext-enable` para no cargar Xdebug dos veces.
 - Error "not found" en el build: el `apache.conf` tenía que estar dentro de la carpeta `docker/`.
 
 **Motivo:**
@@ -391,5 +391,133 @@ Tener una visión general del proyecto para la documentación.
 
 **Qué he aprendido:**
 Que un diagrama de arquitectura y uno de clases no son lo mismo: uno enseña cómo va una petición por las capas y el otro las clases con sus atributos y métodos. Y que en MVC cada capa tiene su trabajo: la vista enseña, el controlador decide y el modelo se encarga de los datos.
+
+---
+
+### 18. Login con sesiones y base de datos
+
+**Prompt:**
+> Hazme el login de la aplicación siguiendo el estilo que hemos visto en clase (formulario con POST normal, `$_SESSION`, `header("Location")` y `session_destroy()` para el logout), pero adaptado a mi estructura MVC + DAO con Twig y comprobando el usuario contra la base de datos.
+
+**Resultado:**
+Un `AuthController` con los métodos `login()` (muestra el formulario por GET y lo procesa por POST) y `logout()`, un `UsuarioDao` con `buscarPorEmail()`, la plantilla `login.html.twig` con el mensaje de error y las rutas `/login` y `/logout` en el `index.php`. La contraseña se comprueba con `password_verify()` porque en la base de datos está guardada con hash, y en la sesión solo se guardan id, nombre, rol y puntos. Se descartaron primero una versión con `fetch` y CSRF y otra simplificada, porque no seguían lo visto en clase.
+
+**Motivo:**
+Tener la autenticación funcionando, que es la base para el resto de partes privadas (agenda, ofertas, panel admin).
+
+**Qué he aprendido:**
+
+
+---
+
+### 19. Consultas PDO con try/catch
+
+**Prompt:**
+> Adapta las consultas del DAO al formato que nos han enseñado: dentro de un `try/catch` con `PDOException` y usando `fetch(PDO::FETCH_ASSOC)`.
+
+**Resultado:**
+`buscarPorEmail()` reescrito con `try/catch`, sacando la conexión de `BD::getConexion()` en vez de repetir `new PDO` en cada DAO, y con `prepare()` en lugar de `query()` porque el email viene del formulario (evita inyección SQL). También un ejemplo de `listarTodos()` con `query()` y `while`, y la explicación del operador `?:` y de cómo simplificar el retorno con el tipo `array|false`.
+
+**Motivo:**
+Que todas las consultas del proyecto sigan el mismo patrón visto en clase.
+
+**Qué he aprendido:**
+
+
+---
+
+### 20. Error "Class not found" y Composer en Docker
+
+**Prompt:**
+> Me sale `Class "App\Controllers\AuthController" not found`. Ayúdame a encontrar la causa y a poder ejecutar Composer dentro del contenedor.
+
+**Resultado:**
+Se revisó el autoload PSR-4 (nombre de carpeta, archivo y `namespace`). Se añadió Composer al `Dockerfile` con el instalador oficial mediante `curl`, y se corrigieron las rutas de los `COPY` a `../apache.conf` y `../xdebug.ini`, porque el contexto del build es la raíz del proyecto. La causa real del error era que `AuthController.php` solo tenía el `namespace`, sin la clase. También se detectó que `UsuarioDAO.php` no coincidía en mayúsculas con la clase `UsuarioDao`.
+
+**Motivo:**
+Poder probar el login y dejar el entorno Docker preparado para cualquiera que clone el repositorio.
+
+**Qué he aprendido:**
+
+
+---
+
+### 21. Router con rutas amigables
+
+**Prompt:**
+> Mi `Router.php` está vacío. Explícame cómo hacer un router sencillo en una clase que sustituya al `switch` del `index.php`, con rutas amigables y que admita parámetros como `/servicio/{id}`.
+
+**Resultado:**
+Clase `Router` con los métodos `get()`, `post()` y `ejecutar()`, que guarda las rutas por método y URL y devuelve 404 si no existe. Después se amplió para aceptar huecos `{id}` usando `preg_replace` y `preg_match`, pasando los valores como parámetros a la función de cada ruta. El `index.php` queda registrando las rutas con funciones anónimas (`function () use ($twig)`).
+
+**Motivo:**
+Separar el enrutado en su propia clase, como pide la estructura del proyecto, y preparar las rutas con datos (detalle de servicio, solicitudes...).
+
+**Qué he aprendido:**
+
+
+---
+
+### 22. Dudas: tipado estricto y Autoloader
+
+**Prompt:**
+> Explícame qué hace `declare(strict_types=1)` y si lo puedo quitar, y si hace falta el `Autoloader.php` teniendo ya el autoload de Composer.
+
+**Resultado:**
+Explicación de que `strict_types` impide que PHP convierta tipos solo (por eso hay que hacer `(int) $id` con datos de la URL), y recomendación de mantenerlo porque el enunciado pide tipado estricto. Sobre el autoloader: no se puede usar solo uno propio porque Twig depende de Composer, y tener uno propio junto al de Composer sería duplicar lo mismo. Como la estructura del profesor no es obligatoria, se decidió borrar `Autoloader.php` y usar solo el autoload PSR-4 de Composer (ver entrada 25).
+
+**Motivo:**
+Entender el código que uso y no romper requisitos del enunciado.
+
+**Qué he aprendido:**
+
+
+---
+
+### 23. Diseño del login con CSS nativo
+
+**Prompt:**
+> Adapta este diseño de login (escrito en SCSS y con estilos globales en el `body`) a CSS3 nativo para mi proyecto, usando mis variables y clases, sin tocar el fondo de la página y con el formulario centrado.
+
+**Resultado:**
+`auth.css` en CSS nativo con nomenclatura BEM (`auth`, `auth__input`, `auth__boton`...), usando las variables de `variables.css`. Se probaron varias versiones (degradado de fondo, tarjeta con formas decorativas, dos columnas) y se eligió una tarjeta centrada de una columna con campos subrayados y botón redondeado. Se corrigió la ruta del CSS en la plantilla para que empiece por `/`.
+
+**Motivo:**
+Que el login tenga un diseño propio y coherente con el resto de la web, cumpliendo la regla de no usar frameworks ni preprocesadores.
+
+**Qué he aprendido:**
+
+
+---
+
+### 24. Tipografía de la web
+
+**Prompt:**
+> Recomiéndame una tipografía para HoraXHora y explícame cómo aplicarla a toda la web.
+
+**Resultado:**
+Se eligió Plus Jakarta Sans (Google Fonts) frente a Inter, Manrope o la fuente del sistema. Se cargó en el `<head>` de `base.html.twig` antes de los CSS, se puso en la variable `--fuente` y se aplicó al `body` en `base.css`, quitando el `serif` y el `fantasy` que había. También se quitaron de la plantilla `layout.css` y `header.js`, que no existían y daban error 404.
+
+**Motivo:**
+Unificar la letra de toda la web y darle una imagen más moderna.
+
+**Qué he aprendido:**
+
+
+---
+
+### 25. Revisión de la estructura de carpetas
+
+**Prompt:**
+> Analiza la estructura de carpetas actual de mi proyecto sin hacer cambios y dime si funciona. Explícame también la diferencia entre PSR-4, el autoload y el router, y para qué serviría `App.php`.
+
+**Resultado:**
+La web funcionaba, pero había dos fallos: `Router.php` contenía el código del `index.php` en vez de la clase `Router`, y el archivo `UsuarioDAO.php` no coincidía en mayúsculas con la clase `UsuarioDao` (en Linux no se cargaría). Se aclaró que PSR-4 es la norma que relaciona namespace con carpeta y archivo, que el autoload de Composer es lo que la aplica, y que el router no tiene que ver con cargar clases sino con decidir qué ejecutar según la URL. Como la estructura del profesor no es obligatoria, se borraron `App.php` y `Autoloader.php`, que estaban vacíos, y se queda `Router.php` con la clase y el `index.php` registrando las rutas.
+
+**Motivo:**
+Comprobar que la organización del proyecto es correcta antes de seguir añadiendo funcionalidades.
+
+**Qué he aprendido:**
+
 
 ---
