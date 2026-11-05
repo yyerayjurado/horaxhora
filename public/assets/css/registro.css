@@ -1,0 +1,35 @@
+/* * Estilos propios del registro. Se carga DESPUÉS de auth.css y solo añade lo que cambia */
+
+/* * La tarjeta es un poco más ancha porque hay más campos */
+.auth--registro {
+    max-width: 520px;
+}
+
+/* * Insignia de los 50 puntos encima del título */
+.registro__bonus {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    margin: 0 auto 16px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: #f59e0b26;
+    color: #b45309;
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+/* * Nombre y apellidos en la misma fila */
+.registro__fila {
+    display: grid;
+    grid-template-columns: 1fr;
+    column-gap: 20px;
+}
+
+/* * Texto de ayuda debajo de un campo */
+.registro__ayuda {
+    margin: 6px 0 0;
+    color: #94a3b8;
+    font-size: 0.8em;
+}

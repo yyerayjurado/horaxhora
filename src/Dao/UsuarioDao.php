@@ -43,4 +43,25 @@ class UsuarioDao
             return null;
         }
     }
+
+    // * Guarda un usuario nuevo. Devuelve su id, o null si hay error
+    // * El rol (PROFESIONAL) y los 50 puntos los pone la BD por defecto
+    public function insertar(string $nombre, string $apellidos, string $email, string $passwordHash, ?string $telefono): ?int
+    {
+        try {
+            $pdo = BD::getConexion();
+
+            // ! prepare() porque todos los datos vienen del formulario
+            $stmt = $pdo->prepare(
+                'INSERT INTO usuarios (nombre, apellidos, email, password, telefono) VALUES (?, ?, ?, ?, ?)'
+            );
+            $stmt->execute([$nombre, $apellidos, $email, $passwordHash, $telefono]);
+
+            // * Id que MySQL le ha dado al usuario nuevo
+            return (int) $pdo->lastInsertId();
+        } catch (PDOException $e) {
+            echo 'Error en la consulta: ' . $e->getMessage();
+            return null;
+        }
+    }
 }

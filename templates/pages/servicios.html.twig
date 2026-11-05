@@ -1,0 +1,92 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Servicios | {{ app_nombre }}{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="/assets/css/servicios.css">
+{% endblock %}
+
+{% block content %}
+    {# * Cabecera con el buscador #}
+    <section class="buscador">
+        <h1 class="buscador__titulo">Encuentra a quien te ayude</h1>
+        <p class="buscador__texto">Busca entre los servicios que ofrece la comunidad y págalos con tus puntos.</p>
+
+        {# * buscador.js escucha estos campos y vuelve a pedir los resultados al cambiar #}
+        <form id="form-buscador" class="buscador__form" role="search">
+            <label for="busqueda" class="buscador__label">Buscar servicio</label>
+            <input type="search" id="busqueda" name="busqueda" class="buscador__input"
+                   placeholder="¿Qué necesitas? Ej: clases de inglés, fontanería..." autocomplete="off">
+
+            <label for="orden" class="buscador__label">Ordenar por</label>
+            <select id="orden" name="orden" class="buscador__select">
+                <option value="valoracion">Mejor valorados</option>
+                <option value="precio_asc">Menos puntos</option>
+                <option value="precio_desc">Más puntos</option>
+            </select>
+        </form>
+
+        {# * Filtro por categoría. "" = todas #}
+        {# TODO: pasar "categorias" desde el controlador con el DAO y quitar el default #}
+        <div class="filtros" id="filtros-categoria" role="group" aria-label="Filtrar por categoría">
+            <button type="button" class="filtro is-active" data-categoria="">Todas</button>
+            {% for categoria in categorias|default([
+                {id_categoria: 1, nombre: 'Hogar y reparaciones'},
+                {id_categoria: 2, nombre: 'Clases y formación'},
+                {id_categoria: 3, nombre: 'Informática'},
+                {id_categoria: 4, nombre: 'Electricidad'}
+            ]) %}
+                <button type="button" class="filtro" data-categoria="{{ categoria.id_categoria }}">
+                    {{ categoria.nombre }}
+                </button>
+            {% endfor %}
+        </div>
+    </section>
+
+    {# * Resultados: los rellena buscador.js #}
+    <section class="resultados" aria-live="polite">
+        <p class="resultados__contador" id="resultados-contador"></p>
+
+        <ul class="resultados__grid" id="resultados-lista"></ul>
+
+        {# * Se enseña cuando no hay ninguna oferta con esos filtros #}
+        <div class="resultados__vacio" id="resultados-vacio" hidden>
+            <h2>No hay resultados</h2>
+            <p>Prueba con otra búsqueda o con otra categoría.</p>
+        </div>
+    </section>
+
+    {# * Molde de una tarjeta. No se ve: buscador.js lo copia y rellena una por oferta #}
+    <template id="plantilla-oferta">
+        <li class="oferta">
+            <div class="oferta__cabecera">
+                <span class="oferta__categoria"></span>
+                <span class="oferta__puntos"></span>
+            </div>
+
+            <h3 class="oferta__servicio"></h3>
+            <p class="oferta__descripcion"></p>
+
+            <div class="oferta__pie">
+                <a class="oferta__profesional" href="#">
+                    <span class="oferta__avatar"></span>
+                    <span>
+                        <span class="oferta__nombre"></span>
+                        <span class="oferta__valoracion"></span>
+                    </span>
+                </a>
+
+                {# ! Solo puede solicitar quien ha iniciado sesión #}
+                {% if usuario %}
+                    <button type="button" class="btn btn--primario oferta__boton">Solicitar</button>
+                {% else %}
+                    <a href="/login" class="btn btn--secundario oferta__boton">Entra para solicitar</a>
+                {% endif %}
+            </div>
+        </li>
+    </template>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/assets/js/modules/buscador.js" defer></script>
+{% endblock %}

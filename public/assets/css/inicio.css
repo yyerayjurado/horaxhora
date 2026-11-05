@@ -13,7 +13,7 @@
 }
 
 .hero__titulo span {
-    color: var(--color-primario);
+    color: #16a34a;
 }
 
 .hero__texto {
@@ -45,35 +45,66 @@
 }
 
 /* * Cómo funciona */
+.pasos {
+    text-align: center;
+}
+
 .pasos__lista {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 24px;
     list-style: none;
+    margin: 0;
     padding: 0;
 }
 
 .paso {
-    background: var(--color-superficie);
-    border: 1px solid var(--color-borde);
-    border-radius: var(--radio);
-    padding: 24px;
+    position: relative;
+    padding: 32px 28px;
+    text-align: left;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px #0f172a0a;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
 }
 
+/* * Al pasar el ratón la tarjeta sube un poco */
+.paso:hover {
+    transform: translateY(-4px);
+    border-color: #16a34a66;
+    box-shadow: 0 16px 40px #16a34a1f;
+}
+
+/* * Número: cuadrado verde suave */
 .paso__numero {
-    display: inline-grid;
+    display: grid;
     place-items: center;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background: var(--color-primario);
-    color: #fff;
-    font-weight: 700;
-    margin-bottom: 12px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 20px;
+    border-radius: 14px;
+    background: #16a34a1a;
+    color: #16a34a;
+    font-size: 1.2em;
+    font-weight: 800;
+    transition: background 0.25s, color 0.25s;
+}
+
+.paso:hover .paso__numero {
+    background: #16a34a;
+    color: #ffffff;
 }
 
 .paso h3 {
     margin: 0 0 8px;
+    font-size: 1.2em;
+}
+
+.paso p {
+    margin: 0;
+    color: #64748b;
 }
 
 /* * Categorías */
@@ -89,23 +120,90 @@
     display: block;
     padding: 20px;
     text-align: center;
-    border: 1px solid var(--color-borde);
-    border-radius: var(--radio);
-    color: var(--color-texto);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    color: #1e293b;
     text-decoration: none;
     font-weight: 600;
     transition: border-color 0.2s, transform 0.2s;
 }
 
 .categoria:hover {
-    border-color: var(--color-primario);
+    border-color: #16a34a;
     transform: translateY(-2px);
 }
 
-/* * Llamada a la acción */
+/* * Llamada a la acción: franja verde con degradado */
 .cta {
+    position: relative;
+    overflow: hidden;
+    max-width: 1100px;
+    margin: 32px auto 48px;
+    padding: 56px 24px;
     text-align: center;
-    background: var(--color-superficie);
-    border-radius: 16px;
-    margin-bottom: 32px;
+    background: linear-gradient(135deg, #15803d, #22c55e);
+    border-radius: 24px;
+    box-shadow: 0 20px 50px #16a34a33;
+}
+
+/* * Círculos decorativos de fondo */
+.cta::before,
+.cta::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: #ffffff1a;
+}
+
+.cta::before {
+    width: 260px;
+    height: 260px;
+    top: -120px;
+    right: -60px;
+}
+
+.cta::after {
+    width: 180px;
+    height: 180px;
+    bottom: -90px;
+    left: -40px;
+}
+
+/* * El texto va por encima de los círculos */
+.cta h2,
+.cta p,
+.cta .btn {
+    position: relative;
+    z-index: 1;
+}
+
+.cta h2 {
+    color: #ffffff;
+    font-size: clamp(1.7em, 4vw, 2.3em);
+    margin-bottom: 8px;
+}
+
+.cta p {
+    color: #ffffffd9;
+    font-size: 1.1em;
+    margin-bottom: 28px;
+}
+
+/* * Botón blanco con texto verde */
+.cta .btn {
+    padding: 14px 32px;
+    border: 0;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #15803d;
+    font-weight: 700;
+    box-shadow: 0 8px 20px #0f172a26;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cta .btn:hover {
+    background: #ffffff;
+    color: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px #0f172a33;
 }

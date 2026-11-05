@@ -1,10 +1,11 @@
-/* * Header fijo arriba */
+/* * Header fijo arriba, blanco con un poco de transparencia */
 .site-header {
-    background: var(--color-superficie);
-    border-bottom: 1px solid var(--color-borde);
     position: sticky;
     top: 0;
     z-index: 10;
+    background: #ffffffd9;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .navbar {
@@ -14,64 +15,110 @@
     gap: 24px;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 12px 16px;
+    padding: 14px 16px;
 }
 
+/* * Logo con un cuadradito verde delante */
 .navbar__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-weight: 800;
-    font-size: 1.3em;
-    color: var(--color-primario);
+    font-size: 1.25em;
+    letter-spacing: -0.02em;
+    color: #1e293b;
     text-decoration: none;
 }
 
-/* * Enlaces del menú */
+.navbar__logo::before {
+    content: '\21C4'; /* * Flechas de intercambio (⇄) */
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 0.85em;
+}
+
+/* * Enlaces del menú en forma de pastilla */
 .navbar__links {
     display: flex;
-    gap: 24px;
+    gap: 4px;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 4px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
 }
 
 .navbar__links a {
-    color: var(--color-texto);
+    display: block;
+    padding: 7px 16px;
+    border-radius: 999px;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.95em;
     text-decoration: none;
-    font-weight: 500;
-    padding: 4px 0;
-    border-bottom: 2px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
+    transition: background 0.2s, color 0.2s;
 }
 
-.navbar__links a:hover,
+.navbar__links a:hover {
+    color: #1e293b;
+}
+
+/* * Página en la que estás: pastilla blanca con el texto verde */
 .navbar__links a.is-active {
-    color: var(--color-primario);
-    border-bottom-color: var(--color-primario);
+    background: #ffffff;
+    color: #16a34a;
+    box-shadow: 0 1px 3px #0f172a1a;
 }
 
 /* * Zona del usuario */
 .navbar__user {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
+/* * Botones del header más redondos que los normales */
+.navbar__user .btn {
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 0.95em;
+}
+
+/* * "Entrar" y "Salir" sin borde, solo texto */
+.navbar__user .btn--secundario {
+    border-color: transparent;
+    color: #1e293b;
+}
+
+.navbar__user .btn--secundario:hover {
+    background: #f8fafc;
+    color: #16a34a;
+}
+
+/* * Saldo de puntos en ámbar suave */
 .navbar__puntos {
-    background: var(--color-secundario);
-    color: #fff;
-    padding: 4px 11px;
+    background: #f59e0b26;
+    color: #b45309;
+    padding: 5px 12px;
     border-radius: 999px;
     font-size: 0.85em;
     font-weight: 700;
 }
 
 .navbar__perfil {
-    color: var(--color-texto);
+    color: #1e293b;
     text-decoration: none;
     font-weight: 600;
 }
 
 .navbar__perfil:hover {
-    color: var(--color-primario);
+    color: #16a34a;
 }
 
 /* * Botón hamburguesa (solo móvil) */
@@ -88,6 +135,6 @@
 .navbar__toggle span {
     width: 24px;
     height: 2px;
-    background: var(--color-texto);
+    background: #1e293b;
     border-radius: 2px;
 }

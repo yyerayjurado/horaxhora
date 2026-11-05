@@ -56,11 +56,81 @@ class AuthController
         ]);
     }
 
+    // * GET /registro: solo muestra el formulario (lo envía registro.js con fetch)
+    public function registro(): void
+    {
+        // * Si ya está logueado, lo mandamos al inicio
+        if (isset($_SESSION['usuario'])) {
+            header('Location: /');
+            exit();
+        }
+
+        echo $this->twig->render('pages/registro.html.twig', ['pagina_actual' => 'registro']);
+    }
+
+    // * POST /api/registro: recibe JSON desde registro.js y responde JSON
+    public function registroApi(): void
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        // * Los datos llegan en el cuerpo de la petición como JSON, no en $_POST
+        $datos = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        $nombre    = trim($datos['nombre'] ?? '');
+        $apellidos = trim($datos['apellidos'] ?? '');
+        $email     = trim($datos['email'] ?? '');
+        $telefono  = trim($datos['telefono'] ?? '');
+        $password  = $datos['password'] ?? '';
+        $password2 = $datos['password2'] ?? '';
+
+        $usuarioDao = new UsuarioDao();
+
+        // ! Se vuelve a validar todo: lo del navegador se puede saltar
+        if ($nombre === '' || $apellidos === '' || $email === '' || $password === '') {
+            $this->responderJson(422, ['ok' => false, 'error' => 'Rellena todos los campos obligatorios.']);
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->responderJson(422, ['ok' => false, 'error' => 'El email no tiene un formato válido.']);
+        } elseif (strlen($password) < 8) {
+            $this->responderJson(422, ['ok' => false, 'error' => 'La contraseña tiene que tener al menos 8 caracteres.']);
+        } elseif ($password !== $password2) {
+            $this->responderJson(422, ['ok' => false, 'error' => 'Las contraseñas no coinciden.']);
+        } elseif ($usuarioDao->buscarPorEmail($email) !== null) {
+            $this->responderJson(409, ['ok' => false, 'error' => 'Ya existe una cuenta con ese email.']);
+        } else {
+            // ! Nunca se guarda la contraseña tal cual, solo su hash
+            $hash = password_hash($password, PASSWORD_DEFAULT);
+
+            // * El teléfono es opcional: si viene vacío se guarda NULL
+            $id = $usuarioDao->insertar($nombre, $apellidos, $email, $hash, $telefono !== '' ? $telefono : null);
+
+            if ($id === null) {
+                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido crear la cuenta. Inténtalo de nuevo.']);
+            } else {
+                // * Cuenta creada: lo dejamos ya logueado con sus 50 puntos de bienvenida
+                $_SESSION['usuario'] = [
+                    'id'           => $id,
+                    'nombre'       => $nombre,
+                    'rol'          => 'PROFESIONAL',
+                    'puntos_saldo' => 50,
+                ];
+
+                $this->responderJson(201, ['ok' => true]);
+            }
+        }
+    }
+
     // * Cierra la sesión y vuelve al login
     public function logout(): void
     {
         session_destroy();
         header('Location: /login');
         exit();
+    }
+
+    // * Envía una respuesta en JSON con su código HTTP
+    private function responderJson(int $codigo, array $respuesta): void
+    {
+        http_response_code($codigo);
+        echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
     }
 }

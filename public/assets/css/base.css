@@ -5,16 +5,21 @@
     box-sizing: border-box;
 }
 
+/* * Scroll suave al pulsar enlaces internos (#seccion) */
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: var(--fuente);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-size: 16px;
     line-height: 1.6;
-    background: var(--color-fondo);
-    color: var(--color-texto);
+    background: #f8fafc;
+    color: #1e293b;
 }
 
 /* * El main ocupa el espacio libre para que el footer quede abajo */
@@ -26,7 +31,7 @@ main {
 h1, h2, h3, h4 {
     line-height: 1.2;
     margin: 0 0 16px;
-    color: var(--color-texto);
+    color: #1e293b;
 }
 
 h1 { font-size: 2.2em; }
@@ -38,7 +43,7 @@ p {
 }
 
 a {
-    color: var(--color-primario);
+    color: #16a34a;
 }
 
 img {
@@ -48,7 +53,7 @@ img {
 
 /* * Accesibilidad: borde visible al navegar con teclado */
 :focus-visible {
-    outline: 2px solid var(--color-primario);
+    outline: 2px solid #16a34a;
     outline-offset: 2px;
 }
 
@@ -61,27 +66,27 @@ img {
     font-size: 1em;
     font-weight: 600;
     text-decoration: none;
-    border: 2px solid var(--color-primario);
+    border: 2px solid #16a34a;
     cursor: pointer;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .btn--primario {
-    background: var(--color-primario);
-    color: #fff;
+    background: #16a34a;
+    color: #ffffff;
 }
 
 .btn--primario:hover {
-    background: var(--color-primario-hover);
-    border-color: var(--color-primario-hover);
+    background: #15803d;
+    border-color: #15803d;
 }
 
 .btn--secundario {
     background: transparent;
-    color: var(--color-primario);
+    color: #16a34a;
 }
 
 .btn--secundario:hover {
-    background: var(--color-primario);
-    color: #fff;
+    background: #16a34a;
+    color: #ffffff;
 }

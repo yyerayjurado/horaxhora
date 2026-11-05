@@ -5,7 +5,6 @@ namespace App\Models;
 
 /**
  * * Representa una fila de la tabla "usuarios" como objeto.
- * ! CAMBIO (Claude): añadido este comentario. El DAO crea objetos Usuario a partir de las filas de la BD.
  */
 class Usuario
 {
