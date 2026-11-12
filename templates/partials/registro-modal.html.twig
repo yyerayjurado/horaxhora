@@ -1,0 +1,7 @@
+{# ! Esto es lo que recibe el modal: sin header ni footer, solo estilos + formulario #}
+{# * auth.css ya lo carga base.html.twig en todas las páginas; registro.css no #}
+<link rel="stylesheet" href="/assets/css/registro.css">
+
+<div class="auth--registro">
+    {% include 'partials/form-registro.html.twig' with { en_modal: true } %}
+</div>
