@@ -12,21 +12,12 @@ class Usuario
     private string $nombre;
     private string $apellidos;
     private string $email;
-    private string $password; // ! Es el hash, nunca la contraseña en claro
+    private string $password;
     private ?string $telefono;
     private string $rol;
     private int $puntosSaldo;
 
-    public function __construct(
-        int $id,
-        string $nombre,
-        string $apellidos,
-        string $email,
-        string $password,
-        ?string $telefono,
-        string $rol,
-        int $puntosSaldo
-    ) {
+    public function __construct(int $id, string $nombre, string $apellidos, string $email, string $password, ?string $telefono, string $rol, int $puntosSaldo) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->apellidos = $apellidos;

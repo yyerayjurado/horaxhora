@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controllers\AuthController;
+use App\Controllers\OfertaController;
+use App\Controllers\PerfilController;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
-use App\Controllers\OfertaController;
 
 class Router
 {
@@ -58,9 +59,39 @@ class Router
                 (new AuthController($this->twig))->logout();
                 break;
 
+            // * GET /perfil muestra el perfil, POST /perfil/actualizar guarda los datos
+            case 'perfil':
+                $this->despacharPerfil($segments);
+                break;
+
             // * Peticiones fetch del JavaScript: /api/...
             case 'api':
                 $this->despacharApi($segments);
+                break;
+
+            default:
+                $this->responderError(404, 'Página no encontrada');
+                break;
+        }
+    }
+
+    private function despacharPerfil(array $segments): void
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $accion = $segments[1] ?? ''; // * "/perfil/actualizar" -> 'actualizar'
+        $controller = new PerfilController($this->twig);
+
+        switch ($accion) {
+            case '':
+                $controller->mostrar();
+                break;
+
+            case 'actualizar':
+                if ($method === 'POST') {
+                    $controller->actualizar();
+                } else {
+                    $this->responderError(405, 'Método no permitido');
+                }
                 break;
 
             default:

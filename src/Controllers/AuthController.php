@@ -8,13 +8,13 @@ use Twig\Environment;
 
 class AuthController
 {
-    public function __construct(private Environment $twig)
-    {
+    public function __construct(private Environment $twig) {
+
     }
 
+
     // * Muestra el login (GET) y lo procesa (POST)
-    public function login(): void
-    {
+    public function login(): void {
         // * Si ya está logueado, lo mandamos al inicio
         if (isset($_SESSION['usuario'])) {
             header('Location: /');
@@ -32,7 +32,6 @@ class AuthController
             $usuario = (new UsuarioDao())->buscarPorEmail($email);
 
             // ! La contraseña está guardada con hash, por eso password_verify y no ===
-            // ! CAMBIO (Claude): $usuario ahora es un objeto Usuario, por eso se usan getters en vez de ['...']
             if ($usuario && password_verify($password, $usuario->getPassword())) {
                 // * Guardar datos en la sesión (nunca la contraseña)
                 // * Sigue siendo un array porque Twig lo lee directamente (usuario.nombre)
@@ -85,19 +84,6 @@ class AuthController
 
         $usuarioDao = new UsuarioDao();
 
-        // ! Se vuelve a validar todo: lo del navegador se puede saltar
-        if ($nombre === '' || $apellidos === '' || $email === '' || $password === '') {
-            $this->responderJson(422, ['ok' => false, 'error' => 'Rellena todos los campos obligatorios.']);
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->responderJson(422, ['ok' => false, 'error' => 'El email no tiene un formato válido.']);
-        } elseif (strlen($password) < 8) {
-            $this->responderJson(422, ['ok' => false, 'error' => 'La contraseña tiene que tener al menos 8 caracteres.']);
-        } elseif ($password !== $password2) {
-            $this->responderJson(422, ['ok' => false, 'error' => 'Las contraseñas no coinciden.']);
-        } elseif ($usuarioDao->buscarPorEmail($email) !== null) {
-            $this->responderJson(409, ['ok' => false, 'error' => 'Ya existe una cuenta con ese email.']);
-        } else {
-            // ! Nunca se guarda la contraseña tal cual, solo su hash
             $hash = password_hash($password, PASSWORD_DEFAULT);
 
             // * El teléfono es opcional: si viene vacío se guarda NULL
@@ -117,7 +103,6 @@ class AuthController
                 $this->responderJson(201, ['ok' => true]);
             }
         }
-    }
 
     // * Cierra la sesión y vuelve al login
     public function logout(): void

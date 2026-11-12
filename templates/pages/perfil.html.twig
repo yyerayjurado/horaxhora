@@ -1,0 +1,100 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Mi perfil · HoraXHora{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="/assets/css/perfil.css">
+
+<div class="perfil">
+
+    {# * Avisos tras un POST #}
+    {% if mensaje %}
+        <p class="aviso aviso--ok" role="status">{{ mensaje }}</p>
+    {% endif %}
+    {% if error %}
+        <p class="aviso aviso--error" role="alert">{{ error }}</p>
+    {% endif %}
+
+    {# * Cabecera: datos básicos + saldo + valoración #}
+    <section class="perfil__cabecera">
+        <div class="perfil__avatar" aria-hidden="true">
+            {{ usuario.nombre|first|upper }}{{ usuario.apellidos|first|upper }}
+        </div>
+
+        <div class="perfil__info">
+            <h1>{{ usuario.nombre }} {{ usuario.apellidos }}</h1>
+            <p class="perfil__meta">Miembro desde {{ usuario.fecha_registro|date('d/m/Y') }}</p>
+        </div>
+
+        <div class="perfil__stats">
+            <article class="stat">
+                <h2 class="stat__titulo">Saldo</h2>
+                <p class="stat__valor" id="saldo-puntos">{{ usuario.puntos_saldo }}</p>
+                <p class="stat__unidad">puntos</p>
+            </article>
+
+            <article class="stat">
+                <h2 class="stat__titulo">Valoración</h2>
+                {% if total_valoraciones > 0 %}
+                    <p class="stat__valor">{{ media_valoracion|number_format(1, ',', '.') }} ★</p>
+                    <p class="stat__unidad">{{ total_valoraciones }} reseña{{ total_valoraciones != 1 ? 's' }}</p>
+                {% else %}
+                    <p class="stat__valor">—</p>
+                    <p class="stat__unidad">Sin reseñas aún</p>
+                {% endif %}
+            </article>
+        </div>
+    </section>
+
+    <div class="perfil__grid">
+
+        {# * Datos personales editables #}
+        <section class="tarjeta">
+            <h2>Mis datos</h2>
+            <form action="/perfil/actualizar" method="POST" class="formulario">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" value="{{ usuario.nombre }}" required>
+
+                <label for="apellidos">Apellidos</label>
+                <input type="text" id="apellidos" name="apellidos" value="{{ usuario.apellidos }}" required>
+
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
+
+                <label for="telefono">Teléfono</label>
+                <input type="tel" id="telefono" name="telefono" value="{{ usuario.telefono }}">
+
+                <button type="submit" class="boton">Guardar cambios</button>
+            </form>
+        </section>
+
+        {# * Ofertas del profesional #}
+        <section class="tarjeta">
+            <h2>Mis servicios ofertados</h2>
+
+            {% if ofertas is empty %}
+                <p class="vacio">Todavía no ofreces ningún servicio.</p>
+            {% else %}
+                <ul class="ofertas">
+                    {% for oferta in ofertas %}
+                        <li class="oferta {{ oferta.activo ? '' : 'oferta--inactiva' }}">
+                            <span class="oferta__categoria">{{ oferta.nombre_categoria }}</span>
+                            <h3>{{ oferta.nombre_servicio }}</h3>
+                            <p>{{ oferta.descripcion_personal ?: 'Sin descripción.' }}</p>
+                            <p class="oferta__precio">
+                                <strong>{{ oferta.puntos_hora }}</strong> pts/h
+                                <small>(ref. {{ oferta.puntos_hora_referencia }})</small>
+                            </p>
+                            <p>{{ oferta.activo ? 'Activa' : 'Pausada' }}</p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {# TODO: botones de eliminar/pausar cuando estén las rutas en el OfertaController #}
+            <a href="/crearoferta" class="boton">Añadir servicio</a>
+        </section>
+
+    </div>
+</div>
+{% endblock %}

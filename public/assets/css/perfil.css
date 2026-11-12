@@ -1,0 +1,265 @@
+/* * Estilos de la página de perfil (HoraXHora) */
+/* ? Colores sacados de base.css para que todo vaya a juego */
+
+.perfil {
+    --verde: #16a34a;
+    --verde-oscuro: #15803d;
+    --verde-claro: #dcfce7;
+    --texto: #1e293b;
+    --texto-suave: #64748b;
+    --borde: #e2e8f0;
+    --blanco: #ffffff;
+    --rojo: #b91c1c;
+    --rojo-claro: #fee2e2;
+    --radio: 12px;
+    --sombra: 0 2px 8px rgba(15, 23, 42, 0.06);
+
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 16px;
+}
+
+/* * Avisos tras guardar */
+.aviso {
+    padding: 14px 16px;
+    border-radius: var(--radio);
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+
+.aviso--ok {
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+}
+
+.aviso--error {
+    background: var(--rojo-claro);
+    color: var(--rojo);
+}
+
+/* * Cabecera: avatar + nombre + stats */
+.perfil__cabecera {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+.perfil__avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--verde);
+    color: var(--blanco);
+    display: grid;
+    place-items: center;
+    font-size: 1.75em;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.perfil__info {
+    flex: 1;
+    min-width: 200px;
+}
+
+.perfil__info h1 {
+    font-size: 1.7em;
+    margin-bottom: 4px;
+}
+
+.perfil__meta {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: 0.9em;
+}
+
+.perfil__stats {
+    display: flex;
+    gap: 16px;
+}
+
+.stat {
+    text-align: center;
+    padding: 12px 20px;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    min-width: 110px;
+}
+
+/* ! Pisamos el tamaño de h2 de base.css, aquí es solo una etiqueta */
+.stat__titulo {
+    margin: 0;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--texto-suave);
+}
+
+.stat__valor {
+    margin: 4px 0 0;
+    font-size: 1.75em;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--verde);
+}
+
+.stat__unidad {
+    margin: 0;
+    font-size: 0.8em;
+    color: var(--texto-suave);
+}
+
+/* * Grid: datos a la izquierda, ofertas a la derecha */
+.perfil__grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.tarjeta {
+    background: var(--blanco);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 24px;
+}
+
+.tarjeta h2 {
+    font-size: 1.25em;
+}
+
+/* * Formulario de datos */
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.formulario label {
+    font-size: 0.85em;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.formulario input {
+    padding: 10px 12px;
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95em;
+    color: var(--texto);
+    background: var(--blanco);
+}
+
+.formulario input:focus {
+    outline: none;
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+/* * Botón del perfil (mismo estilo que .btn--primario) */
+.boton {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 9px 18px;
+    background: var(--verde);
+    color: var(--blanco);
+    border: 2px solid var(--verde);
+    border-radius: var(--radio);
+    font-family: inherit;
+    font-size: 1em;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.boton:hover {
+    background: var(--verde-oscuro);
+    border-color: var(--verde-oscuro);
+}
+
+/* * Lista de ofertas */
+.ofertas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.oferta {
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    padding: 16px;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.oferta:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra);
+}
+
+/* ! Las ofertas pausadas se ven apagadas */
+.oferta--inactiva {
+    opacity: 0.55;
+}
+
+.oferta__categoria {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
+    padding: 3px 8px;
+    border-radius: 999px;
+}
+
+.oferta h3 {
+    margin: 8px 0 4px;
+    font-size: 1.05em;
+}
+
+.oferta p {
+    margin: 4px 0;
+    font-size: 0.9em;
+    color: var(--texto-suave);
+}
+
+.oferta__precio strong {
+    font-size: 1.2em;
+    color: var(--texto);
+}
+
+.vacio {
+    color: var(--texto-suave);
+    font-style: italic;
+}
+
+/* * Móvil: todo en una columna */
+@media (max-width: 768px) {
+    .perfil__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil__cabecera {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .perfil__stats {
+        width: 100%;
+        justify-content: center;
+    }
+}

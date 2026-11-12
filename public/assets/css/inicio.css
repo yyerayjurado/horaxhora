@@ -52,8 +52,8 @@
 .pasos__lista {
     position: relative;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     list-style: none;
     margin: 0;
     padding: 0;
@@ -66,10 +66,7 @@
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
-    box-shadow: 0 4px 20px #0f172a0a;
-    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
 }
-
 /* * Al pasar el ratón la tarjeta sube un poco */
 .paso:hover {
     transform: translateY(-4px);
@@ -89,14 +86,12 @@
     color: #16a34a;
     font-size: 1.2em;
     font-weight: 800;
-    transition: background 0.25s, color 0.25s;
 }
 
 .paso:hover .paso__numero {
     background: #16a34a;
     color: #ffffff;
 }
-
 .paso h3 {
     margin: 0 0 8px;
     font-size: 1.2em;
@@ -110,7 +105,6 @@
 /* * Categorías */
 .categorias__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     list-style: none;
     padding: 0;
@@ -125,12 +119,10 @@
     color: #1e293b;
     text-decoration: none;
     font-weight: 600;
-    transition: border-color 0.2s, transform 0.2s;
 }
 
 .categoria:hover {
     border-color: #16a34a;
-    transform: translateY(-2px);
 }
 
 /* * Llamada a la acción: franja verde con degradado */
@@ -141,32 +133,9 @@
     margin: 32px auto 48px;
     padding: 56px 24px;
     text-align: center;
-    background: linear-gradient(135deg, #15803d, #22c55e);
+    background-color: #16a34a;
     border-radius: 24px;
     box-shadow: 0 20px 50px #16a34a33;
-}
-
-/* * Círculos decorativos de fondo */
-.cta::before,
-.cta::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: #ffffff1a;
-}
-
-.cta::before {
-    width: 260px;
-    height: 260px;
-    top: -120px;
-    right: -60px;
-}
-
-.cta::after {
-    width: 180px;
-    height: 180px;
-    bottom: -90px;
-    left: -40px;
 }
 
 /* * El texto va por encima de los círculos */
@@ -179,7 +148,6 @@
 
 .cta h2 {
     color: #ffffff;
-    font-size: clamp(1.7em, 4vw, 2.3em);
     margin-bottom: 8px;
 }
 
@@ -198,12 +166,11 @@
     color: #15803d;
     font-weight: 700;
     box-shadow: 0 8px 20px #0f172a26;
-    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .cta .btn:hover {
     background: #ffffff;
     color: #15803d;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px #0f172a33;
 }
+
+
