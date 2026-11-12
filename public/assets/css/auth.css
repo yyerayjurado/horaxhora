@@ -118,6 +118,11 @@
     transform: translateY(-1px);
 }
 
+.auth__boton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
 /* * Enlace a registro debajo del botón */
 .auth__pie {
     margin: 24px 0 0;
@@ -134,4 +139,127 @@
     .auth__form {
         padding: 48px 40px;
     }
+}
+
+/* * ===== Registro compacto ===== */
+/* ! Va con #form-registro delante para que gane a los estilos generales del formulario */
+
+/* * Menos espacio entre campos para que quepa sin scroll */
+#form-registro .auth__campo {
+    padding: 8px 0;
+}
+
+/* * Campos en parejas (en móvil, uno debajo del otro) */
+#form-registro .registro__fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 480px) {
+    #form-registro .registro__fila {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+/* * Quitamos el borde gris que el navegador pone por defecto a los fieldset */
+#form-registro .registro__servicios {
+    border: none;
+    padding: 0;
+    margin: 8px 0 0;
+    min-width: 0;
+    text-align: left;
+}
+
+#form-registro .registro__titulo-servicios {
+    padding: 0;
+    margin-bottom: 10px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+/* * Los chips van uno al lado del otro y saltan de línea si no caben */
+#form-registro .registro__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#form-registro .registro__chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #ffffff;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+#form-registro .registro__chip small {
+    font-weight: 500;
+    color: #64748b;
+}
+
+#form-registro .registro__chip:hover {
+    border-color: #16a34a;
+}
+
+/* ! La casilla se oculta pero sigue funcionando (y se puede marcar con el teclado) */
+#form-registro .registro__chip input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+/* ! :has() pinta el chip de verde cuando su casilla está marcada */
+#form-registro .registro__chip:has(input:checked) {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+#form-registro .registro__chip:has(input:checked) small {
+    color: #dcfce7;
+}
+
+#form-registro .registro__chip:has(input:checked)::before {
+    content: '✓';
+    font-weight: 700;
+}
+
+/* * Borde visible si se navega con el teclado */
+#form-registro .registro__chip:has(input:focus-visible) {
+    outline: 2px solid #16a34a;
+    outline-offset: 2px;
+}
+
+/* * Texto de ayuda ("Elige una categoría...") */
+#form-registro .registro__lista .registro__ayuda {
+    width: 100%;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px dashed #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.9em;
+    color: #64748b;
+    text-align: center;
+}
+
+/* * Dentro del modal el formulario no necesita su padding: el modal ya tiene el suyo */
+.modal #form-registro {
+    padding: 0;
+}
+
+.modal #form-registro .auth__boton {
+    margin-top: 20px;
 }

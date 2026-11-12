@@ -8,23 +8,32 @@
 
 {% block content %}
 
-    {# * Hero #}
-    <section class="hero">
-        <h1 class="hero__titulo">Tu tiempo vale <span><b>CÁMBIALO</b></span></h1>
-        <p class="hero__texto">
-            Ofrece tus servicios a la comunidad, gana puntos por cada hora y úsalos
-            para contratar lo que necesites de otros profesionales.
-        </p>
+    {# * Hero: texto a la izquierda e imagen a la derecha (en móvil, la imagen va debajo) #}
+    <section class="hero hero--imagen">
+        <div class="hero__contenido">
+            <h1 class="hero__titulo">Tu tiempo vale <span><b>CÁMBIALO</b></span></h1>
+            <p class="hero__texto">
+                Ofrece tus servicios a la comunidad, gana puntos por cada hora y úsalos
+                para contratar lo que necesites de otros profesionales.
+            </p>
 
-        <div class="hero__acciones">
-            {% if usuario %}
-                <a href="/servicios" class="btn btn--primario">Buscar servicios</a>
-                <a href="/ofertas/crear" class="btn btn--secundario">Ofrecer un servicio</a>
-            {% else %}
-                <a href="/registro" class="btn btn--primario">Únete y recibe 50 puntos</a>
-                <a href="/servicios" class="btn btn--secundario">Ver servicios</a>
-            {% endif %}
+            <div class="hero__acciones">
+                {% if usuario %}
+                    <a href="/servicios" class="btn btn--primario">Buscar servicios</a>
+                    <a href="/ofertas/crear" class="btn btn--secundario">Ofrecer un servicio</a>
+                {% else %}
+                    {# ! js-abrir-registro: principal.js abre el modal en vez de ir a /registro #}
+                    <a href="/registro" class="btn btn--primario js-abrir-registro">Únete y recibe 50 puntos</a>
+                {% endif %}
+            </div>
         </div>
+
+        {# ! fetchpriority="high": es la imagen más importante, que cargue la primera #}
+        <figure class="hero__imagen">
+            <img src="/assets/img/profesionalesHablando.png"
+                 alt="Dos profesionales conversando y llegando a un acuerdo"
+                 fetchpriority="high">
+        </figure>
     </section>
 
     {# * Cómo funciona #}
@@ -48,6 +57,36 @@
                 <p>Usa tus puntos para contratar a cualquier otro profesional.</p>
             </li>
         </ol>
+    </section>
+
+    {# * Comunidad: fotos de profesionales trabajando #}
+    <section class="comunidad" aria-labelledby="titulo-comunidad">
+        <h2 id="titulo-comunidad">Profesionales como tú</h2>
+        <p class="comunidad__intro">
+            Electricistas, pintores, albañiles, profesores... Cada uno aporta lo que sabe
+            hacer y recibe lo que necesita.
+        </p>
+
+        {# ! loading="lazy": estas imágenes están más abajo, se cargan cuando el usuario llega #}
+        <div class="comunidad__grid">
+            <figure class="comunidad__item">
+                <img src="/assets/img/electricista.png"
+                     alt="Electricista revisando una instalación" loading="lazy">
+                <figcaption>Electricidad</figcaption>
+            </figure>
+
+            <figure class="comunidad__item">
+                <img src="/assets/img/pintor.png"
+                     alt="Pintor pintando una pared" loading="lazy">
+                <figcaption>Pintura</figcaption>
+            </figure>
+
+            <figure class="comunidad__item">
+                <img src="/assets/img/trabajandoObra.png"
+                     alt="Profesionales trabajando en una obra" loading="lazy">
+                <figcaption>Reformas y obras</figcaption>
+            </figure>
+        </div>
     </section>
 
     {# * Categorías. TODO: pasar "categorias" desde el controlador con el DAO #}
@@ -75,7 +114,7 @@
         <section class="cta">
             <h2>¿Empiezas hoy?</h2>
             <p>Regístrate gratis y empieza con 50 puntos de bienvenida.</p>
-            <a href="/registro" class="btn btn--primario">Crear cuenta</a>
+            <a href="/registro" class="btn btn--primario js-abrir-registro">Crear cuenta</a>
         </section>
     {% endif %}
 

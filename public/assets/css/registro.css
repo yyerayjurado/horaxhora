@@ -1,35 +1,44 @@
-/* * Estilos propios del registro. Se carga DESPUÉS de auth.css y solo añade lo que cambia */
-
-/* * La tarjeta es un poco más ancha porque hay más campos */
-.auth--registro {
-    max-width: 520px;
+/* * Lista de servicios del registro */
+.registro__servicios {
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* * Insignia de los 50 puntos encima del título */
-.registro__bonus {
-    display: inline-flex;
+.registro__lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 4px 0;
+}
+
+/* * Cada servicio es una fila clicable entera, no solo la casilla */
+.registro__servicio {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    width: fit-content;
-    margin: 0 auto 16px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: #f59e0b26;
-    color: #b45309;
-    font-size: 0.85em;
-    font-weight: 700;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: border-color 0.2s, background 0.2s;
 }
 
-/* * Nombre y apellidos en la misma fila */
-.registro__fila {
-    display: grid;
-    grid-template-columns: 1fr;
-    column-gap: 20px;
+.registro__servicio:hover {
+    border-color: #16a34a;
 }
 
-/* * Texto de ayuda debajo de un campo */
-.registro__ayuda {
-    margin: 6px 0 0;
-    color: #94a3b8;
-    font-size: 0.8em;
+/* ! :has() marca en verde la fila cuando la casilla está marcada */
+.registro__servicio:has(input:checked) {
+    border-color: #16a34a;
+    background: #dcfce7;
+}
+
+.registro__servicio input {
+    accent-color: #16a34a;
+    width: 18px;
+    height: 18px;
 }

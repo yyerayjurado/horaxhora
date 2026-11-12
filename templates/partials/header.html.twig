@@ -1,17 +1,16 @@
 {# * Header común. Usa las variables globales "app_nombre", "usuario" y "pagina_actual" #}
 <header class="site-header">
     <nav class="navbar" aria-label="Navegación principal">
-        {{ app_nombre }}
+        <a href="/" class="navbar__logo">{{ app_nombre }}</a>
 
         <button class="navbar__toggle" aria-expanded="false" aria-controls="nav-links" aria-label="Abrir menú">
             <span></span><span></span><span></span>
         </button>
 
-        <ul class="navbar__links" id="nav-links">
-            <li><a href="/" class="{{ pagina_actual == 'inicio' ? 'is-active' }}">Inicio</a></li>
-            <li><a href="/servicios" class="{{ pagina_actual == 'servicios' ? 'is-active' }}">Servicios</a></li>
-
-            {% if usuario %}
+        {# ! Antes el endif estaba ANTES del </ul> y sin sesión quedaba un </ul> suelto #}
+        {% if usuario %}
+            <ul class="navbar__links" id="nav-links">
+                <li><a href="/servicios" class="{{ pagina_actual == 'servicios' ? 'is-active' }}">Servicios</a></li>
                 <li><a href="/ofertas/crear" class="{{ pagina_actual == 'crear-oferta' ? 'is-active' }}">Crear Oferta</a></li>
                 <li><a href="/agenda" class="{{ pagina_actual == 'agenda' ? 'is-active' }}">Mi Agenda</a></li>
 
@@ -19,8 +18,8 @@
                 {% if usuario.rol == 'ADMIN' %}
                     <li><a href="/admin" class="{{ pagina_actual == 'admin' ? 'is-active' }}">Panel Admin</a></li>
                 {% endif %}
-            {% endif %}
-        </ul>
+            </ul>
+        {% endif %}
 
         <div class="navbar__user">
             {% if usuario %}
@@ -29,8 +28,10 @@
                 <a href="/logout" class="btn btn--secundario">Salir</a>
             {% else %}
                 <a href="/login" class="btn btn--secundario">Entrar</a>
-                <a href="/registro" class="btn btn--primario">Registrarse</a>
+                {# ! El id="btnRegistrar" lo usa principal.js para abrir el modal #}
+                <a href="/registro" id="btnRegistrar" class="btn btn--primario">Registrarse</a>
             {% endif %}
+
         </div>
     </nav>
 </header>

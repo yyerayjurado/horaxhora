@@ -71,4 +71,26 @@ class OfertaDao
 
         return $ofertas;
     }
+
+    // * Crea las ofertas del registro con el precio de referencia del catálogo
+    // ! El INSERT ... SELECT coge el precio de la tabla servicios, así no se puede trucar desde el JS
+    public function crearOfertasIniciales(int $idProfesional, array $idsServicios): void
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                'INSERT INTO ofertas_profesionales (id_profesional, id_servicio, puntos_hora, activo)
+                 SELECT ?, id_servicio, puntos_hora_referencia, TRUE
+                 FROM servicios
+                 WHERE id_servicio = ?'
+            );
+
+            // * Una inserción por cada servicio que ha marcado
+            foreach ($idsServicios as $idServicio) {
+                $stmt->execute([$idProfesional, $idServicio]);
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+        }
+    }
 }

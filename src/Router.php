@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controllers\AuthController;
+use App\Controllers\CatalogoController;
 use App\Controllers\OfertaController;
 use App\Controllers\PerfilController;
 use Twig\Environment;
@@ -50,9 +51,14 @@ class Router
                 (new AuthController($this->twig))->login();
                 break;
 
-            // * Solo muestra el formulario; lo envía registro.js a /api/registro
+            // * /registro → página completa
+            // * /registro/formulario → solo el formulario (lo pide el modal)
             case 'registro':
-                (new AuthController($this->twig))->registro();
+                if (($segments[1] ?? '') === 'formulario') {
+                    (new AuthController($this->twig))->registroFormulario();
+                } else {
+                    (new AuthController($this->twig))->registro();
+                }
                 break;
 
             case 'logout':
@@ -118,6 +124,15 @@ class Router
             case 'ofertas':
                 if ($method === 'GET') {
                     (new OfertaController())->listarApi();
+                } else {
+                    $this->responderError(405, 'Método no permitido');
+                }
+                break;
+
+            // ! Nuevo: servicios de una categoría para el registro. GET /api/servicios?categoria=3
+            case 'servicios':
+                if ($method === 'GET') {
+                    (new CatalogoController())->serviciosApi();
                 } else {
                     $this->responderError(405, 'Método no permitido');
                 }
