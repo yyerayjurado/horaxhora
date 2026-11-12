@@ -147,6 +147,23 @@ INSERT INTO ofertas_profesionales (id_oferta, id_profesional, id_servicio, punto
                                                                                                                           (8, 5, 6, 20, 'Desarrollador web. Ahora mismo sin disponibilidad.',          FALSE);  -- * Oferta desactivada para probar el filtro
 
 
+-- =========================================================
+-- * SERVICIOS QUE PUEDE OFERTAR CADA PROFESIONAL
+-- ! Añadido al enunciado: en el registro se eligen; en "Crear oferta" solo salen estos
+-- =========================================================
+
+-- * Todos los servicios que ya tienen ofertados
+INSERT INTO servicios_profesional (id_profesional, id_servicio)
+SELECT id_profesional, id_servicio FROM ofertas_profesionales;
+
+-- * Y uno más cada uno, todavía SIN ofertar, para poder probar "Crear oferta"
+INSERT INTO servicios_profesional (id_profesional, id_servicio) VALUES
+                                                                    (2, 9),   -- Laura:  Montaje de muebles
+                                                                    (3, 21),  -- Carlos: Instalación de lámparas y focos
+                                                                    (4, 17),  -- Ana:    Clases de francés
+                                                                    (5, 18);  -- David:  Instalación de redes y wifi
+
+
 -- * Una solicitud de cada estado para probar la agenda y el panel admin
 INSERT INTO solicitudes_trueque
 (id_solicitud, id_cliente, id_oferta, horas_estimadas, puntos_totales, fecha_propuesta, estado, confirmado_cliente, confirmado_prestador, fecha_creacion) VALUES

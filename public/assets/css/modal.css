@@ -102,3 +102,9 @@
     color: #64748b;
     text-align: center;
 }
+
+/* * El modal se ensancha solo cuando lleva el formulario de registro (dos columnas) */
+/* ? :has() mira si DENTRO del modal hay un #form-registro */
+.modal:has(#form-registro) {
+    width: min(920px, calc(100% - 32px));
+}

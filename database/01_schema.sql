@@ -11,6 +11,7 @@ USE sistema_trueque;
 DROP TABLE IF EXISTS valoraciones;
 DROP TABLE IF EXISTS solicitudes_trueque;
 DROP TABLE IF EXISTS ofertas_profesionales;
+DROP TABLE IF EXISTS servicios_profesional;
 DROP TABLE IF EXISTS servicios;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS categorias;
@@ -37,6 +38,11 @@ CREATE TABLE usuarios (
                           rol            ENUM('ADMIN', 'PROFESIONAL') NOT NULL DEFAULT 'PROFESIONAL',
                           puntos_saldo   INT NOT NULL DEFAULT 50,               -- * Puntos de bienvenida
                           fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    -- ! Añadido al enunciado: dar de baja sin borrar el historial de trueques
+                          activo         BOOLEAN NOT NULL DEFAULT TRUE,
+    -- ! Añadido al enunciado: las cuentas del registro público esperan a que el admin las apruebe
+    -- ? Por defecto TRUE para que los seeds y los usuarios creados por el admin entren aprobados
+                          aprobado       BOOLEAN NOT NULL DEFAULT TRUE,
     -- ! Nadie puede quedarse en negativo
                           CONSTRAINT chk_saldo_positivo CHECK (puntos_saldo >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -51,6 +57,20 @@ CREATE TABLE servicios (
                            CONSTRAINT fk_servicio_categoria FOREIGN KEY (id_categoria)
                                REFERENCES categorias(id_categoria) ON DELETE CASCADE,
                            CONSTRAINT chk_referencia_positiva CHECK (puntos_hora_referencia > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- ! Añadido al enunciado: servicios que cada profesional eligió al registrarse.
+-- ! Son los únicos que podrá ofertar después desde "Crear oferta"
+CREATE TABLE servicios_profesional (
+                                       id_profesional INT NOT NULL,
+                                       id_servicio    INT NOT NULL,
+    -- * La clave son las dos columnas juntas: no se puede repetir el mismo servicio para el mismo profesional
+                                       PRIMARY KEY (id_profesional, id_servicio),
+                                       CONSTRAINT fk_sp_profesional FOREIGN KEY (id_profesional)
+                                           REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+                                       CONSTRAINT fk_sp_servicio FOREIGN KEY (id_servicio)
+                                           REFERENCES servicios(id_servicio) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -79,7 +99,7 @@ CREATE TABLE solicitudes_trueque (
                                      puntos_totales       INT NOT NULL,                    -- * puntos_hora × horas_estimadas
                                      fecha_propuesta      DATETIME NOT NULL,
                                      estado               ENUM('SOLICITADO', 'ACEPTADO', 'RECHAZADO', 'EN_EJECUCION', 'COMPLETADO', 'CANCELADO')
-                         DEFAULT 'SOLICITADO',
+                                                                   DEFAULT 'SOLICITADO',
                                      confirmado_cliente   BOOLEAN DEFAULT FALSE,
                                      confirmado_prestador BOOLEAN DEFAULT FALSE,
                                      fecha_creacion       DATETIME DEFAULT CURRENT_TIMESTAMP,

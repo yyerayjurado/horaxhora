@@ -1,21 +1,76 @@
-{% extends 'layout/base.html.twig' %}
+{# * Formulario de registro: lo usan la página /registro y el modal #}
+{# ! en_modal: si viene del modal no ponemos el h1, porque el modal ya tiene título #}
+<form id="form-registro" class="auth__form" novalidate>
+    {% if not en_modal|default(false) %}
+        <h1 class="auth__titulo">Crear cuenta</h1>
+    {% endif %}
+    <p class="auth__subtitulo">Ofrece lo que sabes hacer y contrata lo que necesites.</p>
 
-{% block title %}Crear cuenta | {{ app_nombre }}{% endblock %}
-
-{% block styles %}
-    <link rel="stylesheet" href="/assets/css/registro.css">
-{% endblock %}
-
-{% block content %}
-    <div class="auth-contenedor">
-        <div class="auth auth--registro">
-            {# ! El formulario está en partials/form-registro.html.twig, NO borrar este archivo #}
-            {# ! Es la página de respaldo de /registro si el modal no carga #}
-            {% include 'partials/form-registro.html.twig' %}
+    {# * Fila 1: nombre y apellidos #}
+    <div class="registro__fila">
+        <div class="auth__campo">
+            <label for="nombre" class="auth__label">Nombre</label>
+            <input type="text" id="nombre" name="nombre" class="auth__input"
+                   placeholder="Nombre" autocomplete="given-name" maxlength="100" required>
+        </div>
+        <div class="auth__campo">
+            <label for="apellidos" class="auth__label">Apellidos</label>
+            <input type="text" id="apellidos" name="apellidos" class="auth__input"
+                   placeholder="Apellidos" autocomplete="family-name" maxlength="100" required>
         </div>
     </div>
-{% endblock %}
 
-{% block scripts %}
-    <script src="/assets/js/modules/registro.js" defer></script>
-{% endblock %}
+    {# * Fila 2: email y teléfono (el teléfono puede ser NULL en la BD) #}
+    <div class="registro__fila">
+        <div class="auth__campo">
+            <label for="email" class="auth__label">Email</label>
+            <input type="email" id="email" name="email" class="auth__input"
+                   placeholder="Email" autocomplete="email" maxlength="150" required>
+        </div>
+        <div class="auth__campo">
+            <label for="telefono" class="auth__label">Teléfono (opcional)</label>
+            <input type="tel" id="telefono" name="telefono" class="auth__input"
+                   placeholder="Teléfono (opcional)" autocomplete="tel" maxlength="20">
+        </div>
+    </div>
+
+    {# * Fila 3: contraseña y repetirla #}
+    <div class="registro__fila">
+        <div class="auth__campo">
+            <label for="password" class="auth__label">Contraseña</label>
+            <input type="password" id="password" name="password" class="auth__input"
+                   placeholder="Contraseña (mín. 8)" autocomplete="new-password" minlength="8" required>
+        </div>
+        <div class="auth__campo">
+            <label for="password2" class="auth__label">Repite la contraseña</label>
+            <input type="password" id="password2" name="password2" class="auth__input"
+                   placeholder="Repite la contraseña" autocomplete="new-password" minlength="8" required>
+        </div>
+    </div>
+
+    {# ! Las categorías vienen del controlador; los servicios los carga registro.js con fetch #}
+    <div class="auth__campo">
+        <label for="categoria" class="auth__label">¿A qué te dedicas?</label>
+        <select id="categoria" name="categoria" class="auth__input">
+            <option value="">¿A qué te dedicas?</option>
+            {% for categoria in categorias|default([]) %}
+                <option value="{{ categoria.id_categoria }}">{{ categoria.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    {# * Arriba los servicios de la categoría elegida, abajo los ya elegidos de cualquier categoría #}
+    <fieldset class="registro__servicios">
+        <legend class="registro__titulo-servicios">Servicios que puedes ofrecer</legend>
+        <div id="lista-servicios" class="registro__lista">
+            <p class="registro__ayuda">Elige una categoría para ver sus servicios.</p>
+        </div>
+    </fieldset>
+
+    {# * Aquí registro.js pinta los errores. role="alert" hace que el lector de pantalla los lea #}
+    <p class="auth__error" id="registro-error" role="alert" hidden></p>
+
+    <button type="submit" class="auth__boton">Crear cuenta</button>
+
+    <p class="auth__pie">¿Ya tienes cuenta? <a href="/login">Inicia sesión</a></p>
+</form>

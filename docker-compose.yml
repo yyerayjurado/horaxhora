@@ -13,6 +13,8 @@ services:
       DB_NAME: sistema_trueque
       DB_USER: usuario
       DB_PASS: usuario
+      # ! Dentro de Docker, MailHog se llama "mailhog" (el nombre del servicio), no localhost
+      MAIL_HOST: mailhog
     depends_on:
       - db
 
@@ -29,6 +31,13 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
+
+  # * MailHog: 1025 = SMTP (donde PHP envía), 8025 = bandeja web
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
 
 volumes:
   db_data:

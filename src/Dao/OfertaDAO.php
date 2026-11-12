@@ -14,6 +14,7 @@ class OfertaDao
         $ofertas = [];
 
         // * 1. La consulta base: todas las ofertas activas con su servicio, categoría y profesional
+        // ! u.activo y u.aprobado: no salen ofertas de usuarios dados de baja ni pendientes de aprobar
         $sql = "SELECT o.id_oferta, o.puntos_hora, o.descripcion_personal,
                        s.nombre AS servicio,
                        c.id_categoria, c.nombre AS categoria,
@@ -26,7 +27,7 @@ class OfertaDao
                 JOIN usuarios u ON u.id_usuario = o.id_profesional
                 LEFT JOIN solicitudes_trueque st ON st.id_oferta = o.id_oferta
                 LEFT JOIN valoraciones v ON v.id_solicitud = st.id_solicitud
-                WHERE o.activo = TRUE";
+                WHERE o.activo = TRUE AND u.activo = TRUE AND u.aprobado = TRUE";
 
         // * Aquí vamos guardando los valores que sustituyen a cada "?"
         $parametros = [];

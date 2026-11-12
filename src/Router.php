@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Controllers\AdminController;
 use App\Controllers\AuthController;
 use App\Controllers\CatalogoController;
 use App\Controllers\OfertaController;
@@ -70,6 +71,11 @@ class Router
                 $this->despacharPerfil($segments);
                 break;
 
+            // ! Panel de administración: solo la página, los datos van por /api/admin/...
+            case 'admin':
+                (new AdminController($this->twig))->panel();
+                break;
+
             // * Peticiones fetch del JavaScript: /api/...
             case 'api':
                 $this->despacharApi($segments);
@@ -129,13 +135,54 @@ class Router
                 }
                 break;
 
-            // ! Nuevo: servicios de una categoría para el registro. GET /api/servicios?categoria=3
+            // * Servicios de una categoría para el registro. GET /api/servicios?categoria=3
             case 'servicios':
                 if ($method === 'GET') {
                     (new CatalogoController())->serviciosApi();
                 } else {
                     $this->responderError(405, 'Método no permitido');
                 }
+                break;
+
+            // * Panel de administración: /api/admin/...
+            case 'admin':
+                $this->despacharAdmin($segments);
+                break;
+
+            default:
+                $this->responderError(404, 'Recurso API no encontrado');
+                break;
+        }
+    }
+
+    // * "/api/admin/categorias/3" -> recurso 'categorias', id 3
+    private function despacharAdmin(array $segments): void
+    {
+        $method = $_SERVER['REQUEST_METHOD'];
+        $recurso = $segments[2] ?? '';
+        $id = isset($segments[3]) ? (int) $segments[3] : null;
+        $controller = new AdminController($this->twig);
+
+        switch ($recurso) {
+            case 'categorias':
+                $controller->categoriasApi($method, $id);
+                break;
+
+            case 'servicios':
+                $controller->serviciosApi($method, $id);
+                break;
+
+            case 'usuarios':
+                $controller->usuariosApi($method, $id);
+                break;
+
+            case 'trueques':
+                $controller->truequesApi($method, $id);
+                break;
+
+            // ! Nuevo: moderación de reseñas
+            case 'resenas':
+                $controller->resenasApi($method, $id);
                 break;
 
             default:

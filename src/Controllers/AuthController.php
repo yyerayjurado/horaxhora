@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Dao\OfertaDao;
 use App\Dao\ServicioDao;
+use App\Dao\UsuarioAdminDao;
 use App\Dao\UsuarioDao;
+use App\Service\MailOptions;
+use App\Service\MailService;
+use App\Service\PdfService;
 use Twig\Environment;
 
 class AuthController
@@ -32,9 +35,18 @@ class AuthController
 
             // * Buscamos el usuario en la BD
             $usuario = (new UsuarioDao())->buscarPorEmail($email);
+            $usuarioAdminDao = new UsuarioAdminDao();
 
             // ! La contraseña está guardada con hash, por eso password_verify y no ===
-            if ($usuario && password_verify($password, $usuario->getPassword())) {
+            if (!$usuario || !password_verify($password, $usuario->getPassword())) {
+                $error = 'Email o contraseña incorrectos.';
+            } elseif (!$usuarioAdminDao->estaAprobado($usuario->getId())) {
+                // ! Se ha registrado pero el admin todavía no le ha aceptado
+                $error = 'Tu cuenta está pendiente de aprobación. Te avisaremos por correo cuando el administrador la revise.';
+            } elseif (!$usuarioAdminDao->estaActivo($usuario->getId())) {
+                // ! El admin le ha dado de baja: no le dejamos entrar
+                $error = 'Tu cuenta está dada de baja. Contacta con el administrador.';
+            } else {
                 // * Guardar datos en la sesión (nunca la contraseña)
                 $_SESSION['usuario'] = [
                     'id'           => $usuario->getId(),
@@ -45,8 +57,6 @@ class AuthController
 
                 header('Location: /');
                 exit();
-            } else {
-                $error = 'Email o contraseña incorrectos.';
             }
         }
 
@@ -136,7 +146,7 @@ class AuthController
                 return;
             }
 
-            // * Evitamos duplicados (la tabla tiene UNIQUE profesional + servicio)
+            // * Evitamos duplicados (la tabla tiene clave profesional + servicio)
             if (!in_array($idServicio, $idsServicios)) {
                 $idsServicios[] = $idServicio;
             }
@@ -160,18 +170,22 @@ class AuthController
             return;
         }
 
-        // * Los servicios elegidos pasan a ser sus ofertas (salen en el perfil y en el buscador)
-        (new OfertaDao())->crearOfertasIniciales($id, $idsServicios);
+        // ! NO se crean ofertas: solo guardamos QUÉ servicios puede ofertar.
+        // ! Las ofertas (con su tarifa y descripción) las crea él después desde "Crear oferta"
+        $servicioDao->guardarDeProfesional($id, $idsServicios);
 
-        // * Cuenta creada: lo dejamos ya logueado con sus 50 puntos de bienvenida
-        $_SESSION['usuario'] = [
-            'id'           => $id,
-            'nombre'       => $nombre,
-            'rol'          => 'PROFESIONAL',
-            'puntos_saldo' => 50,
-        ];
+        // ! La cuenta queda pendiente: NO iniciamos sesión hasta que el admin la acepte
+        (new UsuarioAdminDao())->marcarPendiente($id);
 
-        $this->responderJson(201, ['ok' => true]);
+        // * Correo de "hemos recibido tu solicitud". Si falla, el registro ya está hecho igualmente
+        try {
+            $mailService = new MailService(MailOptions::desdeEntorno(), new PdfService());
+            $mailService->enviarSolicitudRecibida($email, $nombre);
+        } catch (\Throwable $e) {
+            error_log('Correo no enviado: ' . $e->getMessage());
+        }
+
+        $this->responderJson(201, ['ok' => true, 'pendiente' => true]);
     }
 
     // * Cierra la sesión y vuelve al login

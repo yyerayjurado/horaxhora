@@ -1,0 +1,518 @@
+/* * ===== Panel de administración ===== */
+.admin {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 16px 64px;
+}
+
+.admin__titulo {
+    font-size: 2em;
+    margin-bottom: 24px;
+}
+
+.admin__subtitulo {
+    font-size: 1.3em;
+    margin-bottom: 16px;
+}
+
+/* * Pestañas: con scroll horizontal en móvil si no caben */
+.admin__pestanas {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 24px;
+}
+
+.admin__pestana {
+    padding: 12px 18px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    background: none;
+    font: inherit;
+    font-weight: 600;
+    color: #64748b;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.admin__pestana:hover {
+    color: #1e293b;
+}
+
+.admin__pestana.is-active {
+    color: #16a34a;
+    border-bottom-color: #16a34a;
+}
+
+.admin__contenido {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+}
+
+/* * Formulario de crear/editar */
+.admin__form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+    .admin__form {
+        grid-template-columns: 1fr 2fr auto;
+    }
+
+    /* * Servicios tiene más campos */
+    .admin__form--servicios {
+        grid-template-columns: 1fr 1.5fr 180px;
+    }
+
+    /* * Usuarios: 3 columnas */
+    .admin__form--usuarios {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.admin__campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* * Campos que ocupan toda la fila (descripción y botones) */
+.admin__campo--completo {
+    grid-column: 1 / -1;
+}
+
+.admin__campo label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.admin__campo input,
+.admin__campo select,
+.admin__campo textarea {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font: inherit;
+    color: #1e293b;
+    background: #ffffff;
+}
+
+.admin__campo input:focus,
+.admin__campo select:focus,
+.admin__campo textarea:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px #16a34a26;
+}
+
+.admin__botones {
+    display: flex;
+    gap: 8px;
+}
+
+/* * Mensajes de ok y error */
+.admin__mensaje {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border-left: 3px solid #16a34a;
+    border-radius: 6px;
+    background: #16a34a14;
+    color: #15803d;
+    font-weight: 600;
+}
+
+.admin__mensaje--error {
+    border-left-color: #dc2626;
+    background: #dc262614;
+    color: #dc2626;
+}
+
+/* * Filtro y buscador encima de la tabla */
+.admin__filtro {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 8px 0 12px;
+}
+
+.admin__filtro label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.admin__filtro select,
+.admin__filtro input {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font: inherit;
+    color: #1e293b;
+    background: #ffffff;
+}
+
+.admin__filtro input {
+    min-width: 240px;
+}
+
+.admin__filtro input:focus,
+.admin__filtro select:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px #16a34a26;
+}
+
+/* * Tabla: en móvil se puede deslizar a los lados */
+.admin__tabla-contenedor {
+    overflow-x: auto;
+}
+
+.admin__tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+.admin__tabla th,
+.admin__tabla td {
+    padding: 12px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.admin__tabla th {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.admin__tabla tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* ! Usuarios de baja: la fila se ve apagada */
+.admin__fila--baja td {
+    color: #94a3b8;
+}
+
+/* ! Un <td> no puede llevar display: flex (descoloca las líneas de la tabla).
+   ! Separamos los botones con margen */
+.admin__acciones {
+    white-space: nowrap;
+}
+
+.admin__acciones .admin__boton + .admin__boton {
+    margin-left: 8px;
+}
+
+/* * Botones pequeños */
+.admin__boton {
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    font: inherit;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.admin__boton:hover {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+/* ! Botón de borrar/cancelar en rojo */
+.admin__boton--peligro:hover {
+    border-color: #dc2626;
+    background: #dc2626;
+    color: #ffffff;
+}
+
+/* * "Pastillas" de rol y estado */
+.admin__insignia {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.8em;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.admin__insignia--ok {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.admin__insignia--baja {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.admin__insignia--admin {
+    background: #1e293b;
+    color: #ffffff;
+}
+
+.admin__insignia--solicitado {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.admin__insignia--aceptado {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.admin__insignia--ejecucion {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.admin__vacio {
+    margin: 0;
+    padding: 32px;
+    text-align: center;
+    color: #64748b;
+}
+
+/* * ===== Tarjetas de resumen (trueques y reseñas) ===== */
+.admin__resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.admin__dato {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.admin__dato-valor {
+    font-size: 1.8em;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1e293b;
+}
+
+.admin__dato-texto {
+    font-size: 0.85em;
+    color: #64748b;
+}
+
+/* * El dato principal va en verde para que destaque */
+.admin__dato--destacado {
+    border-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.admin__dato--destacado .admin__dato-valor {
+    color: #16a34a;
+}
+
+/* * ===== Lista simple (la usan trueques y reseñas) ===== */
+.lista {
+    display: flex;
+    flex-direction: column;
+}
+
+/* * Cada línea: marca a la izquierda | texto | estado y botones */
+/* * --color-estado cambia según el estado (trueques) y lo usa el punto */
+.lista__fila {
+    --color-estado: #94a3b8;
+
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 8px;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background 0.2s;
+}
+
+.lista__fila:last-child {
+    border-bottom: none;
+}
+
+.lista__fila:hover {
+    background: #f8fafc;
+}
+
+/* * Colores de los estados de trueque */
+.lista__fila[data-estado="SOLICITADO"]   { --color-estado: #f59e0b; }
+.lista__fila[data-estado="ACEPTADO"]     { --color-estado: #3b82f6; }
+.lista__fila[data-estado="EN_EJECUCION"] { --color-estado: #8b5cf6; }
+.lista__fila[data-estado="COMPLETADO"]   { --color-estado: #16a34a; }
+.lista__fila[data-estado="RECHAZADO"]    { --color-estado: #dc2626; }
+.lista__fila[data-estado="CANCELADO"]    { --color-estado: #cbd5e1; }
+
+/* * Los trueques cancelados y rechazados, con el texto más apagado */
+.lista__fila[data-estado="CANCELADO"] .lista__frase,
+.lista__fila[data-estado="RECHAZADO"] .lista__frase {
+    color: #94a3b8;
+}
+
+/* ! Reseñas de 1-2 estrellas: fondo rojizo suave para que se vean antes */
+.lista__fila--aviso {
+    background: #fef2f2;
+}
+
+.lista__fila--aviso:hover {
+    background: #fee2e2;
+}
+
+/* * Punto de color (trueques). Se alinea con la primera línea del texto */
+.lista__punto {
+    align-self: start;
+    width: 10px;
+    height: 10px;
+    margin-top: 8px;
+    border-radius: 50%;
+    background: var(--color-estado);
+}
+
+/* * Estrellas (reseñas) */
+.lista__estrellas {
+    align-self: start;
+    color: #f59e0b;
+    font-size: 1.05em;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.lista__texto {
+    min-width: 0;
+}
+
+.lista__frase {
+    margin: 0;
+    color: #1e293b;
+}
+
+.lista__frase strong {
+    font-weight: 700;
+}
+
+.lista__secundario {
+    color: #64748b;
+}
+
+.lista__comentario {
+    margin: 4px 0 0;
+    color: #334155;
+    font-style: italic;
+}
+
+.lista__comentario--vacio {
+    color: #94a3b8;
+}
+
+.lista__detalles {
+    margin: 2px 0 0;
+    font-size: 0.85em;
+    color: #64748b;
+}
+
+.lista__lado {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* * Móvil: el estado y los botones bajan debajo del texto */
+@media (max-width: 600px) {
+    .lista__fila {
+        grid-template-columns: auto 1fr;
+    }
+
+    .lista__lado {
+        grid-column: 2;
+        flex-wrap: wrap;
+    }
+}
+
+/* * ===== Registros pendientes de aprobación ===== */
+
+/* * Contador rojo (en la pestaña Usuarios y en el título de pendientes) */
+.admin__badge {
+    display: inline-grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 0.75em;
+    font-weight: 800;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* ! [hidden] tiene que ganar al display de arriba, si no el contador no se oculta */
+.admin__badge[hidden] {
+    display: none;
+}
+
+/* * Caja de pendientes: fondo ámbar suave para que destaque */
+.admin__pendientes {
+    margin-bottom: 32px;
+    padding: 20px;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    background: #fffbeb;
+}
+
+.admin__pendientes[hidden] {
+    display: none;
+}
+
+.admin__pendientes .admin__subtitulo {
+    margin-bottom: 4px;
+}
+
+.admin__pendientes-texto {
+    margin: 0 0 12px;
+    font-size: 0.9em;
+    color: #92400e;
+}
+
+.admin__pendientes .lista__fila:hover {
+    background: #fef3c7;
+}
+
+/* * Botón verde de "Aceptar" */
+.admin__boton--ok {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+.admin__boton--ok:hover {
+    background: #16a34a;
+    color: #ffffff;
+}
