@@ -7,17 +7,17 @@ Registro de las consultas hechas a la IA durante el desarrollo del proyecto: qu�
 ## 1. Revisión del diagrama E/R y propuesta de estructura de carpetas
 **Fecha:** 29/10/2026
 
-### Prompt
+**Prompt:**
 > Te adjunto el diagrama Entidad-Relación de mi proyecto (trueque de servicios). Revísalo y dime qué errores de diseño tiene (nombres de entidades, claves, tipos de datos, relaciones y datos duplicados). Después, a partir del modelo corregido, propón una estructura de carpetas para una aplicación PHP con MVC + DAO, plantillas Twig, JavaScript con fetch y despliegue en Docker, explicando brevemente para qué sirve cada carpeta.
 
-### Resultado
+**Resultado:**
 - Lista de correcciones al diagrama: `catalogo` pasa a ser `categoria`; en `oferta servicio` sobran los campos copiados de `servicio` y falta el `UNIQUE (id_profesional, id_servicio)`; el trueque debe apuntar a `id_oferta` en lugar de copiar datos; `valoraciones` debe enlazar con `id_solicitud` (relación 1:1); y hay tipos mal elegidos (`estado` como ENUM, confirmaciones como BOOLEAN, `telefono` como VARCHAR, `puntuacion` como TINYINT 1–5).
 - Propuesta de estructura de carpetas con `public/` como única carpeta accesible, capas Models / DAO / Controllers, vistas Twig y módulos JS.
 
-### Motivo
+**Motivo:**
 Antes de empezar a programar quería asegurarme de que la base de datos era correcta, porque de cada tabla sale un Modelo y un DAO. Si el diseño está mal, todo lo demás estará mal.
 
-### Qué he aprendido
+**Qué he aprendido:**
 Que antes de ponerme a programar tengo que tener bien la base de datos, porque si una tabla está mal luego el error lo arrastras a los modelos y a los DAO. Y que no hay que repetir datos entre tablas: se enlazan con la clave y listo.
 
 ---
@@ -25,154 +25,104 @@ Que antes de ponerme a programar tengo que tener bien la base de datos, porque s
 ## 2. Adaptar la estructura a la plantilla del profesor
 **Fecha:** 29/10/2026
 
-### Prompt
-> Te adjunto un .zip con la estructura de carpetas que nos ha dado el profesor y que tenemos que seguir obligatoriamente. Adapta tu propuesta anterior a esa plantilla respetando sus nombres (`Dao`, `Views` dentro de `src`, `App.php`, `Autoloader.php`, `Router.php`), añade solo lo que falte para cumplir el enunciado y genérame el esqueleto con los archivos vacíos para descargarlo.
+**Prompt:**
+> Te adjunto un .zip con la estructura de carpetas que nos ha dado el profesor. Adapta tu propuesta anterior a esa plantilla respetando sus nombres (`Dao`, `Views` dentro de `src`, `App.php`, `Autoloader.php`, `Router.php`), añade solo lo que falte para cumplir el enunciado y genera el esqueleto con los archivos vacíos.
 
-### Resultado
-- Se comprobó que los archivos de la plantilla venían vacíos.
-- Se generó el esqueleto `proyecto-noviembre.zip` respetando la plantilla y añadiendo `database/` (SQL de esquema y datos de prueba), `docs/`, `public/assets/` (CSS y módulos JS) y `composer.json` con Twig.
-- Se eliminaron `Services/` y `Controllers/Api/` de la propuesta inicial: la transacción de puntos va en `SolicitudTruequeDao` y las respuestas JSON en los propios controladores.
+**Resultado:**
+- Esqueleto del proyecto respetando la plantilla y añadiendo `database/` (SQL de esquema y datos de prueba), `docs/`, `public/assets/` (CSS y módulos JS) y `composer.json` con Twig.
 - Aviso de una errata del enunciado: Composer es un gestor de dependencias, no de plantillas.
 
-### Motivo
+**Motivo:**
 El profesor propone una estructura concreta, así que había que ajustar la propuesta a ella en lugar de usar una estructura propia.
 
-### Qué he aprendido
+**Qué he aprendido:**
 Que si el profe da una estructura hay que seguirla y no inventarse otra. Y que Composer no es un gestor de plantillas como pone el enunciado, es un gestor de dependencias: sirve para instalar librerías como Twig.
 
 ---
 
-## 3. Crear el repositorio en GitHub
+## 3. Repositorio en GitHub
 **Fecha:** 29/10/2026
 
-### Prompt
-> Quiero subir el esqueleto del proyecto a un repositorio de GitHub. Explícame los pasos para crearlo correctamente (nombre, visibilidad, si debo inicializarlo con README o no) y yo subo el primer commit con la estructura.
+**Prompt:**
+> Quiero versionar el proyecto en GitHub desde el principio. ¿Cómo debo crear el repositorio (nombre, visibilidad, inicialización) si ya tengo el esqueleto en local, para evitar conflictos en el primer push?
 
-### Resultado
-- Pasos para crear el repositorio `proyecto-noviembre` como privado y vacío.
-- Primer commit "Estructura inicial del proyecto" subido a la rama `main`.
+**Resultado:**
+- Repositorio `proyecto-noviembre` privado y vacío, con el primer commit "Estructura inicial del proyecto" en `main`.
 - Explicación de por qué no conviene crear el repositorio con README si ya tienes commits en local.
 
-### Motivo
+**Motivo:**
 Tener el proyecto versionado desde el principio para poder guardar el progreso, volver atrás si algo se rompe y entregarlo.
 
-### Qué he aprendido
+**Qué he aprendido:**
 Que si ya tengo el proyecto en local no hay que crear el repo con README, porque luego da conflicto al hacer el primer push. Y que es mejor subirlo desde el principio para poder volver atrás si rompo algo.
 
 ---
 
-## 4. Dockerfile
-**Fecha:** 30/10/2026
-
-### Prompt
-> Escríbeme un Dockerfile lo más sencillo posible para mi proyecto con PHP 8.2 y Apache que incluya: extensión PDO MySQL, Xdebug configurado desde `../xdebug.ini`, DocumentRoot apuntando a `public/` y que todas las rutas pasen por `index.php` para el Router. Comenta cada instrucción.
-
-### Resultado
-- Dockerfile mínimo basado en `php:8.2-apache`, con `pdo_mysql` y Xdebug instalados, `sed` para cambiar el DocumentRoot a `public/` y `FallbackResource /index.php` (que evita necesitar `.htaccess` y `mod_rewrite`).
-- `../xdebug.ini` preparado para VS Code (`client_host=host.docker.internal`, puerto 9003).
-- La primera versión era más completa (Composer dentro del contenedor, paquetes del sistema). Se simplificó porque Composer ya está en el Mac y `vendor/` entra por el volumen.
-
-### Motivo
-El proyecto tiene que desplegarse con Docker y necesitaba la imagen de PHP + Apache configurada para la estructura del proyecto.
-
-### Qué he aprendido
-Que el Dockerfile es como una receta para montar el servidor: partes de una imagen con PHP y Apache y le vas añadiendo lo que necesitas (PDO, Xdebug...). Y que cuanto más simple, mejor; no hay que meter cosas que no hacen falta.
-
----
-
-## 5. docker-compose.yml
-**Fecha:** 30/10/2026
-
-### Prompt
-> Escríbeme un `docker-compose.yml` sencillo con dos servicios: la app (construida con `../Dockerfile`) y MySQL 8. Monta el código como volumen, carga automáticamente los `.sql` de la carpeta `database/` al crear la base de datos y pasa las credenciales a PHP mediante variables de entorno. Explícame cómo levantarlo.
-
-### Resultado
-- `docker-compose.yml` con los servicios `app` (puerto 8080) y `db` (MySQL 8.0, puerto 3306, volumen persistente).
-- Los `.sql` de `database/` se montan en `/docker-entrypoint-initdb.d`.
-- Las variables `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASS` se leen desde `Database.php` con `getenv()`.
-- Avisos: los `.sql` solo se ejecutan la primera vez (para recargarlos hay que usar `docker compose down -v`, que borra los datos), y si el 3306 está ocupado hay que cambiar el puerto.
-
-### Motivo
-Levantar todo el entorno (servidor y base de datos) con un solo comando, como pide la entrega de infraestructura.
-
-### Qué he aprendido
-Que con docker-compose levanto el servidor y la base de datos a la vez con un solo comando. Y que los .sql de `database/` solo se ejecutan la primera vez; si quiero que se vuelvan a cargar tengo que hacer `down -v`, que borra los datos.
-
----
-
-## 03/11/2026
-
-### 1. Estructura de carpetas para las plantillas Twig
+## 4. Entorno Docker (Dockerfile y docker-compose)
+**Fecha:** 30/10/2026 – 03/11/2026
 
 **Prompt:**
-> ¿Dónde debo ubicar las plantillas Twig dentro de un proyecto PHP con arquitectura MVC y cómo las organizo (layout, partials, páginas y componentes para la parte SPA)?
+> Necesito el entorno Docker del proyecto lo más sencillo posible: un Dockerfile con PHP 8.2 + Apache, PDO MySQL, Xdebug (desde `xdebug.ini`), DocumentRoot en `public/` y todas las rutas hacia `index.php`; y un `docker-compose.yml` con la app y MySQL 8 que monte el código como volumen, cargue los `.sql` de `database/` al crear la base de datos y pase las credenciales a PHP por variables de entorno. Después, integra el `apache.conf` y el `xdebug.ini` que nos ha dado el profesor.
 
 **Resultado:**
-Carpeta `templates/` en la raíz del proyecto, fuera de `public/`, dividida en `layout/`, `partials/`, `pages/`, `components/` y `admin/`. Configuración del `FilesystemLoader` de Twig apuntando a `../templates`.
+- Dockerfile basado en `php:8.2-apache` con `pdo_mysql`, Xdebug y `mod_rewrite`. Se simplificó una primera versión más completa porque Composer ya está en el Mac y `vendor/` entra por el volumen.
+- `docker-compose.yml` con los servicios `app` (puerto 8080) y `db` (MySQL 8.0, volumen persistente `db_data`). Los `.sql` se montan en `/docker-entrypoint-initdb.d` y las credenciales se leen con `getenv()`.
+- Ajustes al integrar la configuración del profesor: declarar el volumen con nombre a nivel raíz, publicar MySQL en otro puerto porque el 3306 estaba ocupado en el Mac, y usar su `apache.conf` (DocumentRoot en `public/` y `AllowOverride All`) para resolver un 403.
 
 **Motivo:**
-Tener las plantillas fuera de la carpeta pública para que Apache no las sirva directamente y separar bien la capa de vista.
+El proyecto tiene que desplegarse con Docker y quería levantar el servidor y la base de datos con un solo comando, como pide la entrega de infraestructura.
 
 **Qué he aprendido:**
-Que las plantillas de Twig no van en `public/` porque nadie tiene que poder abrirlas desde el navegador, solo PHP. Y que conviene separarlas en layout, partials y pages para no repetir código.
+Que el Dockerfile es como una receta para montar el servidor: partes de una imagen con PHP y Apache y le vas añadiendo lo que necesitas (PDO, Xdebug...), y cuanto más simple, mejor. Que con docker-compose levanto el servidor y la base de datos a la vez, y que los .sql de `database/` solo se ejecutan la primera vez; si quiero que se vuelvan a cargar tengo que hacer `down -v`, que borra los datos. Que los volúmenes con nombre se declaran abajo del todo, que si un puerto está pillado lo cambio por fuera sin tocar nada por dentro, y que leyendo bien el error casi siempre sabes dónde está el fallo.
 
 ---
 
-### 2. Ubicación de los archivos CSS y enlace desde Twig
+## 5. Organización de las plantillas Twig y los CSS
+**Fecha:** 03/11/2026
 
 **Prompt:**
-> ¿Dónde se colocan los archivos CSS en un proyecto PHP con Twig y cómo se enlazan desde la plantilla base para que funcionen en todas las rutas?
+> ¿Dónde deben ubicarse las plantillas Twig y los archivos CSS en un proyecto PHP con MVC? Quiero las plantillas organizadas en layout, partials y páginas, y los CSS enlazados desde la plantilla base de forma que funcionen en cualquier ruta y que cada página pueda añadir el suyo.
 
 **Resultado:**
-CSS en `public/assets/css/` separado en `variables.css`, `base.css`, `layout.css`, `header.css`, etc. Enlazados en `base.html.twig` con rutas absolutas (`/assets/css/...`) y un `{% block styles %}` para que cada página añada su CSS.
+- Plantillas en `templates/` (fuera de `public/`), divididas en `layout/`, `partials/` y `pages/`, con el `FilesystemLoader` de Twig apuntando a `../templates`.
+- CSS en `public/assets/css/`, enlazado en `base.html.twig` con rutas absolutas (`/assets/css/...`) y un `{% block styles %}` por página.
+- Un partial no lleva `<!DOCTYPE>`, `<head>` ni `<body>`, y las rutas no incluyen `public/` porque es la raíz web.
 
 **Motivo:**
-El CSS sí tiene que ser accesible desde el navegador, a diferencia de las plantillas.
+Separar bien la capa de vista y que Apache no pueda servir las plantillas directamente.
 
 **Qué he aprendido:**
-Que el CSS, al revés que las plantillas, sí va dentro de `public/` porque el navegador lo tiene que descargar. Y que con el `block styles` cada página puede meter su propio CSS sin tocar la base.
+Que las plantillas de Twig no van en `public/` porque nadie tiene que poder abrirlas desde el navegador, solo PHP, y que el CSS al revés sí va dentro porque el navegador lo tiene que descargar. Que `public/` no aparece en la URL porque es la raíz de la web, y que las rutas tienen que empezar por `/` para que no se rompan en otras páginas. También que un partial es solo un trozo de página, sin `html`, `head` ni `body`, y que Twig busca los archivos con el nombre exacto.
 
 ---
 
-### 3. Error: el header no encontraba su CSS
+## 6. Plantilla base, header y footer
+**Fecha:** 03/11/2026
 
 **Prompt:**
-> Mi `header.html` enlaza el CSS con `href="public/assets/css/header.css"` y no lo encuentra. ¿Cuál es el problema y cómo debería estructurarse un partial de Twig?
+> Genera las plantillas Twig `base.html.twig`, `header.html.twig` y `footer.html.twig` para la aplicación de trueque de servicios. El header debe cambiar según haya sesión o no, mostrar el saldo de puntos, el enlace al panel solo para el rol ADMIN y tener menú hamburguesa en móvil. El nombre de la aplicación tiene que definirse en un único sitio.
 
 **Resultado:**
-La ruta era relativa e incluía `public/`, que es la raíz web y no aparece en la URL. Ruta correcta: `/assets/css/header.css`. Además, un partial no debe llevar `<!DOCTYPE>`, `<head>` ni `<body>`; el `<link>` va en el layout base. Renombrado de los archivos a `.html.twig` y marcar `public/` como Resource Root en PhpStorm.
-
-**Motivo:**
-Corregir el error y no acabar con etiquetas `<html>` duplicadas al incluir los partials.
-
-**Qué he aprendido:**
-Que `public/` no aparece en la URL porque es la raíz de la web, y que las rutas tienen que empezar por `/` para que no se rompan en otras páginas. También que un partial es solo un trozo de página, sin `html`, `head` ni `body`.
-
----
-
-### 4. Plantillas base, header y footer
-
-**Prompt:**
-> Genera las plantillas Twig `base.html.twig`, `header.html.twig` y `footer.html.twig` para la aplicación de trueque de servicios. El header debe cambiar según haya sesión o no, mostrar el saldo de puntos, el enlace al panel solo para el rol ADMIN y tener menú hamburguesa en móvil.
-
-**Resultado:**
-Layout base con bloques `title`, `styles`, `content` y `scripts`. Header dinámico con las variables globales `usuario`, `pagina_actual` y `app_nombre`, saldo con `id="saldo-puntos"` para actualizarlo por JS sin recargar. Footer con enlaces y año automático. CSS del header y del footer y `header.js` para la hamburguesa.
+- Layout base con bloques `title`, `styles`, `content` y `scripts`.
+- Header dinámico con las variables globales `usuario`, `pagina_actual` y `app_nombre`, y el saldo con `id="saldo-puntos"` para actualizarlo por JS sin recargar.
+- El nombre elegido para la aplicación, **HoraXHora**, se define una sola vez con `addGlobal`.
 
 **Motivo:**
 Tener la estructura común de todas las páginas antes de empezar con las vistas concretas.
 
 **Qué he aprendido:**
-Que con `extends` y `block` hago una plantilla base y las demás páginas solo rellenan los huecos. Y que con un `if` en Twig puedo enseñar cosas distintas según si hay sesión o si el usuario es admin.
+Que con `extends` y `block` hago una plantilla base y las demás páginas solo rellenan los huecos. Que con un `if` en Twig puedo enseñar cosas distintas según si hay sesión o si el usuario es admin. Y que con `addGlobal` pongo una variable disponible en todas las plantillas, así si cambio el nombre de la app solo lo toco en un sitio.
 
 ---
 
-### 5. Front controller (index.php) para probar las vistas
+## 7. Front controller provisional
+**Fecha:** 03/11/2026
 
 **Prompt:**
-> Crea un `public/index.php` mínimo que cargue Composer, inicie sesión, configure Twig y tenga un router sencillo para poder ver el header funcionando, con una forma temporal de simular un usuario logueado.
+> Crea un `public/index.php` mínimo que cargue Composer, inicie sesión, configure Twig y enrute con un `switch` sobre la URL, con un modo temporal para simular un usuario logueado y poder probar las plantillas antes de tener el login.
 
 **Resultado:**
-`index.php` con `session_start()`, Twig, variable global `usuario`, router con `switch` sobre la URL y modo demo temporal (`?demo`, `?demo=admin`, `?salir`). Página `pages/inicio.html.twig` de prueba y `.htaccess` para redirigir todas las rutas a `index.php`.
+`index.php` con `session_start()`, Twig, variable global `usuario`, router con `switch` y modo demo temporal (`?demo`, `?demo=admin`, `?salir`), más `.htaccess` para redirigir todas las rutas a `index.php`.
 
 **Motivo:**
 Poder ver las plantillas en el navegador antes de tener el login y los controladores.
@@ -182,65 +132,14 @@ Que `index.php` es la única puerta de entrada a la web y desde ahí se decide q
 
 ---
 
-### 6. Errores al levantar Docker
+## 8. Página de inicio y sistema de estilos
+**Fecha:** 03/11/2026
 
 **Prompt:**
-> Al ejecutar `docker compose up -d` obtengo varios errores: volumen `db_data` no definido, puerto 3306 ocupado y después "403 Forbidden" en Apache. ¿Cómo los soluciono?
+> Crea la página de inicio en Twig (hero, cómo funciona, categorías y llamada a la acción) y los archivos `variables.css`, `base.css`, `header.css`, `footer.css` e `inicio.css` usando variables CSS para los colores, `em` para tamaños de letra y `px` para espaciados.
 
 **Resultado:**
-- Declarar `volumes: db_data:` a nivel raíz del `docker-compose.yml`.
-- Cambiar el puerto de MySQL a `3307:3306` porque el 3306 ya estaba en uso en el Mac.
-- El 403 venía de que Apache servía la raíz del proyecto en vez de `public/`. Se soluciona copiando el `apache.conf` del profesor (DocumentRoot en `/var/www/html/public` y `AllowOverride All`) y activando `mod_rewrite` en el Dockerfile.
-- Usar el `../xdebug.ini` del profesor sin `docker-php-ext-enable` para no cargar Xdebug dos veces.
-- Error "not found" en el build: el `apache.conf` tenía que estar dentro de la carpeta `docker/`.
-
-**Motivo:**
-Dejar el entorno Docker funcionando con la configuración proporcionada por el profesor.
-
-**Qué he aprendido:**
-Que los volúmenes con nombre hay que declararlos abajo del todo en el docker-compose, que si un puerto está pillado lo cambio por fuera (3307) sin tocar nada por dentro, y que el 403 era porque Apache no apuntaba a `public/`. Leyendo bien el error casi siempre sabes dónde está el fallo.
-
----
-
-### 7. Errores de Twig: plantillas no encontradas
-
-**Prompt:**
-> Twig lanza "Unable to find template layout/base.html.twig" y después lo mismo con `partials/footer.html.twig`. ¿Qué falta?
-
-**Resultado:**
-Faltaba crear `templates/layout/base.html.twig` y renombrar `footer.html` a `footer.html.twig`, dejándolo solo con la etiqueta `<footer>`.
-
-**Motivo:**
-Que la página de inicio se renderice completa.
-
-**Qué he aprendido:**
-Que Twig busca los archivos con el nombre exacto, así que si no acaban en `.html.twig` no los encuentra. Los errores de Twig te dicen qué archivo falta y en qué línea; solo hay que leerlos.
-
----
-
-### 8. Nombre de la aplicación
-
-**Prompt:**
-> Propón nombres para una aplicación web de trueque de servicios entre profesionales basada en puntos por hora.
-
-**Resultado:**
-Varias propuestas (TruequePro, HoraXHora, Banco de Oficios, Truekia...). Elegido **HoraXHora**. Se define una sola vez como variable global de Twig (`app_nombre`) y se usa en el título, el header y el footer.
-
-**Motivo:**
-Darle identidad al proyecto y no repetir el nombre en todas las plantillas.
-
-**Qué he aprendido:**
-Que con `addGlobal` pongo una variable disponible en todas las plantillas, así si cambio el nombre de la app solo lo toco en un sitio.
-
----
-
-### 9. Página de inicio y hojas de estilo
-
-**Prompt:**
-> Crea la página de inicio en Twig (hero, cómo funciona, categorías y llamada a la acción) y los archivos `variables.css`, `base.css`, `header.css`, `footer.css` e `inicio.css` usando variables CSS para los colores, `em` para tamaños de letra y `px` para espaciados, sin `rem`.
-
-**Resultado:**
-`inicio.html.twig` con categorías de ejemplo que luego se sustituirán por las del DAO. `variables.css` con la paleta en hexadecimal, `base.css` con reset, tipografía, footer pegado abajo (flex) y botones reutilizables. Todos los CSS convertidos a `em`/`px`. Los estilos de `.btn` se dejan solo en `base.css` para que funcionen en todas las páginas.
+`inicio.html.twig` con categorías de ejemplo que luego se sustituirán por las del DAO. `variables.css` con la paleta, `base.css` con reset, tipografía, footer pegado abajo con flex y botones reutilizables (`.btn`) para todas las páginas.
 
 **Motivo:**
 Cumplir el requisito de CSS3 nativo con variables y diseño adaptativo, y tener una portada para enseñar.
@@ -250,87 +149,56 @@ Que las variables CSS se definen una vez en `:root` y se usan con `var()`, así 
 
 ---
 
-### 10. Avisos de SonarLint
+## 9. Calidad de código con SonarLint
+**Fecha:** 03/11/2026
 
 **Prompt:**
-> SonarLint me marca 7 avisos en Dockerfile, base.css, inicio.css e index.php. Explícame cada uno y cómo corregirlos.
+> SonarLint me marca varios avisos en el Dockerfile, los CSS y el `index.php`. Explícame cada uno, cómo corregirlo y cómo configurar PhpStorm para evitar los que se repiten al guardar.
 
 **Resultado:**
 - Dockerfile: unir los `RUN` en uno solo. El aviso de usuario root se marca como seguro por ser entorno de desarrollo.
-- CSS: envolver `scroll-behavior: smooth` y las animaciones de hover en `prefers-reduced-motion` por accesibilidad.
-- index.php: `require` → `require_once`, salto de línea al final del archivo; el TODO del modo demo se mantiene hasta hacer el login.
+- CSS: envolver `scroll-behavior: smooth` y las animaciones en `prefers-reduced-motion` por accesibilidad.
+- PHP: `require` → `require_once` y salto de línea al final del archivo, que se automatiza con *Settings → Editor → General → On Save → "Ensure every saved file ends with a line break"*.
 
 **Motivo:**
 Mantener el código limpio y accesible de cara a la corrección.
 
 **Qué he aprendido:**
-Que lo de SonarLint no son errores, son avisos para dejar el código más limpio. Lo de `prefers-reduced-motion` no lo conocía: hay gente que tiene quitadas las animaciones en su sistema y la web lo tiene que respetar.
+Que lo de SonarLint no son errores, son avisos para dejar el código más limpio. Lo de `prefers-reduced-motion` no lo conocía: hay gente que tiene quitadas las animaciones en su sistema y la web lo tiene que respetar. Y que PhpStorm se puede configurar para que haga cosas solo al guardar, como dejar la línea vacía del final.
 
 ---
 
-## 03/11/2026 · 12:31
-
-### 11. Script de la base de datos a partir del modelo E-R
+## 10. Base de datos: script, seeds y conexión desde el IDE
+**Fecha:** 03/11/2026
 
 **Prompt:**
-> A partir del modelo Entidad-Relación y el script SQL del anexo del enunciado, genera la estructura de la base de datos en MySQL y unos datos de prueba coherentes. Sepáralo en dos archivos, `01_schema.sql` (tablas) y `02_seeds.sql` (datos), para que Docker los ejecute en orden al crear el contenedor.
+> A partir del modelo E-R y el script SQL del anexo del enunciado, genera la estructura de la base de datos en MySQL y unos datos de prueba coherentes, separados en `01_schema.sql` y `02_seeds.sql` para que Docker los ejecute en orden. Explícame también qué son los seeds y cómo conectar PhpStorm a esta base de datos.
 
 **Resultado:**
-- `01_schema.sql` con las 6 tablas del anexo y restricciones `CHECK` añadidas (saldo no negativo, horas y tarifas mayores que 0, puntuación de 1 a 5) y un índice por estado en las solicitudes.
-- `02_seeds.sql` con 1 administrador, 4 profesionales, 4 categorías, 8 servicios, 8 ofertas (una desactivada), una solicitud de cada estado y valoraciones solo en las completadas. Los saldos cuadran con los trueques completados. Contraseña de prueba `1234` guardada con bcrypt para que funcione con `password_verify`.
-- `SET NAMES utf8mb4` al principio para que los acentos se importen bien.
-- Aviso: el `ON DELETE CASCADE` del anexo borra el historial de trueques si se elimina un usuario. Para la moderación conviene dar de baja con un campo `activo` en vez de un `DELETE`.
+- `01_schema.sql` con las 6 tablas del anexo, restricciones `CHECK` (saldo no negativo, horas y tarifas mayores que 0, puntuación de 1 a 5) y un índice por estado en las solicitudes.
+- `02_seeds.sql` con 1 administrador, 4 profesionales, categorías, servicios, ofertas (una desactivada), una solicitud de cada estado y valoraciones solo en las completadas. Los saldos cuadran con los trueques completados y la contraseña de prueba está guardada con bcrypt.
+- `SET NAMES utf8mb4` para que los acentos se importen bien.
+- Aviso: el `ON DELETE CASCADE` del anexo borra el historial de trueques si se elimina un usuario.
+- Conexión desde PhpStorm con `localhost` y el puerto publicado, frente a `db` desde dentro de Docker.
 
 **Motivo:**
-Tener la base de datos creada y con datos para poder probar el resto de la aplicación, y cumplir el entregable del script `.sql` con seeds.
+Tener la base de datos creada y con datos para probar el resto de la aplicación, y cumplir el entregable del script `.sql` con seeds.
 
 **Qué he aprendido:**
-Que con `CHECK` la base de datos no deja meter datos raros (saldo negativo, una puntuación de 7...). Que las contraseñas nunca se guardan tal cual, van hasheadas. Y que el `ON DELETE CASCADE` te puede borrar más cosas de las que crees.
+Que con `CHECK` la base de datos no deja meter datos raros (saldo negativo, una puntuación de 7...). Que las contraseñas nunca se guardan tal cual, van hasheadas. Que el `ON DELETE CASCADE` te puede borrar más cosas de las que crees. Que los seeds son los datos de prueba para que la base de datos no esté vacía al arrancar, así el profe puede probarlo todo sin crear usuarios a mano. Y que desde fuera de Docker me conecto con `localhost`, pero la app por dentro usa el nombre del servicio (`db`).
 
 ---
 
-### 12. Qué son los seeds
-
-**Prompt:**
-> ¿Qué son los "seeds" de una base de datos y para qué sirven en este proyecto?
-
-**Resultado:**
-Son los datos de prueba iniciales que se insertan al crear la base de datos. Separan el *contenido* (`02_seeds.sql`) de la *estructura* (`01_schema.sql`), permiten probar la aplicación nada más levantarla, facilitan la corrección al profesor y se pueden restaurar con `docker compose down -v` + `up -d`.
-
-**Motivo:**
-Entender un término que pide el enunciado en los entregables.
-
-**Qué he aprendido:**
-Que los seeds son los datos de prueba para que la base de datos no esté vacía al arrancar. Así el profe puede probarlo todo sin tener que crear usuarios a mano.
-
----
-
-### 13. Conectar PhpStorm a la base de datos de Docker
-
-**Prompt:**
-> ¿Qué datos tengo que poner en "Data Sources and Drivers" de PhpStorm para conectarme a la base de datos MySQL que corre en Docker?
-
-**Resultado:**
-Host `localhost`, puerto el publicado en `docker-compose.yml`, usuario y contraseña `usuario`, base de datos `sistema_trueque`. Descargar antes el driver de MySQL y comprobar con *Test Connection*. Soluciones a los errores típicos (contenedor parado, acceso denegado, `allowPublicKeyRetrieval`).
-
-**Motivo:**
-Poder ver y consultar las tablas desde el IDE.
-
-**Qué he aprendido:**
-Que desde fuera de Docker me conecto con `localhost` y el puerto que he publicado, pero la app por dentro usa el nombre del servicio (`db`). Y que sin el driver descargado PhpStorm no puede conectar.
-
----
-
-### 14. Conexión PDO a la base de datos
+## 11. Conexión PDO con Singleton
+**Fecha:** 03/11/2026
 
 **Prompt:**
 > Explícame cómo crear la conexión a la base de datos con PDO usando el patrón Singleton dentro de la capa DAO, leyendo los datos de conexión de las variables de entorno de Docker y cargando las clases con el autoload de Composer.
 
 **Resultado:**
-- `src/Dao/BD.php`: clase `final` con constructor privado y método estático `getConexion()` que crea la conexión PDO una sola vez. Lee `DB_HOST`, `DB_NAME`, `DB_USER` y `DB_PASS` con `getenv()`, usa `charset=utf8mb4` y activa excepciones, `FETCH_ASSOC` y consultas preparadas reales. Si falla, lanza un error genérico sin mostrar datos del servidor.
-- `composer.json` con autoload PSR-4 (`App\` → `src/`) y `composer dump-autoload`.
-- `public/.htaccess` para que todas las rutas pasen por `index.php`.
-- Ruta temporal `/test-bd` en `index.php`. Resultado: conexión correcta con los 5 usuarios de los seeds.
+- `src/Dao/BD.php`: clase `final` con constructor privado y método estático `getConexion()` que crea la conexión una sola vez, con `utf8mb4`, excepciones activadas y un error genérico si falla (sin mostrar datos del servidor).
+- `composer.json` con autoload PSR-4 (`App\` → `src/`).
+- Ruta temporal `/test-bd` para comprobarlo con los usuarios de los seeds.
 
 **Uso de la IA:**
 En un primer momento la IA escribió los archivos directamente en mi proyecto sin que se lo pidiera. Le pedí que lo deshiciera, me pasó el código en el chat y lo incorporé yo a mano.
@@ -343,45 +211,14 @@ Que con el Singleton solo se crea una conexión y todos los DAO usan la misma. Q
 
 ---
 
-### 15. Salto de línea al final de los archivos
-
-**Prompt:**
-> SonarLint me sigue marcando "Add a new line at the end of this file" en `index.php`. ¿Cómo lo arreglo y cómo hago que PhpStorm lo haga solo al guardar?
-
-**Resultado:**
-Al pegar código, PhpStorm elimina la última línea vacía. Se arregla añadiéndola a mano, y de forma permanente activando *Settings → Editor → General → On Save → "Ensure every saved file ends with a line break"*.
-
-**Motivo:**
-Quitar el aviso de SonarLint y no tener que corregirlo en cada archivo.
-
-**Qué he aprendido:**
-Que PhpStorm se puede configurar para que haga cosas solo al guardar, como dejar la línea vacía del final, y así me ahorro corregirlo a mano cada vez.
-
----
-
-### 16. Commit y push de los cambios
-
-**Prompt:**
-> Dame los comandos para hacer commit y push de los cambios de hoy, con mensajes de commit claros.
-
-**Resultado:**
-Comandos `git add`, `git commit` y `git push`, con la recomendación de revisar antes `git status` y la opción de separar los cambios en varios commits (base de datos, conexión, rutas) para que el historial sea más claro.
-
-**Motivo:**
-Subir el trabajo al repositorio de GitHub.
-
-**Qué he aprendido:**
-Que antes de hacer commit es mejor mirar `git status` para ver qué se va a subir, y que poner `feat:`, `docs:` o `chore:` en los mensajes hace que el historial se entienda mejor.
-
----
-
-### 17. Diagrama de la arquitectura MVC
+## 12. Diagrama de la arquitectura MVC
+**Fecha:** 03/11/2026
 
 **Prompt:**
 > Genera una imagen de la arquitectura MVC + DAO de mi proyecto con las carpetas reales, organizada en capas apiladas (Vista, Controlador, Modelo) y marcando qué partes están hechas y cuáles pendientes.
 
 **Resultado:**
-Diagrama en PNG y SVG con el navegador arriba, las capas Vista (`templates/`, `public/assets/`), Control (entrada, Router, controladores de páginas y API) y Modelo (`src/Models/`, `src/Dao/`), y MySQL abajo. Lo pendiente aparece con borde discontinuo. Una primera versión con flujo numerado se descartó por tener demasiadas flechas.
+Diagrama en PNG y SVG con el navegador arriba, las capas Vista, Control y Modelo, y MySQL abajo. Lo pendiente aparece con borde discontinuo.
 
 **Nota:**
 Es un diagrama de arquitectura, no el diagrama de clases MVC que pide el enunciado. Ese se hará cuando estén los modelos y los DAO.
@@ -394,146 +231,216 @@ Que un diagrama de arquitectura y uno de clases no son lo mismo: uno enseña có
 
 ---
 
-### 18. Login con sesiones y base de datos
+## 13. Login con sesiones y consultas seguras
+**Fecha:** 03/11/2026
 
 **Prompt:**
-> Hazme el login de la aplicación siguiendo el estilo que hemos visto en clase (formulario con POST normal, `$_SESSION`, `header("Location")` y `session_destroy()` para el logout), pero adaptado a mi estructura MVC + DAO con Twig y comprobando el usuario contra la base de datos.
+> Implementa el login siguiendo el estilo visto en clase (formulario con POST normal, `$_SESSION`, `header("Location")` y `session_destroy()` para el logout), adaptado a mi estructura MVC + DAO con Twig y comprobando el usuario contra la base de datos. Las consultas del DAO deben seguir el formato de clase: `try/catch` con `PDOException`, `prepare()` cuando hay datos del usuario y `fetch(PDO::FETCH_ASSOC)`.
 
 **Resultado:**
-Un `AuthController` con los métodos `login()` (muestra el formulario por GET y lo procesa por POST) y `logout()`, un `UsuarioDao` con `buscarPorEmail()`, la plantilla `login.html.twig` con el mensaje de error y las rutas `/login` y `/logout` en el `index.php`. La contraseña se comprueba con `password_verify()` porque en la base de datos está guardada con hash, y en la sesión solo se guardan id, nombre, rol y puntos. Se descartaron primero una versión con `fetch` y CSRF y otra simplificada, porque no seguían lo visto en clase.
+- `AuthController` con `login()` (GET muestra, POST procesa) y `logout()`, `UsuarioDao` con `buscarPorEmail()` y la plantilla `login.html.twig`.
+- La contraseña se comprueba con `password_verify()` y en la sesión solo se guardan id, nombre, rol y puntos.
+- Las consultas usan `BD::getConexion()` y `prepare()` para evitar inyección SQL.
+- Se descartaron otras propuestas (con `fetch` y CSRF) porque no seguían lo visto en clase.
 
 **Motivo:**
-Tener la autenticación funcionando, que es la base para el resto de partes privadas (agenda, ofertas, panel admin).
+Tener la autenticación funcionando, que es la base de las partes privadas (agenda, ofertas, panel admin), y que todas las consultas sigan el mismo patrón.
 
 **Qué he aprendido:**
-Que la contraseña no se compara con `===` porque en la base de datos está guardada con hash, y que para eso está `password_verify()`. También que en la sesión nunca se guarda la contraseña, solo los datos que necesito enseñar, y que con `header('Location')` y `exit()` mando al usuario a otra página.
+Que la contraseña no se compara con `===` porque en la base de datos está guardada con hash, y que para eso está `password_verify()`. Que en la sesión nunca se guarda la contraseña, solo los datos que necesito enseñar, y que con `header('Location')` y `exit()` mando al usuario a otra página. Que cuando el dato viene del usuario hay que usar `prepare()` y no `query()`, porque si no me pueden hacer inyección SQL. Y que el operador `?:` es una forma corta de un `if`.
 
 ---
 
-### 19. Consultas PDO con try/catch
+## 14. Autoload, tipado estricto y revisión de la estructura
+**Fecha:** 04/11/2026
 
 **Prompt:**
-> Adapta las consultas del DAO al formato que nos han enseñado: dentro de un `try/catch` con `PDOException` y usando `fetch(PDO::FETCH_ASSOC)`.
+> Analiza la estructura de carpetas actual sin hacer cambios y dime si funciona. Explícame la diferencia entre PSR-4, el autoload y el router, qué hace `declare(strict_types=1)`, si hace falta `Autoloader.php` teniendo el de Composer y por qué me aparece `Class "App\Controllers\AuthController" not found`.
 
 **Resultado:**
-`buscarPorEmail()` reescrito con `try/catch`, sacando la conexión de `BD::getConexion()` en vez de repetir `new PDO` en cada DAO, y con `prepare()` en lugar de `query()` porque el email viene del formulario (evita inyección SQL). También un ejemplo de `listarTodos()` con `query()` y `while`, y la explicación del operador `?:` y de cómo simplificar el retorno con el tipo `array|false`.
+- El error venía de que `AuthController.php` solo tenía el `namespace`, sin la clase, y de que `UsuarioDAO.php` no coincidía en mayúsculas con la clase `UsuarioDao` (en Linux no se cargaría).
+- PSR-4 es la norma que relaciona namespace con carpeta y archivo; el autoload de Composer la aplica; el router decide qué ejecutar según la URL.
+- `strict_types` se mantiene porque el enunciado pide tipado estricto.
+- Se borran `App.php` y `Autoloader.php`, que estaban vacíos y duplicarían el autoload de Composer. Se añade Composer al Dockerfile para quien clone el repositorio.
 
 **Motivo:**
-Que todas las consultas del proyecto sigan el mismo patrón visto en clase.
+Entender el código que uso, no romper requisitos del enunciado y comprobar que la organización es correcta antes de seguir.
 
 **Qué he aprendido:**
-Que cuando el dato viene del usuario hay que usar `prepare()` y no `query()`, porque si no me pueden hacer inyección SQL. Y que el operador `?:` es una forma corta de un `if`: si lo de la izquierda vale algo lo devuelve, y si no, devuelve lo de la derecha.
+Que el error `Class not found` casi siempre es porque el nombre de la carpeta, del archivo o del `namespace` no coincide. Que PSR-4 es la regla que dice que el `namespace` tiene que coincidir con la carpeta y el nombre de la clase con el del archivo, y que en Mac funciona aunque las mayúsculas no coincidan, pero en Linux no. Que `declare(strict_types=1)` hace que PHP no cambie los tipos solo, por eso los datos de la URL hay que pasarlos a `(int)`. Y que no hace falta un autoloader propio si ya uso el de Composer.
 
 ---
 
-### 20. Error "Class not found" y Composer en Docker
+## 15. Router en una clase siguiendo el modelo del profesor
+**Fecha:** 06/11/2026
 
 **Prompt:**
-> Me sale `Class "App\Controllers\AuthController" not found`. Ayúdame a encontrar la causa y a poder ejecutar Composer dentro del contenedor.
+> Este es el `index.php` y el `Router.php` de mi profesor. Adapta mi enrutado a su forma de hacerlo (una clase con `dispatch()` y un `switch` por segmentos de la URL), con mis rutas actuales y dejándolo en `src/Router.php`, sin complicarlo.
 
 **Resultado:**
-Se revisó el autoload PSR-4 (nombre de carpeta, archivo y `namespace`). Se añadió Composer al `Dockerfile` con el instalador oficial mediante `curl`, y se corrigieron las rutas de los `COPY` a `../apache.conf` y `../xdebug.ini`, porque el contexto del build es la raíz del proyecto. La causa real del error era que `AuthController.php` solo tenía el `namespace`, sin la clase. También se detectó que `UsuarioDAO.php` no coincidía en mayúsculas con la clase `UsuarioDao`.
+`index.php` reducido a cargar el autoload, crear el `Router` y llamar a `dispatch()`. La clase `Router` arranca la sesión, prepara Twig, parte la URL en segmentos con `explode` y decide con un `switch` qué hacer en cada ruta, con `responderError()` para el 404. Se descartaron una versión con expresiones regulares y otra con todas las rutas futuras por ser innecesariamente complejas.
 
 **Motivo:**
-Poder probar el login y dejar el entorno Docker preparado para cualquiera que clone el repositorio.
+Seguir el mismo modelo que usa el profesor y dejar el `index.php` lo más limpio posible.
 
 **Qué he aprendido:**
-Que el error `Class not found` casi siempre es porque el nombre de la carpeta, del archivo o del `namespace` no coincide, no por Composer. Y que en el `Dockerfile` las rutas de los `COPY` van desde el contexto del build, no desde la carpeta donde está el `Dockerfile`.
+Que con `explode('/', trim($uri, '/'))` la URL se parte en trozos y con el primero sé a qué página quiere ir el usuario. Que con el `.htaccess` todas las URLs pasan por `index.php` y por eso puedo tener rutas amigables como `/login`. Y que es mejor ir añadiendo un `case` por cada página cuando la hago que meter de golpe rutas que todavía no existen.
 
 ---
 
-### 21. Router con rutas amigables
+## 16. Diseño del login y tipografía
+**Fecha:** 06/11/2026
 
 **Prompt:**
-> Mi `Router.php` está vacío. Explícame cómo hacer un router sencillo en una clase que sustituya al `switch` del `index.php`, con rutas amigables y que admita parámetros como `/servicio/{id}`.
+> Adapta este diseño de login (escrito en SCSS y con estilos globales en el `body`) a CSS3 nativo con mis variables y nomenclatura BEM, sin tocar el fondo de la página. Recomiéndame además una tipografía para HoraXHora y cómo aplicarla a toda la web.
 
 **Resultado:**
-Clase `Router` con los métodos `get()`, `post()` y `ejecutar()`, que guarda las rutas por método y URL y devuelve 404 si no existe. Después se amplió para aceptar huecos `{id}` usando `preg_replace` y `preg_match`, pasando los valores como parámetros a la función de cada ruta. El `index.php` queda registrando las rutas con funciones anónimas (`function () use ($twig)`).
+- `auth.css` en CSS nativo con BEM (`auth`, `auth__input`, `auth__boton`...). Tras probar varias versiones se eligió una tarjeta centrada con campos subrayados y botón redondeado.
+- Tipografía Plus Jakarta Sans (Google Fonts), cargada en el `<head>` antes de los CSS y aplicada desde una variable.
 
 **Motivo:**
-Separar el enrutado en su propia clase, como pide la estructura del proyecto, y preparar las rutas con datos (detalle de servicio, solicitudes...).
+Que el login tenga un diseño propio y coherente con el resto de la web, sin frameworks ni preprocesadores, y unificar la letra de toda la web.
 
 **Qué he aprendido:**
-Que con el `.htaccess` todas las URLs pasan por `index.php` y por eso puedo tener rutas amigables como `/login` en vez de `index.php?pagina=login`. Y que un router es lo que mira la URL y decide qué controlador ejecutar.
+Que SCSS no es CSS normal (tiene `$variables` y anidación) y hay que pasarlo a CSS nativo. Que si pongo estilos en el `body` o en `*` dentro del CSS de una página, me puede romper el header y el footer de toda la web. Que una fuente de Google Fonts se carga con un `<link>` en el `<head>` y conviene ponerla en una variable. Y que si no veo los cambios del CSS muchas veces es la caché del navegador y se arregla con `Cmd + Shift + R`.
 
 ---
 
-### 22. Dudas: tipado estricto y Autoloader
+## 17. Página de perfil del profesional
+**Fecha:** 10/11/2026
 
 **Prompt:**
-> Explícame qué hace `declare(strict_types=1)` y si lo puedo quitar, y si hace falta el `Autoloader.php` teniendo ya el autoload de Composer.
+> Necesito la vista de perfil del profesional en Twig, extendiendo `layout/base.html.twig`. Debe mostrar los datos personales editables por formulario POST (siguiendo el patrón de clase: POST normal + `$_SESSION`), el saldo de puntos, la valoración media y las ofertas del usuario. Genera el `PerfilController`, un `PerfilDAO` con PDO (`try/catch` de `PDOException` y `fetch(PDO::FETCH_ASSOC)`) y la ruta `/perfil` en mi `Router`, con estilos en CSS nativo usando la paleta de `base.css`.
 
 **Resultado:**
-Explicación de que `strict_types` impide que PHP convierta tipos solo (por eso hay que hacer `(int) $id` con datos de la URL), y recomendación de mantenerlo porque el enunciado pide tipado estricto. Sobre el autoloader: no se puede usar solo uno propio porque Twig depende de Composer, y tener uno propio junto al de Composer sería duplicar lo mismo. Como la estructura del profesor no es obligatoria, se decidió borrar `Autoloader.php` y usar solo el autoload PSR-4 de Composer (ver entrada 25).
+Controlador, DAO, plantilla y CSS del perfil. La valoración media se calcula con un JOIN entre `valoraciones`, `solicitudes_trueque` y `ofertas_profesionales`. Al integrarlo hubo que ajustar el namespace (`App\Dao`), la clave de sesión (`id`) y la ruta de la plantilla base. Además se detectó que `base.css` usaba `var(--radio)` sin tenerla definida.
 
 **Motivo:**
-Entender el código que uso y no romper requisitos del enunciado.
+El enunciado pide que cada profesional tenga un panel personal con sus puntos visibles en todo momento.
 
 **Qué he aprendido:**
-Que `declare(strict_types=1)` hace que PHP no cambie los tipos solo y salte un error si no coinciden, por eso los datos de la URL hay que pasarlos a `(int)`. Y que no hace falta un autoloader propio si ya uso el de Composer.
 
 ---
 
-### 23. Diseño del login con CSS nativo
+## 18. Registro en ventana modal reutilizable
+**Fecha:** 11/11/2026
 
 **Prompt:**
-> Adapta este diseño de login (escrito en SCSS y con estilos globales en el `body`) a CSS3 nativo para mi proyecto, usando mis variables y clases, sin tocar el fondo de la página y con el formulario centrado.
+> Partiendo del ejemplo de modal visto en clase (`Modal` con `prototype`, `cargarURL` y `cargarLogica`), quiero convertir el registro en un modal. Requisitos: completar los métodos vacíos del ejemplo, reutilizar el mismo formulario en la página `/registro` y en el modal sin duplicar HTML, servir el fragmento desde una ruta PHP propia y que el JS del formulario funcione aunque se cargue varias veces. Valida en PHP los datos que en el JS no se comprobaban (contraseñas iguales, campos obligatorios).
 
 **Resultado:**
-`auth.css` en CSS nativo con nomenclatura BEM (`auth`, `auth__input`, `auth__boton`...), usando las variables de `variables.css`. Se probaron varias versiones (degradado de fondo, tarjeta con formas decorativas, dos columnas) y se eligió una tarjeta centrada de una columna con campos subrayados y botón redondeado. Se corrigió la ruta del CSS en la plantilla para que empiece por `/`.
+- Clase `Modal` completa. El formulario pasa a un partial de Twig incluido por la página y por el fragmento `/registro/formulario`.
+- `registro.js` encapsulado en una función para evitar redeclaraciones, y `?v=` en la URL del script para evitar la caché.
+- Validación completa en `registroApi()`.
+- Se detectaron dos fallos en el ejemplo original: `crearVelo()` no estaba definida y el CSS tenía propiedades duplicadas.
 
 **Motivo:**
-Que el login tenga un diseño propio y coherente con el resto de la web, cumpliendo la regla de no usar frameworks ni preprocesadores.
+El enunciado valora la arquitectura híbrida con carga dinámica de componentes sin recargar la página.
 
 **Qué he aprendido:**
-Que SCSS no es CSS normal (tiene `$variables` y anidación) y hay que pasarlo a CSS nativo. También que si pongo estilos en el `body` o en `*` dentro del CSS de una página, me puede romper el header y el footer de toda la web.
 
 ---
 
-### 24. Tipografía de la web
+## 19. Elección de servicios en el registro
+**Fecha:** 11/11/2026
 
 **Prompt:**
-> Recomiéndame una tipografía para HoraXHora y explícame cómo aplicarla a toda la web.
+> En el registro, el profesional debe elegir una categoría y ver sus servicios cargados con `fetch` desde una API (`GET /api/servicios?categoria=`). Debe poder marcar servicios de varias categorías sin perder los ya elegidos, y los marcados deben verse siempre al final de la lista. Valida en PHP que los servicios existen. Diseño en dos columnas (datos / servicios) y chips en lugar de casillas.
 
 **Resultado:**
-Se eligió Plus Jakarta Sans (Google Fonts) frente a Inter, Manrope o la fuente del sistema. Se cargó en el `<head>` de `base.html.twig` antes de los CSS, se puso en la variable `--fuente` y se aplicó al `body` en `base.css`, quitando el `serif` y el `fantasy` que había. También se quitaron de la plantilla `layout.css` y `header.js`, que no existían y daban error 404.
+- Endpoint en `CatalogoController` y `ServicioDao` con los métodos de catálogo.
+- El JS guarda los elegidos en un objeto y repinta la lista en cada cambio.
+- Formulario en dos columnas con CSS Grid y chips accesibles (casilla oculta pero navegable con teclado, estilo con `:has(input:checked)`).
 
 **Motivo:**
-Unificar la letra de toda la web y darle una imagen más moderna.
+Cada profesional solo debe poder ofertar servicios del catálogo oficial que realmente sabe hacer.
 
 **Qué he aprendido:**
-Que una fuente de Google Fonts se carga con un `<link>` en el `<head>` y luego se usa en el CSS, y que conviene ponerla en una variable para cambiarla en un solo sitio. Y que si no veo los cambios del CSS muchas veces es la caché del navegador y se arregla con `Cmd + Shift + R`.
 
 ---
 
-### 25. Revisión de la estructura de carpetas
+## 20. Imágenes en la landing
+**Fecha:** 11/11/2026
 
 **Prompt:**
-> Analiza la estructura de carpetas actual de mi proyecto sin hacer cambios y dime si funciona. Explícame también la diferencia entre PSR-4, el autoload y el router, y para qué serviría `App.php`.
+> Integra cuatro imágenes en `inicio.html.twig` sin romper el diseño actual: una en el hero (dos columnas en escritorio, apilado en móvil) y una sección nueva con las otras tres en grid. Usa `loading="lazy"` en las que no se ven al cargar, textos alternativos descriptivos y respeta `prefers-reduced-motion`. Los botones de "Únete" deben abrir el modal de registro.
 
 **Resultado:**
-La web funcionaba, pero había dos fallos: `Router.php` contenía el código del `index.php` en vez de la clase `Router`, y el archivo `UsuarioDAO.php` no coincidía en mayúsculas con la clase `UsuarioDao` (en Linux no se cargaría). Se aclaró que PSR-4 es la norma que relaciona namespace con carpeta y archivo, que el autoload de Composer es lo que la aplica, y que el router no tiene que ver con cargar clases sino con decidir qué ejecutar según la URL. Como la estructura del profesor no es obligatoria, se borraron `App.php` y `Autoloader.php`, que estaban vacíos, y se queda `Router.php` con la clase y el `index.php` registrando las rutas.
+Hero en grid, sección "Profesionales como tú" con `figure`/`figcaption` y `aspect-ratio` + `object-fit`. Se corrigieron además dos detalles de `inicio.css`: faltaba `transition` en el hover de los pasos y el grid de categorías no tenía columnas.
 
 **Motivo:**
-Comprobar que la organización del proyecto es correcta antes de seguir añadiendo funcionalidades.
+Mejorar la presentación de la plataforma y la experiencia de usuario.
 
 **Qué he aprendido:**
-Que PSR-4 es la regla que dice que el `namespace` tiene que coincidir con la carpeta y el nombre de la clase con el del archivo, y que el autoload de Composer es lo que la aplica. También que en Mac funciona aunque las mayúsculas no coincidan, pero en Linux no.
 
 ---
 
-### 26. Router adaptado al modelo del profesor
+## 21. Panel de administración (SPA)
+**Fecha:** 12/11/2026
 
 **Prompt:**
-> Este es el `index.php` y el `Router.php` de mi profesor. Adapta mi router a su forma de hacerlo (una clase con `dispatch()` y un `switch` por segmentos de la URL), con mis rutas actuales y dejándolo en `src/Router.php`, sin complicarlo.
+> Diseña el panel de administración como una única página `/admin` con pestañas que cargan su contenido por `fetch` sin recargar. Cada sección usa una API REST bajo `/api/admin/...` con los métodos HTTP adecuados (GET listar, POST crear, PUT editar, PATCH cambios parciales, DELETE borrar), y todas comprueban en el servidor que el rol es ADMIN. Secciones: CRUD de categorías, CRUD de servicios con filtro por categoría, gestión de usuarios, historial de trueques con cancelación y moderación de reseñas. El HTML de cada sección en `<template>`.
 
 **Resultado:**
-`index.php` reducido a cargar el autoload, crear el `Router` y llamar a `dispatch()`. La clase `Router` (en `src/Router.php`, namespace `App`) arranca la sesión, prepara Twig, parte la URL en segmentos con `explode` y decide con un `switch` qué hacer para `/`, `/servicios`, `/login` y `/logout`, con `responderError()` para el 404. Se descartaron una versión con expresiones regulares y otra con todas las rutas futuras y un mapa de la API, por ser demasiado complicadas para lo que hace falta ahora.
+`AdminController`, cuatro DAO nuevos (`CategoriaDao`, `TruequeDao`, `ValoracionDao`, `UsuarioAdminDao`), `admin.js` con funciones de ayuda compartidas y `admin.css`. Decisiones de diseño:
+- "Dar de baja" desactiva al usuario (nueva columna `activo`) en vez de borrarlo, para no perder el historial por el `ON DELETE CASCADE`.
+- El admin no puede darse de baja ni borrarse a sí mismo.
+- Solo se cancelan trueques no terminados, comprobándolo en el propio `UPDATE`.
+- La moderación permite quitar solo el comentario (sin alterar la media) o borrar la reseña completa.
+- Trueques y reseñas se muestran como lista con resumen de cifras; el resto, en tablas.
 
 **Motivo:**
-Seguir el mismo modelo que usa el profesor y tener el enrutado en una clase, dejando el `index.php` lo más limpio posible.
+Cubrir el apartado 3.6 del enunciado (Admin Dashboard).
 
 **Qué he aprendido:**
-Que con `explode('/', trim($uri, '/'))` la URL se parte en trozos y con el primero sé a qué página quiere ir el usuario. Y que es mejor ir añadiendo un `case` por cada página cuando la hago que meter de golpe rutas que todavía no existen.
 
 ---
+
+## 22. Aprobación de registros por el administrador
+**Fecha:** 12/11/2026
+
+**Prompt:**
+> Quiero que los registros nuevos queden pendientes hasta que el administrador los acepte o rechace. El usuario pendiente no puede iniciar sesión y sus ofertas no deben aparecer en el buscador. En el panel, un contador en la pestaña Usuarios y una lista de pendientes con los servicios que eligió cada uno.
+
+**Resultado:**
+Columna `aprobado` (por defecto `TRUE` para no afectar a los seeds ni a los usuarios creados por el admin), comprobación en el login, filtro en el buscador y bloque de pendientes en el panel. Rechazar borra la cuenta, ya que todavía no tiene historial.
+
+**Motivo:**
+Mejora propia sobre el enunciado para evitar cuentas falsas.
+
+**Qué he aprendido:**
+
+---
+
+## 23. Separar "servicios que sé hacer" de "ofertas"
+**Fecha:** 12/11/2026
+
+**Prompt:**
+> En el registro solo se eligen los servicios que el profesional puede ofertar; las ofertas (con tarifa y descripción) se crean después desde "Crear oferta". Propón cómo guardarlo en la base de datos sin alterar las tablas del enunciado, y actualiza el registro, el panel de pendientes y los seeds.
+
+**Resultado:**
+Nueva tabla `servicios_profesional` con clave primaria compuesta y claves foráneas en cascada. El registro ya no crea ofertas. Los seeds rellenan la tabla a partir de las ofertas existentes con un `INSERT ... SELECT`.
+
+**Motivo:**
+Evitar ofertas sin descripción ni tarifa propia en el buscador.
+
+**Qué he aprendido:**
+
+---
+
+## 24. Envío de correos y generación de PDF (capa Service)
+**Fecha:** 12/11/2026
+
+**Prompt:**
+> Siguiendo lo visto en clase, implementa una capa `App\Service` con `MailService`, `PdfService`, `MailOptions` (configuración SMTP como objeto) y `CreateMailer` (factoría que devuelve un `PHPMailer` configurado), usando PHPMailer ^6.8 y Dompdf. Las plantillas se renderizan con `extract` + `ob_start`. El correo lleva un banner incrustado con `addEmbeddedImage` y `cid`. Añade MailHog al `docker-compose.yml` (SMTP 1025, web 8025), con una configuración que también funcione en XAMPP. Úsalo para avisar al registrarse y al aprobar o rechazar una cuenta, adjuntando un PDF de bienvenida al aprobar.
+
+**Resultado:**
+- Las cuatro clases de servicio, tres plantillas de correo, una plantilla de PDF y MailHog en Docker.
+- El fallo de un correo no bloquea la acción: se registra en el log.
+- `extract` con `EXTR_SKIP` para que los datos no puedan pisar variables internas, y comprobación de que la plantilla existe antes de incluirla.
+- MailHog no representa en su pestaña HTML los correos `multipart/related` (imágenes con `cid`). El correo es correcto y se comprueba en la pestaña "Source" o abriendo el `.eml` en un cliente de correo.
+
+**Motivo:**
+Requisito de la unidad: envío de correos con adjuntos y generación de PDF desde plantillas.
+
+**Qué he aprendido:**

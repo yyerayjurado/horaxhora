@@ -37,6 +37,7 @@ class PdfService
         string $papel = 'A4',
         string $orientacion = 'portrait'
     ): string {
+
         $html = $this->renderTemplate($this->carpetaPlantillas . '/' . $plantilla, $datos);
 
         $opciones = new Options();

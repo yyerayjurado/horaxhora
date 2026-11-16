@@ -6,7 +6,7 @@ namespace App\Models;
 /**
  * * Representa una fila de la tabla "usuarios" como objeto.
  */
-class Usuario
+class Usuarios
 {
     private int $id;
     private string $nombre;

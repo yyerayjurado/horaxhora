@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Dao;
 
-use App\Models\Usuario;
+use App\Models\Usuarios;
 use PDO;
 use PDOException;
 
@@ -12,7 +12,7 @@ class UsuarioDao
 {
     // * Busca un usuario por su email. Si no existe (o hay error) devuelve null
     // ! CAMBIO (Claude): ahora devuelve un objeto Usuario en vez de un array
-    public function buscarPorEmail(string $email): ?Usuario
+    public function buscarPorEmail(string $email): ?Usuarios
     {
         try {
             $pdo = BD::getConexion();
@@ -28,7 +28,7 @@ class UsuarioDao
             }
 
             // ! CAMBIO (Claude): convierte la fila de la BD en un objeto Usuario
-            return new Usuario(
+            return new Usuarios(
                 (int) $fila['id_usuario'],
                 $fila['nombre'],
                 $fila['apellidos'],

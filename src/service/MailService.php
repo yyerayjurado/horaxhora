@@ -100,7 +100,7 @@ class MailService
         $this->enviar(
             $email,
             $nombre,
-            '¡Tu cuenta de HoraXHora ya está activa!',
+            '¡Ya tienes acceso a HoraxHora, bienvenido!',
             'cuenta-aprobada.php',
             ['nombre' => $nombre],
             ['bienvenida-horaxhora.pdf' => $pdf]

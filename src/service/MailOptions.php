@@ -18,7 +18,7 @@ class MailOptions
     }
 
     // * Lee la configuración de las variables de entorno (docker-compose.yml)
-    // ! Si no existen (XAMPP del profe), usa MailHog en localhost:1025
+    // ! usa MailHog en localhost:1025
     public static function desdeEntorno(): self
     {
         return new self(

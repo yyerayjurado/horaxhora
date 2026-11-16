@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // * Hace una petición a la API y devuelve el JSON. Si falla la conexión devuelve un error
 async function pedirApi(url, metodo, datos) {
-    let opciones = { method: metodo || "GET", headers: {} };
+    let opciones = {method: metodo || "GET", headers: {}};
 
     if (datos) {
         opciones.headers["Content-Type"] = "application/json";
@@ -64,7 +64,7 @@ async function pedirApi(url, metodo, datos) {
         let respuesta = await fetch(url, opciones);
         return await respuesta.json();
     } catch (error) {
-        return { ok: false, error: "Error de conexión con el servidor" };
+        return {ok: false, error: "Error de conexión con el servidor"};
     }
 }
 
@@ -134,7 +134,7 @@ function rellenarSelectCategorias(select, categorias, textoPrimero) {
 function formatearFecha(textoFecha) {
     // ? El replace cambia el espacio por una T para que JavaScript entienda la fecha
     let fecha = new Date(textoFecha.replace(" ", "T"));
-    return fecha.toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+    return fecha.toLocaleString("es-ES", {dateStyle: "short", timeStyle: "short"});
 }
 
 // * ===== Sección: categorías =====
@@ -483,7 +483,7 @@ function iniciarUsuarios() {
 
         let botonAceptar = crearBoton("Aceptar", "admin__boton admin__boton--ok");
         botonAceptar.onclick = async function () {
-            let respuesta = await pedirApi("/api/admin/usuarios/" + pendiente.id_usuario, "PATCH", { aprobado: true });
+            let respuesta = await pedirApi("/api/admin/usuarios/" + pendiente.id_usuario, "PATCH", {aprobado: true});
 
             if (respuesta.ok) {
                 mostrarMensaje(mensaje, nombre + " ya puede entrar en la plataforma", false);
@@ -503,7 +503,7 @@ function iniciarUsuarios() {
                 return;
             }
 
-            let respuesta = await pedirApi("/api/admin/usuarios/" + pendiente.id_usuario, "PATCH", { aprobado: false });
+            let respuesta = await pedirApi("/api/admin/usuarios/" + pendiente.id_usuario, "PATCH", {aprobado: false});
 
             if (respuesta.ok) {
                 mostrarMensaje(mensaje, "Registro de " + nombre + " rechazado", false);
@@ -590,7 +590,7 @@ function iniciarUsuarios() {
                         return;
                     }
 
-                    let respuesta = await pedirApi("/api/admin/usuarios/" + usuario.id_usuario, "PATCH", { activo: !activo });
+                    let respuesta = await pedirApi("/api/admin/usuarios/" + usuario.id_usuario, "PATCH", {activo: !activo});
 
                     if (respuesta.ok) {
                         mostrarMensaje(mensaje, activo ? "Usuario dado de baja" : "Usuario reactivado", false);
@@ -702,12 +702,12 @@ function iniciarTrueques() {
 
     // * Texto bonito y color de cada estado (las claves son las del ENUM de la BD)
     let estados = {
-        SOLICITADO:   { texto: "Solicitado",   clase: "admin__insignia--solicitado" },
-        ACEPTADO:     { texto: "Aceptado",     clase: "admin__insignia--aceptado" },
-        EN_EJECUCION: { texto: "En ejecución", clase: "admin__insignia--ejecucion" },
-        COMPLETADO:   { texto: "Completado",   clase: "admin__insignia--ok" },
-        RECHAZADO:    { texto: "Rechazado",    clase: "admin__insignia--baja" },
-        CANCELADO:    { texto: "Cancelado",    clase: "" }
+        SOLICITADO: {texto: "Solicitado", clase: "admin__insignia--solicitado"},
+        ACEPTADO: {texto: "Aceptado", clase: "admin__insignia--aceptado"},
+        EN_EJECUCION: {texto: "En ejecución", clase: "admin__insignia--ejecucion"},
+        COMPLETADO: {texto: "Completado", clase: "admin__insignia--ok"},
+        RECHAZADO: {texto: "Rechazado", clase: "admin__insignia--baja"},
+        CANCELADO: {texto: "Cancelado", clase: ""}
     };
 
     // ! Solo estos estados se pueden cancelar (el PHP lo vuelve a comprobar)
