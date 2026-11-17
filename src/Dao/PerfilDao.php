@@ -6,7 +6,7 @@ namespace App\Dao;
 use PDO;
 use PDOException;
 
-class PerfilDAO
+class PerfilDao
 {
     private PDO $conexion;
 

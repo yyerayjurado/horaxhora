@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Dao\PerfilDAO;
+use App\Dao\PerfilDao;
 use Twig\Environment;
 
 class PerfilController
 {
-    private PerfilDAO $dao;
+    private PerfilDao $dao;
 
     public function __construct(private Environment $twig)
     {
-        $this->dao = new PerfilDAO();
+        $this->dao = new PerfilDao();
     }
 
     // * GET /perfil: muestra los datos, las ofertas y la valoración del usuario

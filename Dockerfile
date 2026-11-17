@@ -9,5 +9,5 @@ RUN docker-php-ext-install pdo_mysql \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # ! Rutas desde la raíz del proyecto (context: .), no desde la carpeta Docker/
-COPY Docker/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-COPY Docker/apache.conf /etc/apache2/sites-available/000-default.conf
+COPY xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
