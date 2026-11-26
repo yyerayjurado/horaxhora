@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controllers\AdminController;
+use App\Controllers\AgendaController;
 use App\Controllers\AuthController;
 use App\Controllers\CatalogoController;
 use App\Controllers\OfertaController;
 use App\Controllers\PerfilController;
+use App\Controllers\SolicitudController;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -71,9 +73,23 @@ class Router
                 $this->despacharPerfil($segments);
                 break;
 
-            // ! Panel de administración: solo la página, los datos van por /api/admin/...
+            // ! Panel de administración: GET /admin/{seccion} pinta, POST /admin/{seccion}/{accion}/{id} actúa
             case 'admin':
-                (new AdminController($this->twig))->panel();
+                $this->despacharAdmin($segments);
+                break;
+
+            // * /ofertas/crear: página para crear ofertas (crear-oferta.js carga los datos)
+            case 'ofertas':
+                if (($segments[1] ?? '') === 'crear') {
+                    (new OfertaController($this->twig))->paginaCrear();
+                } else {
+                    $this->responderError(404, 'Página no encontrada');
+                }
+                break;
+
+            // * Mi agenda: la página solo pone la estructura, agenda.js carga los trueques
+            case 'agenda':
+                (new AgendaController($this->twig))->panel();
                 break;
 
             // * Peticiones fetch del JavaScript: /api/...
@@ -126,10 +142,22 @@ class Router
                 }
                 break;
 
-            // * Buscador de servicios: GET /api/ofertas?busqueda=...&categoria=...&orden=...
+            // * GET /api/ofertas?busqueda=... -> buscador de servicios
+            // * POST /api/ofertas -> crear una oferta nueva (desde "Crear oferta")
             case 'ofertas':
                 if ($method === 'GET') {
-                    (new OfertaController())->listarApi();
+                    (new OfertaController($this->twig))->listarApi();
+                } elseif ($method === 'POST') {
+                    (new OfertaController($this->twig))->crearApi();
+                } else {
+                    $this->responderError(405, 'Método no permitido');
+                }
+                break;
+
+            // * Crear oferta: GET /api/mis-ofertas devuelve lo que puedo ofertar y lo que ya oferto
+            case 'mis-ofertas':
+                if ($method === 'GET') {
+                    (new OfertaController($this->twig))->misOfertasApi();
                 } else {
                     $this->responderError(405, 'Método no permitido');
                 }
@@ -144,9 +172,27 @@ class Router
                 }
                 break;
 
-            // * Panel de administración: /api/admin/...
-            case 'admin':
-                $this->despacharAdmin($segments);
+            // * Mi agenda: GET /api/agenda devuelve mis trueques en JSON
+            // * POST /api/agenda/aceptar/7 (o rechazar, cancelar) cambia el estado de un trueque
+            case 'agenda':
+                if ($method === 'GET') {
+                    (new AgendaController($this->twig))->listarApi();
+                } elseif ($method === 'POST') {
+                    $accion = $segments[2] ?? '';
+                    $id = (int) ($segments[3] ?? 0);
+                    (new AgendaController($this->twig))->accionApi($accion, $id);
+                } else {
+                    $this->responderError(405, 'Método no permitido');
+                }
+                break;
+
+            // * Solicitar un servicio: POST /api/solicitudes (lo llama buscador.js)
+            case 'solicitudes':
+                if ($method === 'POST') {
+                    (new SolicitudController())->crearApi();
+                } else {
+                    $this->responderError(405, 'Método no permitido');
+                }
                 break;
 
             default:
@@ -155,39 +201,19 @@ class Router
         }
     }
 
-    // * "/api/admin/categorias/3" -> recurso 'categorias', id 3
+    // * "/admin/usuarios/aprobar/7" -> sección 'usuarios', acción 'aprobar', id 7
     private function despacharAdmin(array $segments): void
     {
-        $method = $_SERVER['REQUEST_METHOD'];
-        $recurso = $segments[2] ?? '';
+        $seccion = $segments[1] ?? '';
+        $accion = $segments[2] ?? '';
         $id = isset($segments[3]) ? (int) $segments[3] : null;
         $controller = new AdminController($this->twig);
 
-        switch ($recurso) {
-            case 'categorias':
-                $controller->categoriasApi($method, $id);
-                break;
-
-            case 'servicios':
-                $controller->serviciosApi($method, $id);
-                break;
-
-            case 'usuarios':
-                $controller->usuariosApi($method, $id);
-                break;
-
-            case 'trueques':
-                $controller->truequesApi($method, $id);
-                break;
-
-            // ! Nuevo: moderación de reseñas
-            case 'resenas':
-                $controller->resenasApi($method, $id);
-                break;
-
-            default:
-                $this->responderError(404, 'Recurso API no encontrado');
-                break;
+        // ! Las acciones que cambian datos solo por POST (un enlace GET no puede borrar nada)
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $controller->accion($seccion, $accion, $id);
+        } else {
+            $controller->panel($seccion);
         }
     }
 

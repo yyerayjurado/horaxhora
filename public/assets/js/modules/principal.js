@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
         ev.preventDefault();
 
         let modal = new Modal("Crear cuenta");
+        // * El registro tiene dos columnas: el modal tiene que ser más ancho (modal.css)
+        modal.modal.classList.add("modal--ancho");
 
         try {
             // ! El formulario lo devuelve el PHP en /registro/formulario

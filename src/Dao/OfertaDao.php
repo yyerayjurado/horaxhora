@@ -94,4 +94,80 @@ class OfertaDao
             error_log($e->getMessage());
         }
     }
+
+    // * Una oferta concreta, solo si se puede solicitar ahora mismo
+    // ! Devuelve null si no existe, está desactivada o su dueño está de baja o sin aprobar
+    public function buscarDisponible(int $idOferta): ?array
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                'SELECT o.id_oferta, o.id_profesional, o.puntos_hora
+                 FROM ofertas_profesionales o
+                 JOIN usuarios u ON u.id_usuario = o.id_profesional
+                 WHERE o.id_oferta = ?
+                   AND o.activo = TRUE AND u.activo = TRUE AND u.aprobado = TRUE'
+            );
+            $stmt->execute([$idOferta]);
+            $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$fila) {
+                return null;
+            }
+            return $fila;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+    // * ===== Crear oferta =====
+
+    // * Las ofertas de un profesional, con su servicio y categoría
+    public function deProfesional(int $idProfesional): array
+    {
+        $ofertas = [];
+
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                'SELECT o.id_oferta, o.puntos_hora, o.descripcion_personal, o.activo,
+                        s.nombre AS servicio, s.puntos_hora_referencia,
+                        c.nombre AS categoria
+                 FROM ofertas_profesionales o
+                 JOIN servicios s ON s.id_servicio = o.id_servicio
+                 JOIN categorias c ON c.id_categoria = s.id_categoria
+                 WHERE o.id_profesional = ?
+                 ORDER BY s.nombre'
+            );
+            $stmt->execute([$idProfesional]);
+
+            while ($fila = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $ofertas[] = $fila;
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+        }
+
+        return $ofertas;
+    }
+
+    // * Crea una oferta nueva. Devuelve su id, o null si falla
+    // ? La restricción UNIQUE (id_profesional, id_servicio) de la BD impide ofertar dos veces lo mismo
+    public function crear(int $idProfesional, int $idServicio, int $puntosHora, string $descripcion): ?int
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                'INSERT INTO ofertas_profesionales (id_profesional, id_servicio, puntos_hora, descripcion_personal, activo)
+                 VALUES (?, ?, ?, ?, TRUE)'
+            );
+            $stmt->execute([$idProfesional, $idServicio, $puntosHora, $descripcion]);
+
+            return (int) $pdo->lastInsertId();
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
 }

@@ -1,4 +1,5 @@
-/* * ---------- Cabecera con el buscador ---------- */
+/* * ===== Página de servicios (buscador) ===== */
+
 .buscador {
     max-width: 900px;
     margin: 0 auto;
@@ -7,50 +8,37 @@
 }
 
 .buscador__titulo {
-    font-size: clamp(1.9em, 4vw, 2.6em);
     margin-bottom: 8px;
+    font-size: 2.4em;
 }
 
 .buscador__texto {
-    color: #64748b;
     margin-bottom: 28px;
+    color: #64748b;
 }
 
-/* * Las etiquetas existen para accesibilidad, pero no se ven */
+/* ? Las etiquetas no se ven: el campo ya lo explica su placeholder */
 .buscador__label {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
+    display: none;
 }
 
-/* * Barra de búsqueda: input + select en una sola pastilla */
+/* * Barra de búsqueda: texto + desplegable en una sola caja */
 .buscador__form {
     display: flex;
     gap: 8px;
     padding: 6px;
-    background: #ffffff;
+    background-color: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 999px;
-    box-shadow: 0 10px 30px #0f172a0f;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-/* * Al escribir, toda la barra se marca en verde */
-.buscador__form:focus-within {
-    border-color: #16a34a;
-    box-shadow: 0 10px 30px #16a34a26;
+    border-radius: 30px;
 }
 
 .buscador__input {
     flex: 1;
-    min-width: 0;
     padding: 12px 20px;
-    border: 0;
+    border: none;
     background: none;
-    font: inherit;
+    font-family: inherit;
+    font-size: 1em;
     color: #1e293b;
 }
 
@@ -61,17 +49,17 @@
 
 .buscador__select {
     padding: 10px 16px;
-    border: 0;
-    border-radius: 999px;
-    background: #f8fafc;
-    font: inherit;
+    border: none;
+    border-radius: 30px;
+    background-color: #f1f5f9;
+    font-family: inherit;
     font-size: 0.9em;
     font-weight: 600;
     color: #1e293b;
     cursor: pointer;
 }
 
-/* * Filtros de categoría en forma de pastilla */
+/* * Botones de categoría */
 .filtros {
     display: flex;
     flex-wrap: wrap;
@@ -83,14 +71,13 @@
 .filtro {
     padding: 8px 16px;
     border: 1px solid #e2e8f0;
-    border-radius: 999px;
-    background: #ffffff;
-    font: inherit;
+    border-radius: 20px;
+    background-color: #ffffff;
+    font-family: inherit;
     font-size: 0.9em;
     font-weight: 600;
     color: #64748b;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .filtro:hover {
@@ -98,14 +85,13 @@
     color: #16a34a;
 }
 
-/* * Categoría seleccionada */
 .filtro.is-active {
-    background: #16a34a;
+    background-color: #16a34a;
     border-color: #16a34a;
     color: #ffffff;
 }
 
-/* * ---------- Resultados ---------- */
+/* * ===== Resultados ===== */
 .resultados {
     max-width: 1100px;
     margin: 0 auto;
@@ -113,99 +99,90 @@
 }
 
 .resultados__contador {
-    color: #64748b;
+    margin-bottom: 16px;
     font-size: 0.9em;
     font-weight: 600;
-    margin-bottom: 16px;
+    color: #64748b;
 }
 
+/* * 3 tarjetas por fila */
 .resultados__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    list-style: none;
     margin: 0;
     padding: 0;
+    list-style: none;
 }
 
-/* * Mensaje cuando no hay ofertas */
+/* * Cuando no hay ofertas */
 .resultados__vacio {
     padding: 48px 16px;
-    text-align: center;
-    background: #ffffff;
+    background-color: #ffffff;
     border: 2px dashed #e2e8f0;
     border-radius: 16px;
+    text-align: center;
 }
 
 .resultados__vacio p {
-    color: #64748b;
     margin: 0;
+    color: #64748b;
 }
 
-/* * ---------- Tarjeta de oferta ---------- */
+/* * ===== Tarjeta de una oferta ===== */
 .oferta {
     display: flex;
     flex-direction: column;
     padding: 24px;
-    background: #ffffff;
+    background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
-    box-shadow: 0 4px 20px #0f172a0a;
-    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
 }
 
 .oferta:hover {
-    transform: translateY(-4px);
-    border-color: #16a34a66;
-    box-shadow: 0 16px 40px #16a34a1f;
+    border-color: #16a34a;
 }
 
+/* * Arriba: categoría a la izquierda y precio a la derecha */
 .oferta__cabecera {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    align-items: center;
     margin-bottom: 14px;
 }
 
 .oferta__categoria {
     padding: 4px 12px;
-    border-radius: 999px;
-    background: #16a34a1a;
+    border-radius: 20px;
+    background-color: #dcfce7;
     color: #15803d;
     font-size: 0.8em;
     font-weight: 700;
 }
 
-/* * Precio en puntos por hora */
 .oferta__puntos {
-    color: #b45309;
     font-weight: 800;
-    white-space: nowrap;
+    color: #b45309;
 }
 
 .oferta__servicio {
+    margin-bottom: 8px;
     font-size: 1.2em;
-    margin: 0 0 8px;
 }
 
-/* * Descripción cortada a 3 líneas para que todas las tarjetas midan parecido */
+/* * flex: 1 empuja el pie de la tarjeta hacia abajo */
 .oferta__descripcion {
     flex: 1;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    color: #64748b;
+    margin-bottom: 20px;
     font-size: 0.95em;
-    margin: 0 0 20px;
+    color: #64748b;
 }
 
-/* * Parte de abajo: profesional a la izquierda, botón a la derecha */
+/* * Abajo: profesional a la izquierda y botón a la derecha */
 .oferta__pie {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     gap: 12px;
     padding-top: 16px;
     border-top: 1px solid #e2e8f0;
@@ -215,43 +192,94 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    min-width: 0;
     color: #1e293b;
     text-decoration: none;
 }
 
-/* * Círculo con la inicial del profesional */
+/* * Círculo verde con la inicial */
 .oferta__avatar {
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #16a34a;
+    background-color: #16a34a;
     color: #ffffff;
     font-weight: 800;
+    line-height: 38px;
+    text-align: center;
 }
 
 .oferta__nombre {
     display: block;
-    font-weight: 700;
     font-size: 0.95em;
+    font-weight: 700;
 }
 
 .oferta__valoracion {
     display: block;
-    color: #64748b;
     font-size: 0.8em;
-}
-
-.oferta__profesional:hover .oferta__nombre {
-    color: #16a34a;
+    color: #64748b;
 }
 
 .oferta__boton {
-    flex-shrink: 0;
     padding: 8px 16px;
-    border-radius: 999px;
+    white-space: nowrap; /* ? Que "Es tu oferta" no se parta en dos líneas */
+    border-radius: 20px;
     font-size: 0.9em;
+}
+
+/* * ===== Modal "Solicitar servicio" ===== */
+.solicitud__resumen {
+    margin-bottom: 8px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background-color: #f0fdf4;
+}
+
+.solicitud__servicio {
+    margin: 0;
+    font-weight: 700;
+}
+
+.solicitud__profesional {
+    margin: 2px 0 0;
+    font-size: 0.9em;
+    color: #64748b;
+}
+
+.solicitud__total {
+    margin: 12px 0 0;
+}
+
+.solicitud__total strong {
+    color: #16a34a;
+}
+
+/* * "¡Solicitud enviada!" */
+.solicitud__ok {
+    text-align: center;
+}
+
+.solicitud__ok-icono {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background-color: #dcfce7;
+    color: #16a34a;
+    font-size: 1.8em;
+    font-weight: 700;
+    line-height: 56px;
+}
+
+/* * ===== Pantallas más pequeñas ===== */
+@media (max-width: 1000px) {
+    .resultados__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .resultados__grid {
+        grid-template-columns: 1fr;
+    }
 }

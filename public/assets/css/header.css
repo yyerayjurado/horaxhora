@@ -1,10 +1,6 @@
-/* * Header fijo arriba, blanco con un poco de transparencia */
+/* * ===== Header ===== */
 .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: #ffffffd9;
-    backdrop-filter: blur(10px);
+    background-color: #ffffff;
     border-bottom: 1px solid #e2e8f0;
 }
 
@@ -18,123 +14,79 @@
     padding: 14px 16px;
 }
 
-/* * Logo con un cuadradito verde delante */
 .navbar__logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 800;
     font-size: 1.25em;
-    letter-spacing: -0.02em;
+    font-weight: 800;
     color: #1e293b;
     text-decoration: none;
 }
 
-.navbar__logo::before {
-    content: '\21C4'; /* * Flechas de intercambio (⇄) */
-    display: grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: #16a34a;
-    color: #ffffff;
-    font-size: 0.85em;
+/* ? El botón de menú para móvil todavía no hace nada, así que lo escondemos */
+.navbar__toggle {
+    display: none;
 }
 
-/* * Enlaces del menú en forma de pastilla */
+/* * Menú */
 .navbar__links {
     display: flex;
     gap: 4px;
-    list-style: none;
     margin: 0;
-    padding: 4px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 999px;
+    padding: 0;
+    list-style: none;
 }
 
 .navbar__links a {
     display: block;
-    padding: 7px 16px;
-    border-radius: 999px;
-    color: #64748b;
+    padding: 8px 16px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 0.95em;
+    color: #64748b;
     text-decoration: none;
-    transition: background 0.2s, color 0.2s;
 }
 
 .navbar__links a:hover {
     color: #1e293b;
 }
 
-/* * Página en la que estás: pastilla blanca con el texto verde */
+/* * Página en la que estás */
 .navbar__links a.is-active {
-    background: #ffffff;
-    color: #16a34a;
-    box-shadow: 0 1px 3px #0f172a1a;
+    background-color: #dcfce7;
+    color: #15803d;
 }
 
-/* * Zona del usuario */
+/* * Zona del usuario: puntos, nombre y Salir */
 .navbar__user {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
-/* * Botones del header más redondos que los normales */
-.navbar__user .btn {
-    border-radius: 999px;
-    padding: 8px 18px;
-    font-size: 0.95em;
-}
-
-/* * "Entrar" y "Salir" sin borde, solo texto */
-.navbar__user .btn--secundario {
-    border-color: transparent;
-    color: #1e293b;
-}
-
-.navbar__user .btn--secundario:hover {
-    background: #f8fafc;
-    color: #16a34a;
-}
-
-/* * Saldo de puntos en ámbar suave */
 .navbar__puntos {
-    background: #f59e0b26;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background-color: #fef3c7;
     color: #b45309;
-    padding: 5px 12px;
-    border-radius: 999px;
     font-size: 0.85em;
     font-weight: 700;
 }
 
 .navbar__perfil {
+    font-weight: 600;
     color: #1e293b;
     text-decoration: none;
-    font-weight: 600;
 }
 
 .navbar__perfil:hover {
     color: #16a34a;
 }
 
-/* * Botón hamburguesa (solo móvil) */
-.navbar__toggle {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    background: none;
-    border: 0;
-    padding: 4px;
-    cursor: pointer;
+/* * "Entrar" y "Salir" sin borde, solo texto */
+.navbar__user .btn--secundario {
+    border-color: #ffffff;
+    color: #1e293b;
 }
 
-.navbar__toggle span {
-    width: 24px;
-    height: 2px;
-    background: #1e293b;
-    border-radius: 2px;
+.navbar__user .btn--secundario:hover {
+    background-color: #f1f5f9;
+    color: #16a34a;
 }

@@ -64,4 +64,23 @@ class UsuarioDao
             return null;
         }
     }
+
+    // * Puntos que tiene ahora mismo un usuario (de la BD, no de la sesión)
+    public function obtenerSaldo(int $idUsuario): int
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare('SELECT puntos_saldo FROM usuarios WHERE id_usuario = ?');
+            $stmt->execute([$idUsuario]);
+            $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$fila) {
+                return 0;
+            }
+            return (int) $fila['puntos_saldo'];
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return 0;
+        }
+    }
 }

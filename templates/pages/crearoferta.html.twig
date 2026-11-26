@@ -1,0 +1,82 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Crear oferta | {{ app_nombre }}{% endblock %}
+
+{% block styles %}
+    {# ? Reutilizamos admin.css: formulario (.admin__form, .admin__campo), listas e insignias #}
+    <link rel="stylesheet" href="/assets/css/admin.css">
+{% endblock %}
+
+{% block content %}
+    <div class="admin">
+        <h1 class="admin__titulo">Crear oferta</h1>
+
+        {# * ===== Formulario para crear una oferta nueva ===== #}
+        <section class="admin__contenido">
+            <h2 class="admin__subtitulo">Nueva oferta</h2>
+
+            {# * Mensaje verde (todo bien) o rojo (error). Lo enseña crear_oferta.js #}
+            <p class="admin__mensaje" id="oferta-mensaje" hidden></p>
+
+            {# ! Si ya ofrece todos los servicios que eligió al registrarse, no hay nada que crear #}
+            <p class="admin__vacio" id="sin-ofertables" hidden>
+                Ya ofreces todos los servicios que elegiste al registrarte.
+            </p>
+
+            <form class="admin__form admin__form--servicios" id="form-oferta" novalidate hidden>
+                <div class="admin__campo">
+                    <label for="oferta-servicio">Servicio</label>
+                    {# * Las opciones las mete crear_oferta.js: solo tus servicios que aún no tienes ofertados #}
+                    <select id="oferta-servicio" name="id_servicio" required></select>
+                </div>
+
+                <div class="admin__campo">
+                    <label for="oferta-puntos">Tu precio (puntos por hora)</label>
+                    <input type="number" id="oferta-puntos" name="puntos_hora" required>
+                    {# * "Referencia: 10 pts/h · puedes cobrar de 5 a 15" #}
+                    <small class="oferta-ayuda" id="oferta-ayuda"></small>
+                </div>
+
+                <div class="admin__campo admin__campo--completo">
+                    <label for="oferta-descripcion">Cuéntale a la gente tu experiencia</label>
+                    <textarea id="oferta-descripcion" name="descripcion" rows="3" minlength="10" maxlength="500" required
+                              placeholder="Ej: Llevo 10 años arreglando fugas y averías en baños y cocinas..."></textarea>
+                </div>
+
+                <div class="admin__botones admin__campo--completo">
+                    <button type="submit" class="btn btn--primario">Publicar oferta</button>
+                </div>
+            </form>
+        </section>
+
+        {# * ===== Las ofertas que ya tengo ===== #}
+        <section class="admin__contenido oferta-mias">
+            <h2 class="admin__subtitulo">Mis ofertas</h2>
+            <div class="lista" id="lista-ofertas"></div>
+            <p class="admin__vacio" id="sin-ofertas" hidden>Todavía no tienes ninguna oferta publicada.</p>
+        </section>
+    </div>
+
+    {# * Molde de una fila de "Mis ofertas". crear_oferta.js lo copia y lo rellena #}
+    <template id="plantilla-mi-oferta">
+        {# ? Estas filas no llevan punto de color a la izquierda #}
+        <div class="lista__fila lista__fila--sin-punto">
+            <div class="lista__texto">
+                <p class="lista__frase">
+                    <strong class="mi-oferta__servicio"></strong>
+                    <span class="lista__secundario mi-oferta__categoria"></span>
+                </p>
+                <p class="lista__comentario mi-oferta__descripcion"></p>
+                <p class="lista__detalles mi-oferta__precio"></p>
+            </div>
+
+            <div class="lista__lado">
+                <span class="admin__insignia mi-oferta__estado"></span>
+            </div>
+        </div>
+    </template>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/assets/js/modules/crear_oferta.js" defer></script>
+{% endblock %}

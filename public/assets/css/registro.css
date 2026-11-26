@@ -1,99 +1,159 @@
-/* * Lista de servicios del registro */
-.registro__servicios {
-    border: none;
+/* * ===== Formulario de registro (va dentro del modal) ===== */
+
+/* * Dentro del modal el formulario no necesita padding: el modal ya tiene el suyo */
+.modal .auth__form {
     padding: 0;
-    margin: 0;
 }
 
-.registro__lista {
+.registro__columnas {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-    padding: 4px 0;
+    gap: 32px;
 }
 
-/* * Cada servicio es una fila clicable entera, no solo la casilla */
-.registro__servicio {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95em;
-    transition: border-color 0.2s, background 0.2s;
+/* * Cada columna ocupa la mitad */
+.registro__col {
+    width: 50%;
 }
 
-.registro__servicio:hover {
-    border-color: #16a34a;
+/* * Línea fina separando las dos columnas */
+.registro__col--servicios {
+    padding-left: 32px;
+    border-left: 1px solid #e2e8f0;
 }
 
-/* ! :has() marca en verde la fila cuando la casilla está marcada */
-.registro__servicio:has(input:checked) {
-    border-color: #16a34a;
-    background: #dcfce7;
-}
-
-.registro__servicio input {
-    accent-color: #16a34a;
-    width: 18px;
-    height: 18px;
-}
-
-/* * ===== Servicios elegidos (de todas las categorías) ===== */
-#form-registro .registro__elegidos {
-    margin-top: 16px;
-    padding: 12px;
-    border-radius: 12px;
-    background: #f0fdf4;
+/* * "1. TUS DATOS" / "2. QUÉ SABES HACER" */
+.registro__paso {
+    margin: 8px 0 4px;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #16a34a;
     text-align: left;
 }
 
-/* ! [hidden] tiene que ganar al resto de estilos, si no la caja sale aunque no haya nada */
-#form-registro .registro__elegidos[hidden] {
-    display: none;
+/* * Dos campos en la misma fila (nombre y apellidos, email y teléfono...) */
+.registro__fila {
+    display: flex;
+    gap: 16px;
 }
 
-#form-registro .registro__elegidos .registro__titulo-servicios {
-    margin: 0 0 8px;
+.registro__fila .auth__campo {
+    width: 50%;
 }
 
-/* * Pastilla verde con el nombre y la × para quitarla */
-#form-registro .registro__elegido {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 4px 4px 12px;
-    border-radius: 999px;
-    background: #16a34a;
-    color: #ffffff;
+#form-registro .auth__campo {
+    padding: 8px 0;
+}
+
+/* * Quitamos el borde que el navegador pone a los fieldset */
+.registro__servicios {
+    margin: 8px 0 0;
+    padding: 0;
+    border: none;
+    text-align: left;
+}
+
+.registro__titulo-servicios {
+    margin-bottom: 10px;
+    padding: 0;
     font-size: 0.85em;
     font-weight: 600;
+    color: #64748b;
 }
 
-#form-registro .registro__quitar {
-    display: grid;
-    place-items: center;
-    width: 22px;
-    height: 22px;
-    border: none;
-    border-radius: 50%;
-    background: #ffffff33;
-    color: #ffffff;
-    font-size: 1.1em;
-    line-height: 1;
+/* * Los servicios van uno al lado del otro y saltan de línea si no caben */
+.registro__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 230px;
+    overflow-y: auto;
+}
+
+/* * Cada servicio: casilla + nombre + precio */
+.registro__chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background-color: #ffffff;
+    font-size: 0.9em;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
 }
 
-#form-registro .registro__quitar:hover {
-    background: #ffffff66;
+.registro__chip:hover {
+    border-color: #16a34a;
 }
 
-#form-registro .registro__quitar:focus-visible {
-    outline: 2px solid #ffffff;
-    outline-offset: 1px;
+.registro__chip small {
+    font-weight: 400;
+    color: #64748b;
+}
+
+/* * Servicio marcado (la clase la pone registro.js) */
+.registro__chip--marcado {
+    border-color: #16a34a;
+    background-color: #dcfce7;
+}
+
+/* * "Elige una categoría para ver sus servicios" */
+.registro__ayuda {
+    width: 100%;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px dashed #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.9em;
+    color: #64748b;
+    text-align: center;
+}
+
+/* * ===== Mensaje de "solicitud enviada" ===== */
+.registro__exito {
+    padding: 16px 0;
+    text-align: center;
+}
+
+.registro__exito-icono {
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background-color: #dcfce7;
+    color: #16a34a;
+    font-size: 2em;
+    font-weight: 800;
+    line-height: 64px;
+}
+
+.registro__exito-titulo {
+    margin: 0 0 8px;
+    font-size: 1.4em;
+}
+
+.registro__exito-texto {
+    color: #64748b;
+}
+
+/* * En el móvil, todo en una columna */
+@media (max-width: 800px) {
+    .registro__columnas,
+    .registro__fila {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .registro__col,
+    .registro__fila .auth__campo {
+        width: 100%;
+    }
+
+    .registro__col--servicios {
+        padding-left: 0;
+        border-left: none;
+    }
 }

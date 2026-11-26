@@ -1,42 +1,47 @@
-/* * Hero */
+/* * ===== Página de inicio ===== */
+
+/* * Portada: texto a la izquierda e imagen a la derecha */
 .hero {
-    text-align: center;
-    padding: 64px 16px 48px;
     max-width: 800px;
     margin: 0 auto;
+    padding: 64px 16px 48px;
+    text-align: center;
+}
+
+.hero--imagen {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    max-width: 1100px;
+    text-align: left;
+}
+
+.hero__contenido,
+.hero__imagen {
+    width: 50%;
 }
 
 .hero__titulo {
-    font-size: clamp(2em, 5vw, 3.2em);
+    margin-bottom: 16px;
+    font-size: 3em;
     line-height: 1.1;
-    margin: 0 0 16px;
 }
 
+/* * La palabra destacada del título va en verde */
 .hero__titulo span {
     color: #16a34a;
 }
 
 .hero__texto {
-    font-size: 1.1em;
-    opacity: 0.85;
     margin-bottom: 32px;
+    font-size: 1.1em;
+    color: #475569;
 }
 
 .hero__acciones {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
     gap: 16px;
-}
-
-/* * Hero con imagen: en móvil texto arriba e imagen abajo, en ordenador dos columnas */
-/* ! Va después de .hero para pisar su max-width de 800px */
-.hero--imagen {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 40px;
-    align-items: center;
-    max-width: 1100px;
 }
 
 .hero__imagen {
@@ -45,25 +50,10 @@
 
 .hero__imagen img {
     width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
     border-radius: 20px;
-    box-shadow: 0 20px 50px #0f172a1f;
 }
 
-@media (min-width: 900px) {
-    .hero--imagen {
-        grid-template-columns: 1.1fr 1fr;
-        text-align: left;
-    }
-
-    /* ! En ordenador los botones se alinean a la izquierda, con el texto */
-    .hero--imagen .hero__acciones {
-        justify-content: flex-start;
-    }
-}
-
-/* * Secciones */
+/* * ===== Secciones ===== */
 .pasos,
 .comunidad,
 .categorias,
@@ -76,66 +66,48 @@
 .pasos h2,
 .comunidad h2,
 .categorias h2 {
-    text-align: center;
     margin-bottom: 32px;
-}
-
-/* * Cómo funciona */
-.pasos {
     text-align: center;
 }
 
+/* * Cómo funciona: 3 tarjetas en fila */
 .pasos__lista {
-    position: relative;
-    display: grid;
+    display: flex;
     gap: 24px;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    list-style: none;
     margin: 0;
     padding: 0;
+    list-style: none;
 }
 
 .paso {
-    position: relative;
-    padding: 32px 28px;
-    text-align: left;
-    background: #ffffff;
+    flex: 1;
+    padding: 28px;
+    background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
-    /* ! Sin transition el hover saltaba de golpe */
-    transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
 }
 
-/* * Al pasar el ratón la tarjeta sube un poco */
 .paso:hover {
-    transform: translateY(-4px);
-    border-color: #16a34a66;
-    box-shadow: 0 16px 40px #16a34a1f;
+    border-color: #16a34a;
 }
 
-/* * Número: cuadrado verde suave */
+/* * Número del paso en un cuadrado verde */
 .paso__numero {
-    display: grid;
-    place-items: center;
+    display: block;
     width: 48px;
     height: 48px;
     margin-bottom: 20px;
-    border-radius: 14px;
-    background: #16a34a1a;
+    border-radius: 12px;
+    background-color: #dcfce7;
     color: #16a34a;
     font-size: 1.2em;
     font-weight: 800;
-    transition: background 0.25s, color 0.25s;
-}
-
-.paso:hover .paso__numero {
-    background: #16a34a;
-    color: #ffffff;
+    line-height: 48px;
+    text-align: center;
 }
 
 .paso h3 {
-    margin: 0 0 8px;
-    font-size: 1.2em;
+    margin-bottom: 8px;
 }
 
 .paso p {
@@ -143,12 +115,11 @@
     color: #64748b;
 }
 
-/* * Comunidad: fotos de profesionales */
+/* * Comunidad: 3 fotos en fila */
 .comunidad {
     text-align: center;
 }
 
-/* ! El h2 lleva margin-bottom: 32px; aquí lo reducimos porque debajo va la intro */
 .comunidad h2 {
     margin-bottom: 8px;
 }
@@ -159,68 +130,53 @@
     color: #64748b;
 }
 
-/* * 3 columnas en ordenador, 1 en móvil (se ajusta solo con auto-fit) */
 .comunidad__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    display: flex;
     gap: 24px;
 }
 
 .comunidad__item {
-    position: relative;
+    flex: 1;
     margin: 0;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 30px #0f172a14;
 }
 
 .comunidad__item img {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    height: 320px;
     object-fit: cover;
-    transition: transform 0.4s;
 }
 
-.comunidad__item:hover img {
-    transform: scale(1.04);
-}
-
-/* * Texto encima de la foto con un degradado oscuro para que se lea */
+/* * Texto debajo de la foto */
 .comunidad__item figcaption {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 48px 20px 18px;
-    background: linear-gradient(transparent, #0f172acc);
-    color: #ffffff;
+    padding: 14px 18px;
     font-weight: 700;
-    font-size: 1.1em;
     text-align: left;
 }
 
-/* * Categorías */
-/* ! Antes no tenía columnas y cada categoría ocupaba todo el ancho */
+/* * Categorías: cuadrícula de 4 columnas */
 .categorias__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    list-style: none;
     margin: 0;
     padding: 0;
+    list-style: none;
 }
 
 .categoria {
     display: block;
     padding: 20px;
-    text-align: center;
-    background: #ffffff;
+    background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    color: #1e293b;
-    text-decoration: none;
     font-weight: 600;
-    transition: border-color 0.2s, color 0.2s;
+    color: #1e293b;
+    text-align: center;
+    text-decoration: none;
 }
 
 .categoria:hover {
@@ -228,62 +184,53 @@
     color: #16a34a;
 }
 
-/* * Llamada a la acción: franja verde */
+/* * Franja verde del final */
 .cta {
-    position: relative;
-    overflow: hidden;
     margin: 32px auto 48px;
     padding: 56px 24px;
-    text-align: center;
     background-color: #16a34a;
     border-radius: 24px;
-    box-shadow: 0 20px 50px #16a34a33;
-}
-
-/* * El texto va por encima de cualquier decoración del fondo */
-.cta h2,
-.cta p,
-.cta .btn {
-    position: relative;
-    z-index: 1;
+    text-align: center;
 }
 
 .cta h2 {
-    color: #ffffff;
     margin-bottom: 8px;
+    color: #ffffff;
 }
 
 .cta p {
-    color: #ffffffd9;
-    font-size: 1.1em;
     margin-bottom: 28px;
+    font-size: 1.1em;
+    color: #ffffff;
 }
 
 /* * Botón blanco con texto verde */
 .cta .btn {
     padding: 14px 32px;
-    border: 0;
-    border-radius: 999px;
-    background: #ffffff;
-    color: #15803d;
-    font-weight: 700;
-    box-shadow: 0 8px 20px #0f172a26;
-}
-
-.cta .btn:hover {
-    background: #ffffff;
+    border-color: #ffffff;
+    border-radius: 30px;
+    background-color: #ffffff;
     color: #15803d;
 }
 
-/* ! Si el usuario tiene desactivadas las animaciones en su sistema, quitamos movimientos */
-@media (prefers-reduced-motion: reduce) {
-    .paso,
-    .comunidad__item img {
-        transition: none;
+/* * ===== Móvil: todo en una columna ===== */
+@media (max-width: 800px) {
+    .hero--imagen,
+    .pasos__lista,
+    .comunidad__grid {
+        flex-direction: column;
     }
 
-    .paso:hover,
-    .comunidad__item:hover img {
-        transform: none;
+    .hero__contenido,
+    .hero__imagen {
+        width: 100%;
+    }
+
+    .hero__titulo {
+        font-size: 2.2em;
+    }
+
+    .categorias__grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

@@ -44,7 +44,8 @@
     </section>
 
     {# * Resultados: los rellena buscador.js #}
-    <section class="resultados" aria-live="polite">
+    {# ? data-usuario: el id del usuario conectado, para no dejarle solicitar sus propias ofertas #}
+    <section class="resultados" aria-live="polite" data-usuario="{{ usuario ? usuario.id : '' }}">
         <p class="resultados__contador" id="resultados-contador"></p>
 
         <ul class="resultados__grid" id="resultados-lista"></ul>
@@ -84,6 +85,34 @@
                 {% endif %}
             </div>
         </li>
+    </template>
+
+    {# * Molde del formulario de solicitud. buscador.js lo mete dentro del modal al pulsar "Solicitar" #}
+    <template id="plantilla-solicitud">
+        <form class="modal-form solicitud" id="form-solicitud" novalidate>
+            {# * Resumen de lo que va a pedir #}
+            <div class="solicitud__resumen">
+                <p class="solicitud__servicio"></p>
+                <p class="solicitud__profesional"></p>
+            </div>
+
+            <p class="modal-form__error" id="solicitud-error" hidden></p>
+
+            <label for="solicitud-fecha">Día</label>
+            <input type="date" id="solicitud-fecha" name="fecha" required>
+
+            <label for="solicitud-hora">Hora</label>
+            <input type="time" id="solicitud-hora" name="hora" value="10:00" step="900" required>
+
+            <label for="solicitud-horas">Horas que necesitas</label>
+            <input type="number" id="solicitud-horas" name="horas" value="1" min="0.5" max="8" step="0.5" required>
+
+            {# * Lo calcula buscador.js al cambiar las horas. El precio de verdad lo calcula el servidor #}
+            <p class="solicitud__total">Total: <strong id="solicitud-total"></strong></p>
+            <p class="modal-form__nota">Los puntos no se descuentan ahora: solo cuando los dos confirméis que el servicio está hecho.</p>
+
+            <button type="submit" class="btn btn--primario">Enviar solicitud</button>
+        </form>
     </template>
 {% endblock %}
 

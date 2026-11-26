@@ -13,483 +13,409 @@ use App\Service\MailService;
 use App\Service\PdfService;
 use Twig\Environment;
 
+// * Panel de administración
+// * GET  /admin/{seccion}                -> enseña la sección
+// * POST /admin/{seccion}/{accion}/{id}  -> hace la acción y vuelve a la sección
 class AdminController
 {
-    // * Estados que existen en el ENUM de solicitudes_trueque
-    private const ESTADOS_TRUEQUE = ['SOLICITADO', 'ACEPTADO', 'RECHAZADO', 'EN_EJECUCION', 'COMPLETADO', 'CANCELADO'];
+    private Environment $twig;
 
-    public function __construct(private Environment $twig)
+    public function __construct(Environment $twig)
     {
+        $this->twig = $twig;
     }
 
-    // ! Todo el panel pasa por aquí: solo entra el rol ADMIN
-    private function esAdmin(): bool
+    // ! Si no es admin, lo mandamos al inicio
+    private function comprobarAdmin(): void
     {
-        return isset($_SESSION['usuario']) && $_SESSION['usuario']['rol'] === 'ADMIN';
-    }
-
-    // * GET /admin: la página del panel (los datos los carga admin.js)
-    public function panel(): void
-    {
-        if (!$this->esAdmin()) {
+        if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] != 'ADMIN') {
             header('Location: /');
             exit();
         }
-
-        echo $this->twig->render('pages/admin.html.twig', [
-            'pagina_actual' => 'admin',
-            // * Para el contador rojo de la pestaña Usuarios
-            'pendientes'    => (new UsuarioAdminDao())->contarPendientes(),
-        ]);
     }
 
-    // * ===== Categorías: /api/admin/categorias y /api/admin/categorias/{id} =====
-    public function categoriasApi(string $method, ?int $id): void
+    // * Guarda el mensaje que se enseña después de la redirección
+    private function mensaje(string $texto, bool $esError = false): void
     {
-        header('Content-Type: application/json; charset=utf-8');
+        $_SESSION['admin_mensaje'] = ['texto' => $texto, 'error' => $esError];
+    }
 
-        if (!$this->esAdmin()) {
-            $this->responderJson(403, ['ok' => false, 'error' => 'No tienes permiso']);
-            return;
+    // * ===== GET: pintar la sección =====
+    public function panel(string $seccion): void
+    {
+        $this->comprobarAdmin();
+
+        $usuarioDao = new UsuarioAdminDao();
+        $pendientes = $usuarioDao->contarPendientes();
+
+        // * /admin sin sección: si hay registros pendientes vamos a usuarios
+        if ($seccion == '') {
+            if ($pendientes > 0) {
+                header('Location: /admin/usuarios');
+            } else {
+                header('Location: /admin/categorias');
+            }
+            exit();
         }
 
+        // * Recogemos el mensaje de la última acción y lo borramos para que salga solo una vez
+        $mensaje = $_SESSION['admin_mensaje'] ?? null;
+        unset($_SESSION['admin_mensaje']);
+
+        // * Si en la URL viene ?editar=5, el formulario se rellena con ese registro
+        $editarId = (int) ($_GET['editar'] ?? 0);
+
+        $datos = [
+            'pagina_actual' => 'admin',
+            'seccion' => $seccion,
+            'pendientes' => $pendientes,
+            'mensaje' => $mensaje,
+            'editar' => null
+        ];
+
+        if ($seccion == 'categorias') {
+            $categorias = (new CategoriaDao())->listar();
+            $datos['categorias'] = $categorias;
+
+            foreach ($categorias as $categoria) {
+                if ($categoria['id_categoria'] == $editarId) {
+                    $datos['editar'] = $categoria;
+                }
+            }
+        } elseif ($seccion == 'servicios') {
+            $filtro = (int) ($_GET['categoria'] ?? 0);
+
+            if ($filtro > 0) {
+                $servicios = (new ServicioDao())->listarTodos($filtro);
+            } else {
+                $servicios = (new ServicioDao())->listarTodos(null);
+            }
+
+            $datos['servicios'] = $servicios;
+            $datos['categorias'] = (new CategoriaDao())->listar();
+            $datos['filtro_categoria'] = $filtro;
+
+            foreach ($servicios as $servicio) {
+                if ($servicio['id_servicio'] == $editarId) {
+                    $datos['editar'] = $servicio;
+                }
+            }
+        } elseif ($seccion == 'usuarios') {
+            $busqueda = trim($_GET['busqueda'] ?? '');
+            $usuarios = $usuarioDao->listar($busqueda);
+
+            $datos['usuarios'] = $usuarios;
+            $datos['lista_pendientes'] = $usuarioDao->listarPendientes();
+            $datos['busqueda'] = $busqueda;
+            $datos['id_admin'] = $_SESSION['usuario']['id'];
+
+            foreach ($usuarios as $usuario) {
+                if ($usuario['id_usuario'] == $editarId) {
+                    $datos['editar'] = $usuario;
+                }
+            }
+        } elseif ($seccion == 'trueques') {
+            $estado = $_GET['estado'] ?? '';
+            $dao = new TruequeDao();
+
+            if ($estado == '') {
+                $datos['trueques'] = $dao->listar(null);
+            } else {
+                $datos['trueques'] = $dao->listar($estado);
+            }
+
+            $datos['resumen'] = $dao->resumen();
+            $datos['filtro_estado'] = $estado;
+        } elseif ($seccion == 'resenas') {
+            $puntuacion = (int) ($_GET['puntuacion'] ?? 0);
+            $dao = new ValoracionDao();
+
+            if ($puntuacion >= 1 && $puntuacion <= 5) {
+                $datos['resenas'] = $dao->listar($puntuacion);
+            } else {
+                $datos['resenas'] = $dao->listar(null);
+            }
+
+            $datos['resumen'] = $dao->resumen();
+            $datos['filtro_puntuacion'] = $puntuacion;
+        } else {
+            // ! Sección que no existe
+            header('Location: /admin');
+            exit();
+        }
+
+        echo $this->twig->render('pages/admin.html.twig', $datos);
+    }
+
+    // * ===== POST: hacer una acción y volver a la sección =====
+    public function accion(string $seccion, string $accion, ?int $id): void
+    {
+        $this->comprobarAdmin();
+
+        // ! Todas las acciones menos "guardar" necesitan un id en la URL
+        if ($id == null && $accion != 'guardar') {
+            $this->mensaje('Falta el id en la URL', true);
+            header('Location: /admin/' . $seccion);
+            exit();
+        }
+
+        if ($seccion == 'categorias') {
+            $this->accionCategorias($accion, $id);
+        } elseif ($seccion == 'servicios') {
+            $this->accionServicios($accion, $id);
+        } elseif ($seccion == 'usuarios') {
+            $this->accionUsuarios($accion, $id);
+        } elseif ($seccion == 'trueques') {
+            $this->accionTrueques($accion, $id);
+        } elseif ($seccion == 'resenas') {
+            $this->accionResenas($accion, $id);
+        }
+
+        // ! Siempre redirigimos después de un POST: así F5 no repite la acción
+        header('Location: /admin/' . $seccion);
+        exit();
+    }
+
+    // * ----- Categorías -----
+    private function accionCategorias(string $accion, ?int $id): void
+    {
         $dao = new CategoriaDao();
 
-        // * GET: listar
-        if ($method === 'GET') {
-            $this->responderJson(200, ['ok' => true, 'categorias' => $dao->listar()]);
-            return;
-        }
-
-        // * DELETE: borrar
-        if ($method === 'DELETE') {
-            if ($id === null) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Falta el id de la categoría']);
-                return;
-            }
-
+        if ($accion == 'borrar') {
             if ($dao->borrar($id)) {
-                $this->responderJson(200, ['ok' => true]);
+                $this->mensaje('Categoría borrada');
             } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido borrar la categoría']);
+                $this->mensaje('No se ha podido borrar la categoría', true);
             }
             return;
         }
 
-        // * POST y PUT llevan datos: los leemos y validamos una sola vez
-        $datos = $this->leerJson();
-        $nombre = trim($datos['nombre'] ?? '');
-        $descripcion = trim($datos['descripcion'] ?? '');
+        if ($accion == 'guardar') {
+            $nombre = trim($_POST['nombre'] ?? '');
+            $descripcion = trim($_POST['descripcion'] ?? '');
 
-        if ($nombre === '' || mb_strlen($nombre) > 100) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'El nombre es obligatorio (máximo 100 caracteres)']);
-            return;
-        }
-
-        // * POST: crear
-        if ($method === 'POST') {
-            $nuevoId = $dao->crear($nombre, $descripcion);
-
-            if ($nuevoId === null) {
-                // ? El fallo más típico es el UNIQUE del nombre
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido crear la categoría (¿ya existe una con ese nombre?)']);
-            } else {
-                $this->responderJson(201, ['ok' => true, 'id' => $nuevoId]);
-            }
-            return;
-        }
-
-        // * PUT: editar
-        if ($method === 'PUT') {
-            if ($id === null) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Falta el id de la categoría']);
+            if ($nombre == '') {
+                $this->mensaje('El nombre es obligatorio', true);
                 return;
             }
 
-            if ($dao->actualizar($id, $nombre, $descripcion)) {
-                $this->responderJson(200, ['ok' => true]);
+            // * Sin id = crear, con id = editar
+            if ($id == null) {
+                $ok = $dao->crear($nombre, $descripcion) != null;
             } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido guardar la categoría (¿ya existe una con ese nombre?)']);
+                $ok = $dao->actualizar($id, $nombre, $descripcion);
             }
-            return;
-        }
 
-        $this->responderJson(405, ['ok' => false, 'error' => 'Método no permitido']);
+            if ($ok) {
+                $this->mensaje('Categoría guardada');
+            } else {
+                $this->mensaje('No se ha podido guardar (¿ya existe una con ese nombre?)', true);
+            }
+        }
     }
 
-    // * ===== Servicios: /api/admin/servicios y /api/admin/servicios/{id} =====
-    public function serviciosApi(string $method, ?int $id): void
+    // * ----- Servicios -----
+    private function accionServicios(string $accion, ?int $id): void
     {
-        header('Content-Type: application/json; charset=utf-8');
-
-        if (!$this->esAdmin()) {
-            $this->responderJson(403, ['ok' => false, 'error' => 'No tienes permiso']);
-            return;
-        }
-
         $dao = new ServicioDao();
 
-        // * GET: listar (con filtro opcional ?categoria=3)
-        if ($method === 'GET') {
-            $idCategoria = null;
-            if (isset($_GET['categoria']) && $_GET['categoria'] !== '') {
-                $idCategoria = (int) $_GET['categoria'];
-            }
-
-            $this->responderJson(200, ['ok' => true, 'servicios' => $dao->listarTodos($idCategoria)]);
-            return;
-        }
-
-        // * DELETE: borrar
-        if ($method === 'DELETE') {
-            if ($id === null) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Falta el id del servicio']);
-                return;
-            }
-
+        if ($accion == 'borrar') {
             if ($dao->borrar($id)) {
-                $this->responderJson(200, ['ok' => true]);
+                $this->mensaje('Servicio borrado');
             } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido borrar el servicio']);
+                $this->mensaje('No se ha podido borrar el servicio', true);
             }
             return;
         }
 
-        // * POST y PUT llevan datos: los leemos y validamos una sola vez
-        $datos = $this->leerJson();
-        $idCategoria = (int) ($datos['id_categoria'] ?? 0);
-        $nombre = trim($datos['nombre'] ?? '');
-        $descripcion = trim($datos['descripcion'] ?? '');
-        $puntos = (int) ($datos['puntos'] ?? 0);
+        if ($accion == 'guardar') {
+            $idCategoria = (int) ($_POST['id_categoria'] ?? 0);
+            $nombre = trim($_POST['nombre'] ?? '');
+            $descripcion = trim($_POST['descripcion'] ?? '');
+            $puntos = (int) ($_POST['puntos'] ?? 0);
 
-        if ($idCategoria <= 0) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'Elige una categoría']);
-            return;
-        }
-        if ($nombre === '' || mb_strlen($nombre) > 150) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'El nombre es obligatorio (máximo 150 caracteres)']);
-            return;
-        }
-        // ? He puesto 1000 como máximo; cámbialo si el profe da otro límite
-        if ($puntos < 1 || $puntos > 1000) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'Los puntos por hora deben estar entre 1 y 1000']);
-            return;
-        }
-
-        // * POST: crear
-        if ($method === 'POST') {
-            $nuevoId = $dao->crear($idCategoria, $nombre, $descripcion, $puntos);
-
-            if ($nuevoId === null) {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido crear el servicio']);
-            } else {
-                $this->responderJson(201, ['ok' => true, 'id' => $nuevoId]);
+            if ($idCategoria == 0 || $nombre == '') {
+                $this->mensaje('La categoría y el nombre son obligatorios', true);
+                return;
             }
-            return;
-        }
-
-        // * PUT: editar
-        if ($method === 'PUT') {
-            if ($id === null) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Falta el id del servicio']);
+            if ($puntos < 1 || $puntos > 1000) {
+                $this->mensaje('Los puntos por hora deben estar entre 1 y 1000', true);
                 return;
             }
 
-            if ($dao->actualizar($id, $idCategoria, $nombre, $descripcion, $puntos)) {
-                $this->responderJson(200, ['ok' => true]);
+            if ($id == null) {
+                $ok = $dao->crear($idCategoria, $nombre, $descripcion, $puntos) != null;
             } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido guardar el servicio']);
+                $ok = $dao->actualizar($id, $idCategoria, $nombre, $descripcion, $puntos);
             }
-            return;
-        }
 
-        $this->responderJson(405, ['ok' => false, 'error' => 'Método no permitido']);
+            if ($ok) {
+                $this->mensaje('Servicio guardado');
+            } else {
+                $this->mensaje('No se ha podido guardar el servicio', true);
+            }
+        }
     }
 
-    // * ===== Usuarios: /api/admin/usuarios y /api/admin/usuarios/{id} =====
-    public function usuariosApi(string $method, ?int $id): void
+    // * ----- Usuarios -----
+    private function accionUsuarios(string $accion, ?int $id): void
     {
-        header('Content-Type: application/json; charset=utf-8');
-
-        if (!$this->esAdmin()) {
-            $this->responderJson(403, ['ok' => false, 'error' => 'No tienes permiso']);
-            return;
-        }
-
         $dao = new UsuarioAdminDao();
-        $idAdmin = (int) $_SESSION['usuario']['id'];
 
-        // * GET: usuarios aprobados (con buscador opcional ?busqueda=texto) + registros pendientes
-        // * Mandamos también el id del admin para que el JS no le ponga botones de baja/borrar a él mismo
-        if ($method === 'GET') {
-            $busqueda = trim($_GET['busqueda'] ?? '');
-            $this->responderJson(200, [
-                'ok'         => true,
-                'usuarios'   => $dao->listar($busqueda),
-                'pendientes' => $dao->listarPendientes(),
-                'id_admin'   => $idAdmin,
-            ]);
+        if ($accion == 'guardar') {
+            $this->guardarUsuario($dao, $id);
             return;
         }
 
-        // * Todo lo que no sea crear necesita saber de qué usuario hablamos
-        if ($method !== 'POST' && $id === null) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'Falta el id del usuario']);
+        // ! El admin no puede darse de baja ni borrarse a sí mismo
+        if ($id == $_SESSION['usuario']['id']) {
+            $this->mensaje('No puedes hacer esto con tu propia cuenta', true);
             return;
         }
 
-        // ! El admin no puede darse de baja ni borrarse a sí mismo (se quedaría fuera del panel)
-        if (($method === 'DELETE' || $method === 'PATCH') && $id === $idAdmin) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'No puedes hacer esto con tu propia cuenta']);
-            return;
-        }
-
-        // * DELETE: borrar del todo
-        if ($method === 'DELETE') {
+        if ($accion == 'baja') {
+            $dao->cambiarActivo($id, false);
+            $this->mensaje('Usuario dado de baja');
+        } elseif ($accion == 'reactivar') {
+            $dao->cambiarActivo($id, true);
+            $this->mensaje('Usuario reactivado');
+        } elseif ($accion == 'borrar') {
             if ($dao->borrar($id)) {
-                $this->responderJson(200, ['ok' => true]);
+                $this->mensaje('Usuario borrado');
             } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido borrar el usuario']);
+                $this->mensaje('No se ha podido borrar el usuario', true);
             }
-            return;
+        } elseif ($accion == 'aprobar' || $accion == 'rechazar') {
+            $this->resolverRegistro($dao, $id, $accion == 'aprobar');
+        }
+    }
+
+    private function guardarUsuario(UsuarioAdminDao $dao, ?int $id): void
+    {
+        $nombre = trim($_POST['nombre'] ?? '');
+        $apellidos = trim($_POST['apellidos'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $telefono = trim($_POST['telefono'] ?? '');
+        $puntos = (int) ($_POST['puntos'] ?? 0);
+
+        // * Si el teléfono viene vacío guardamos NULL
+        if ($telefono == '') {
+            $telefono = null;
         }
 
-        $datos = $this->leerJson();
-
-        // * PATCH con {aprobado: true/false}: aceptar o rechazar un registro pendiente
-        if ($method === 'PATCH' && array_key_exists('aprobado', $datos)) {
-            // ! Guardamos nombre y email ANTES: si se rechaza, la cuenta se borra y ya no los tendríamos
-            $contacto = $dao->obtenerContacto($id);
-            if ($contacto === null) {
-                $this->responderJson(404, ['ok' => false, 'error' => 'Ese usuario no existe']);
-                return;
-            }
-
-            $aprobar = $datos['aprobado'] === true;
-            $hecho = $aprobar ? $dao->aprobar($id) : $dao->rechazar($id);
-
-            if (!$hecho) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'No se ha podido completar (¿ya estaba aprobado?)']);
-                return;
-            }
-
-            // * Avisamos por correo. Si el correo falla, la acción YA está hecha: solo lo apuntamos
-            $aviso = null;
-            try {
-                $mailService = new MailService(MailOptions::desdeEntorno(), new PdfService());
-
-                if ($aprobar) {
-                    $mailService->enviarCuentaAprobada($contacto['email'], $contacto['nombre']);
-                } else {
-                    $mailService->enviarCuentaRechazada($contacto['email'], $contacto['nombre']);
-                }
-            } catch (\Throwable $e) {
-                error_log('Correo no enviado: ' . $e->getMessage());
-                $aviso = 'Hecho, pero no se ha podido enviar el correo de aviso';
-            }
-
-            $this->responderJson(200, ['ok' => true, 'aviso' => $aviso]);
-            return;
-        }
-
-        // * PATCH con {activo: true/false}: dar de baja o reactivar
-        if ($method === 'PATCH') {
-            $activo = (bool) ($datos['activo'] ?? true);
-
-            if ($dao->cambiarActivo($id, $activo)) {
-                $this->responderJson(200, ['ok' => true]);
-            } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido cambiar el estado']);
-            }
-            return;
-        }
-
-        // * POST y PUT: datos del usuario
-        $nombre    = trim($datos['nombre'] ?? '');
-        $apellidos = trim($datos['apellidos'] ?? '');
-        $email     = trim($datos['email'] ?? '');
-        $telefono  = trim($datos['telefono'] ?? '');
-        $telefono  = $telefono !== '' ? $telefono : null; // * Vacío = NULL en la BD
-        $puntos    = (int) ($datos['puntos'] ?? 0);
-
-        if ($nombre === '' || $apellidos === '') {
-            $this->responderJson(400, ['ok' => false, 'error' => 'El nombre y los apellidos son obligatorios']);
+        if ($nombre == '' || $apellidos == '') {
+            $this->mensaje('El nombre y los apellidos son obligatorios', true);
             return;
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'El email no es válido']);
+            $this->mensaje('El email no es válido', true);
             return;
         }
         if ($puntos < 0) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'Los puntos no pueden ser negativos']);
+            $this->mensaje('Los puntos no pueden ser negativos', true);
+            return;
+        }
+        if ($dao->emailEnUso($email, $id)) {
+            $this->mensaje('Ya existe otro usuario con ese email', true);
             return;
         }
 
-        // * Al editar no contamos el email del propio usuario
-        $excluirId = $method === 'PUT' ? $id : null;
-        if ($dao->emailEnUso($email, $excluirId)) {
-            $this->responderJson(409, ['ok' => false, 'error' => 'Ya existe otro usuario con ese email']);
-            return;
-        }
-
-        // * POST: crear (la contraseña solo se pide al crear)
-        if ($method === 'POST') {
-            $password = $datos['password'] ?? '';
+        // * Crear
+        if ($id == null) {
+            $password = $_POST['password'] ?? '';
 
             if (strlen($password) < 8) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'La contraseña debe tener al menos 8 caracteres']);
+                $this->mensaje('La contraseña debe tener al menos 8 caracteres', true);
                 return;
             }
 
             $hash = password_hash($password, PASSWORD_DEFAULT);
-            $nuevoId = $dao->crear($nombre, $apellidos, $email, $hash, $telefono);
 
-            if ($nuevoId === null) {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido crear el usuario']);
+            if ($dao->crear($nombre, $apellidos, $email, $hash, $telefono, $puntos) != null) {
+                $this->mensaje('Usuario creado');
             } else {
-                $this->responderJson(201, ['ok' => true, 'id' => $nuevoId]);
+                $this->mensaje('No se ha podido crear el usuario', true);
             }
             return;
         }
 
-        // * PUT: editar
-        if ($method === 'PUT') {
-            if ($dao->actualizar($id, $nombre, $apellidos, $email, $telefono, $puntos)) {
-                // * Si el admin se edita a sí mismo, refrescamos su sesión (nombre y puntos del header)
-                if ($id === $idAdmin) {
-                    $_SESSION['usuario']['nombre'] = $nombre;
-                    $_SESSION['usuario']['puntos_saldo'] = $puntos;
-                }
-                $this->responderJson(200, ['ok' => true]);
-            } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido guardar el usuario']);
-            }
-            return;
+        // * Editar
+        if ($dao->actualizar($id, $nombre, $apellidos, $email, $telefono, $puntos)) {
+            $this->mensaje('Usuario actualizado');
+        } else {
+            $this->mensaje('No se ha podido guardar el usuario', true);
         }
-
-        $this->responderJson(405, ['ok' => false, 'error' => 'Método no permitido']);
     }
 
-    // * ===== Trueques: /api/admin/trueques y /api/admin/trueques/{id} =====
-    public function truequesApi(string $method, ?int $id): void
+    // * Aceptar o rechazar un registro pendiente y avisar por correo
+    private function resolverRegistro(UsuarioAdminDao $dao, int $id, bool $aprobar): void
     {
-        header('Content-Type: application/json; charset=utf-8');
+        // ! Cogemos el email ANTES, porque si se rechaza la cuenta se borra
+        $contacto = $dao->obtenerContacto($id);
 
-        if (!$this->esAdmin()) {
-            $this->responderJson(403, ['ok' => false, 'error' => 'No tienes permiso']);
+        if ($contacto == null) {
+            $this->mensaje('Ese usuario no existe', true);
             return;
         }
 
-        $dao = new TruequeDao();
+        if ($aprobar) {
+            $ok = $dao->aprobar($id);
+        } else {
+            $ok = $dao->rechazar($id);
+        }
 
-        // * GET: historial (con filtro opcional ?estado=COMPLETADO) + resumen
-        if ($method === 'GET') {
-            $estado = $_GET['estado'] ?? '';
-
-            // ! Solo aceptamos estados que existen; cualquier otra cosa es un error
-            if ($estado !== '' && !in_array($estado, self::ESTADOS_TRUEQUE, true)) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Estado no válido']);
-                return;
-            }
-
-            $this->responderJson(200, [
-                'ok'       => true,
-                'trueques' => $dao->listar($estado !== '' ? $estado : null),
-                'resumen'  => $dao->resumen(),
-            ]);
+        if (!$ok) {
+            $this->mensaje('No se ha podido completar la acción', true);
             return;
         }
 
-        // * PATCH: cancelar un trueque
-        if ($method === 'PATCH') {
-            if ($id === null) {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Falta el id del trueque']);
-                return;
-            }
+        $texto = $aprobar ? 'Registro aceptado' : 'Registro rechazado';
 
-            if ($dao->cancelar($id)) {
-                $this->responderJson(200, ['ok' => true]);
+        // ? Si falla el correo, la acción ya está hecha: solo lo avisamos en el mensaje
+        try {
+            $mail = new MailService(MailOptions::desdeEntorno(), new PdfService());
+
+            if ($aprobar) {
+                $mail->enviarCuentaAprobada($contacto['email'], $contacto['nombre']);
             } else {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Solo se pueden cancelar trueques que aún no han terminado']);
+                $mail->enviarCuentaRechazada($contacto['email'], $contacto['nombre']);
             }
-            return;
+        } catch (\Throwable $e) {
+            $texto = $texto . ' (no se ha podido enviar el correo)';
         }
 
-        $this->responderJson(405, ['ok' => false, 'error' => 'Método no permitido']);
+        $this->mensaje($texto);
     }
 
-    // * ===== Reseñas: /api/admin/resenas y /api/admin/resenas/{id} =====
-    public function resenasApi(string $method, ?int $id): void
+    // * ----- Trueques: solo se pueden cancelar -----
+    private function accionTrueques(string $accion, ?int $id): void
     {
-        header('Content-Type: application/json; charset=utf-8');
-
-        if (!$this->esAdmin()) {
-            $this->responderJson(403, ['ok' => false, 'error' => 'No tienes permiso']);
-            return;
+        if ($accion == 'cancelar') {
+            if ((new TruequeDao())->cancelar($id)) {
+                $this->mensaje('Trueque cancelado');
+            } else {
+                $this->mensaje('Este trueque ya no se puede cancelar', true);
+            }
         }
+    }
 
+    // * ----- Reseñas: quitar el comentario o borrarla -----
+    private function accionResenas(string $accion, ?int $id): void
+    {
         $dao = new ValoracionDao();
 
-        // * GET: listar (con filtro opcional ?puntuacion=1..5) + resumen
-        if ($method === 'GET') {
-            $puntuacion = null;
-
-            if (isset($_GET['puntuacion']) && $_GET['puntuacion'] !== '') {
-                $puntuacion = (int) $_GET['puntuacion'];
-
-                // ! Solo de 1 a 5 estrellas
-                if ($puntuacion < 1 || $puntuacion > 5) {
-                    $this->responderJson(400, ['ok' => false, 'error' => 'La puntuación debe estar entre 1 y 5']);
-                    return;
-                }
-            }
-
-            $this->responderJson(200, [
-                'ok'      => true,
-                'resenas' => $dao->listar($puntuacion),
-                'resumen' => $dao->resumen(),
-            ]);
-            return;
-        }
-
-        // * El resto de acciones necesitan saber de qué reseña hablamos
-        if ($id === null) {
-            $this->responderJson(400, ['ok' => false, 'error' => 'Falta el id de la reseña']);
-            return;
-        }
-
-        // * PATCH: quitar solo el comentario (las estrellas se quedan)
-        if ($method === 'PATCH') {
+        if ($accion == 'quitar-comentario') {
             if ($dao->quitarComentario($id)) {
-                $this->responderJson(200, ['ok' => true]);
+                $this->mensaje('Comentario retirado');
             } else {
-                $this->responderJson(400, ['ok' => false, 'error' => 'Esta reseña no tiene comentario o no existe']);
+                $this->mensaje('No se ha podido quitar el comentario', true);
             }
-            return;
-        }
-
-        // * DELETE: borrar la reseña entera
-        if ($method === 'DELETE') {
+        } elseif ($accion == 'borrar') {
             if ($dao->borrar($id)) {
-                $this->responderJson(200, ['ok' => true]);
+                $this->mensaje('Reseña borrada');
             } else {
-                $this->responderJson(500, ['ok' => false, 'error' => 'No se ha podido borrar la reseña']);
+                $this->mensaje('No se ha podido borrar la reseña', true);
             }
-            return;
         }
-
-        $this->responderJson(405, ['ok' => false, 'error' => 'Método no permitido']);
-    }
-
-    // * Los datos de fetch llegan como JSON en el cuerpo de la petición
-    private function leerJson(): array
-    {
-        return json_decode(file_get_contents('php://input'), true) ?? [];
-    }
-
-    private function responderJson(int $codigo, array $respuesta): void
-    {
-        http_response_code($codigo);
-        echo json_encode($respuesta, JSON_UNESCAPED_UNICODE);
     }
 }

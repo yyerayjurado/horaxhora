@@ -1,0 +1,100 @@
+{% extends 'layout/base.html.twig' %}
+
+{% block title %}Mi agenda | {{ app_nombre }}{% endblock %}
+
+{% block styles %}
+    {# ? admin.css tiene los estilos de las listas e insignias; agenda.css los del calendario #}
+    <link rel="stylesheet" href="/assets/css/admin.css">
+    <link rel="stylesheet" href="/assets/css/agenda.css">
+{% endblock %}
+
+{% block content %}
+    <div class="admin">
+        <h1 class="admin__titulo">Mi agenda</h1>
+
+        {# * Mensaje verde (acción hecha) o rojo (error). Lo enseña agenda.js #}
+        <p class="admin__mensaje admin__mensaje--error" id="agenda-mensaje" hidden></p>
+
+        {# * ===== Calendario: lo rellena agenda.js ===== #}
+        <section class="admin__contenido calendario" aria-live="polite">
+            <div class="calendario__cabecera">
+                <button type="button" class="admin__boton" id="anterior" aria-label="Anterior">‹</button>
+                <h2 class="calendario__titulo" id="calendario-titulo"></h2>
+                <button type="button" class="admin__boton" id="siguiente" aria-label="Siguiente">›</button>
+            </div>
+
+            <div class="calendario__opciones">
+                {# * Botones para cambiar de vista #}
+                <div class="calendario__vistas" role="group" aria-label="Vista del calendario">
+                    <button type="button" class="calendario__vista is-active" data-vista="mes">Mes</button>
+                    <button type="button" class="calendario__vista" data-vista="semana">Semana</button>
+                </div>
+
+                {# * Leyenda: qué significa cada flecha #}
+                <p class="calendario__leyenda">
+                    <span>↓ Te lo piden a ti</span>
+                    <span>↑ Lo has pedido tú</span>
+                </p>
+            </div>
+
+            {# * Aquí agenda.js pinta el mes o la semana #}
+            <div id="calendario"></div>
+        </section>
+
+        {# * ===== Solicitudes que me han hecho y aún no he contestado ===== #}
+        <section class="admin__contenido agenda__pendientes">
+            <h2 class="admin__subtitulo">Pendientes de responder</h2>
+            <div class="lista" id="lista-pendientes"></div>
+            <p class="admin__vacio" id="vacio-pendientes" hidden>No tienes solicitudes pendientes de responder.</p>
+        </section>
+    </div>
+
+    {# * Molde de una fila de la lista de pendientes. agenda.js lo copia y lo rellena #}
+    <template id="plantilla-pendiente">
+        <div class="lista__fila" data-estado="SOLICITADO">
+            <span class="lista__punto" aria-hidden="true"></span>
+
+            <div class="lista__texto">
+                <p class="lista__frase">
+                    <strong class="pendiente__persona"></strong>
+                    <span class="lista__secundario pendiente__servicio"></span>
+                </p>
+                <p class="lista__detalles pendiente__detalles"></p>
+            </div>
+        </div>
+    </template>
+
+    {# * Molde del detalle de un trueque. agenda.js lo mete en el modal al pulsar un trueque #}
+    <template id="plantilla-detalle">
+        <div class="detalle">
+            <p class="detalle__estado"><span class="admin__insignia"></span></p>
+
+            <dl class="detalle__datos">
+                <dt>Servicio</dt>
+                <dd class="detalle__servicio"></dd>
+
+                <dt class="detalle__rol"></dt>
+                <dd class="detalle__persona"></dd>
+
+                <dt>Cuándo</dt>
+                <dd class="detalle__fecha"></dd>
+
+                <dt>Duración</dt>
+                <dd class="detalle__horas"></dd>
+
+                <dt>Puntos</dt>
+                <dd class="detalle__puntos"></dd>
+            </dl>
+
+            <p class="modal-form__error detalle__error" hidden></p>
+
+            {# * Aquí agenda.js pone los botones que tocan según el estado #}
+            <div class="detalle__botones"></div>
+            <p class="modal-form__nota detalle__nota"></p>
+        </div>
+    </template>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/assets/js/modules/agenda.js" defer></script>
+{% endblock %}

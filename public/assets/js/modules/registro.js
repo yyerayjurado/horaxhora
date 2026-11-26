@@ -24,10 +24,15 @@ function iniciarRegistro() {
     }
 
     // * Crea un chip: <label><input type="checkbox"><span>Nombre</span><small>10 pts/h</small></label>
-    // ! La casilla está oculta con CSS, pero sigue ahí: al pinchar el chip se marca
+    // * Al pinchar en cualquier parte del chip se marca la casilla (porque es un <label>)
     function crearChip(id, nombre, puntos, marcado) {
         let chip = document.createElement("label");
         chip.className = "registro__chip";
+
+        // * Si está marcado, lo pintamos en verde (registro.css)
+        if (marcado) {
+            chip.className = "registro__chip registro__chip--marcado";
+        }
 
         let casilla = document.createElement("input");
         casilla.type = "checkbox";

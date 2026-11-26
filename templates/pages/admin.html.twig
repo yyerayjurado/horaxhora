@@ -10,298 +10,36 @@
     <div class="admin">
         <h1 class="admin__titulo">Panel de administración</h1>
 
-        {# * Pestañas: admin.js cambia el contenido sin recargar la página #}
-        <nav class="admin__pestanas" role="tablist" aria-label="Secciones del panel">
-            <button type="button" class="admin__pestana" data-seccion="categorias" role="tab">Categorías</button>
-            <button type="button" class="admin__pestana" data-seccion="servicios" role="tab">Servicios</button>
-            <button type="button" class="admin__pestana" data-seccion="usuarios" role="tab">
-                Usuarios
-                {# ! Contador rojo de registros pendientes. admin.js lo actualiza al aceptar/rechazar #}
-                <span id="badge-pendientes" class="admin__badge" {{ pendientes == 0 ? 'hidden' }}
-                      aria-label="{{ pendientes }} registros pendientes">{{ pendientes }}</span>
-            </button>
-            <button type="button" class="admin__pestana" data-seccion="trueques" role="tab">Trueques</button>
-            <button type="button" class="admin__pestana" data-seccion="resenas" role="tab">Reseñas</button>
+        {# * Pestañas: cada una es un enlace normal a /admin/{seccion} #}
+        <nav class="admin__pestanas" aria-label="Secciones del panel">
+            {% set pestanas = {
+                categorias: 'Categorías',
+                servicios: 'Servicios',
+                usuarios: 'Usuarios',
+                trueques: 'Trueques',
+                resenas: 'Reseñas'
+            } %}
+
+            {% for clave, texto in pestanas %}
+                <a href="/admin/{{ clave }}" class="admin__pestana {{ seccion == clave ? 'is-active' }}"
+                   {% if seccion == clave %}aria-current="page"{% endif %}>
+                    {{ texto }}
+                    {# ! Contador rojo de registros pendientes (lo calcula PHP en cada carga) #}
+                    {% if clave == 'usuarios' and pendientes > 0 %}
+                        <span class="admin__badge" aria-label="{{ pendientes }} registros pendientes">{{ pendientes }}</span>
+                    {% endif %}
+                </a>
+            {% endfor %}
         </nav>
 
-        {# * Aquí se pinta la sección activa #}
-        <section id="admin-contenido" class="admin__contenido" aria-live="polite"></section>
+        <section class="admin__contenido">
+            {# * Mensaje de la última acción (verde si va bien, rojo si hay error) #}
+            {% if mensaje %}
+                <p class="admin__mensaje {{ mensaje.error ? 'admin__mensaje--error' }}" role="status">{{ mensaje.texto }}</p>
+            {% endif %}
+
+            {# * Cada sección está en su propio archivo: partials/admin/categorias.html.twig, etc. #}
+            {% include 'partials/admin/' ~ seccion ~ '.html.twig' %}
+        </section>
     </div>
-
-    {# ! Las plantillas de abajo no se ven: admin.js las copia dentro de #admin-contenido #}
-
-    {# * ===== Sección: categorías ===== #}
-    <template id="tpl-categorias">
-        <h2 class="admin__subtitulo">Categorías</h2>
-
-        <form id="form-categoria" class="admin__form" novalidate>
-            <input type="hidden" name="id">
-
-            <div class="admin__campo">
-                <label for="cat-nombre">Nombre</label>
-                <input type="text" id="cat-nombre" name="nombre" maxlength="100" required>
-            </div>
-
-            <div class="admin__campo">
-                <label for="cat-descripcion">Descripción</label>
-                <input type="text" id="cat-descripcion" name="descripcion">
-            </div>
-
-            <div class="admin__botones">
-                <button type="submit" id="cat-guardar" class="btn btn--primario">Añadir categoría</button>
-                <button type="button" id="cat-cancelar" class="btn btn--secundario" hidden>Cancelar</button>
-            </div>
-        </form>
-
-        <p id="cat-mensaje" class="admin__mensaje" role="status" hidden></p>
-
-        <div class="admin__tabla-contenedor">
-            <table class="admin__tabla">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Servicios</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="cat-filas">
-                    <tr><td colspan="4">Cargando...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </template>
-
-    {# * ===== Sección: servicios ===== #}
-    <template id="tpl-servicios">
-        <h2 class="admin__subtitulo">Servicios del catálogo</h2>
-
-        <form id="form-servicio" class="admin__form admin__form--servicios" novalidate>
-            <input type="hidden" name="id">
-
-            <div class="admin__campo">
-                <label for="serv-categoria">Categoría</label>
-                {# * Las opciones las rellena admin.js con las categorías de la BD #}
-                <select id="serv-categoria" name="categoria" required></select>
-            </div>
-
-            <div class="admin__campo">
-                <label for="serv-nombre">Nombre</label>
-                <input type="text" id="serv-nombre" name="nombre" maxlength="150" required>
-            </div>
-
-            <div class="admin__campo">
-                <label for="serv-puntos">Pts/hora de referencia</label>
-                <input type="number" id="serv-puntos" name="puntos" min="1" max="1000" value="10" required>
-            </div>
-
-            <div class="admin__campo admin__campo--completo">
-                <label for="serv-descripcion">Descripción</label>
-                <input type="text" id="serv-descripcion" name="descripcion">
-            </div>
-
-            <div class="admin__botones admin__campo--completo">
-                <button type="submit" id="serv-guardar" class="btn btn--primario">Añadir servicio</button>
-                <button type="button" id="serv-cancelar" class="btn btn--secundario" hidden>Cancelar</button>
-            </div>
-        </form>
-
-        <p id="serv-mensaje" class="admin__mensaje" role="status" hidden></p>
-
-        <div class="admin__filtro">
-            <label for="serv-filtro">Filtrar por categoría</label>
-            <select id="serv-filtro"></select>
-        </div>
-
-        <div class="admin__tabla-contenedor">
-            <table class="admin__tabla">
-                <thead>
-                    <tr>
-                        <th>Servicio</th>
-                        <th>Categoría</th>
-                        <th>Pts/h ref.</th>
-                        <th>Ofertas</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="serv-filas">
-                    <tr><td colspan="5">Cargando...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </template>
-
-    {# * ===== Sección: usuarios ===== #}
-    <template id="tpl-usuarios">
-        {# ! Registros pendientes de aprobar: solo se ve si hay alguno (lo muestra admin.js) #}
-        <div id="usu-pendientes" class="admin__pendientes" hidden>
-            <h2 class="admin__subtitulo">
-                Registros pendientes
-                <span id="usu-pendientes-num" class="admin__badge">0</span>
-            </h2>
-            <p class="admin__pendientes-texto">Estas personas se han registrado y esperan a que aceptes su cuenta.</p>
-            <div id="usu-pendientes-lista" class="lista"></div>
-        </div>
-
-        <h2 class="admin__subtitulo">Usuarios</h2>
-
-        <form id="form-usuario" class="admin__form admin__form--usuarios" novalidate>
-            <input type="hidden" name="id">
-
-            <div class="admin__campo">
-                <label for="usu-nombre">Nombre</label>
-                <input type="text" id="usu-nombre" name="nombre" maxlength="100" required>
-            </div>
-
-            <div class="admin__campo">
-                <label for="usu-apellidos">Apellidos</label>
-                <input type="text" id="usu-apellidos" name="apellidos" maxlength="100" required>
-            </div>
-
-            <div class="admin__campo">
-                <label for="usu-email">Email</label>
-                <input type="email" id="usu-email" name="email" maxlength="150" required>
-            </div>
-
-            <div class="admin__campo">
-                <label for="usu-telefono">Teléfono</label>
-                <input type="tel" id="usu-telefono" name="telefono" maxlength="20">
-            </div>
-
-            <div class="admin__campo">
-                <label for="usu-puntos">Puntos</label>
-                <input type="number" id="usu-puntos" name="puntos" min="0" value="50" required>
-            </div>
-
-            {# ! La contraseña solo se pide al crear; al editar admin.js oculta este campo #}
-            <div class="admin__campo" id="usu-campo-password">
-                <label for="usu-password">Contraseña (mín. 8)</label>
-                <input type="password" id="usu-password" name="password" minlength="8" autocomplete="new-password">
-            </div>
-
-            <div class="admin__botones admin__campo--completo">
-                <button type="submit" id="usu-guardar" class="btn btn--primario">Añadir usuario</button>
-                <button type="button" id="usu-cancelar" class="btn btn--secundario" hidden>Cancelar</button>
-            </div>
-        </form>
-
-        <p id="usu-mensaje" class="admin__mensaje" role="status" hidden></p>
-
-        <div class="admin__filtro">
-            <label for="usu-buscador">Buscar</label>
-            <input type="search" id="usu-buscador" placeholder="Nombre, apellidos o email">
-        </div>
-
-        <div class="admin__tabla-contenedor">
-            <table class="admin__tabla">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Puntos</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="usu-filas">
-                    <tr><td colspan="6">Cargando...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </template>
-
-    {# * ===== Sección: trueques ===== #}
-    <template id="tpl-trueques">
-        <h2 class="admin__subtitulo">Historial de trueques</h2>
-
-        {# * Resumen: lo rellena admin.js con los números de la API #}
-        <div class="admin__resumen">
-            <div class="admin__dato">
-                <span class="admin__dato-valor" id="tru-total">—</span>
-                <span class="admin__dato-texto">Trueques</span>
-            </div>
-            <div class="admin__dato">
-                <span class="admin__dato-valor" id="tru-completados">—</span>
-                <span class="admin__dato-texto">Completados</span>
-            </div>
-            <div class="admin__dato">
-                <span class="admin__dato-valor" id="tru-en-curso">—</span>
-                <span class="admin__dato-texto">En curso</span>
-            </div>
-            <div class="admin__dato admin__dato--destacado">
-                <span class="admin__dato-valor" id="tru-puntos">—</span>
-                <span class="admin__dato-texto">Puntos intercambiados</span>
-            </div>
-        </div>
-
-        <p id="tru-mensaje" class="admin__mensaje" role="status" hidden></p>
-
-        <div class="admin__filtro">
-            <label for="tru-filtro">Filtrar por estado</label>
-            {# ! Los value tienen que ser iguales que el ENUM de la BD #}
-            <select id="tru-filtro">
-                <option value="">Todos los estados</option>
-                <option value="SOLICITADO">Solicitado</option>
-                <option value="ACEPTADO">Aceptado</option>
-                <option value="EN_EJECUCION">En ejecución</option>
-                <option value="COMPLETADO">Completado</option>
-                <option value="RECHAZADO">Rechazado</option>
-                <option value="CANCELADO">Cancelado</option>
-            </select>
-        </div>
-
-        {# ! Clase "lista": la comparten trueques, reseñas y pendientes en admin.css #}
-        <div id="tru-lista" class="lista">
-            <p class="admin__vacio">Cargando...</p>
-        </div>
-    </template>
-
-    {# * ===== Sección: reseñas ===== #}
-    <template id="tpl-resenas">
-        <h2 class="admin__subtitulo">Moderación de reseñas</h2>
-
-        {# * Resumen: lo rellena admin.js con los números de la API #}
-        <div class="admin__resumen">
-            <div class="admin__dato">
-                <span class="admin__dato-valor" id="res-total">—</span>
-                <span class="admin__dato-texto">Reseñas</span>
-            </div>
-            <div class="admin__dato admin__dato--destacado">
-                <span class="admin__dato-valor" id="res-media">—</span>
-                <span class="admin__dato-texto">Valoración media</span>
-            </div>
-            <div class="admin__dato">
-                <span class="admin__dato-valor" id="res-bajas">—</span>
-                <span class="admin__dato-texto">Con 1-2 estrellas</span>
-            </div>
-        </div>
-
-        <p id="res-mensaje" class="admin__mensaje" role="status" hidden></p>
-
-        <div class="admin__filtro">
-            <label for="res-filtro">Filtrar por estrellas</label>
-            <select id="res-filtro">
-                <option value="">Todas</option>
-                <option value="5">★★★★★ (5)</option>
-                <option value="4">★★★★ (4)</option>
-                <option value="3">★★★ (3)</option>
-                <option value="2">★★ (2)</option>
-                <option value="1">★ (1)</option>
-            </select>
-        </div>
-
-        <div id="res-lista" class="lista">
-            <p class="admin__vacio">Cargando...</p>
-        </div>
-    </template>
-
-    {# * Por si se añade una pestaña sin su plantilla #}
-    <template id="tpl-proximamente">
-        <p class="admin__vacio">Esta sección todavía no está hecha.</p>
-    </template>
-{% endblock %}
-
-{% block scripts %}
-    <script src="/assets/js/modules/admin.js" defer></script>
 {% endblock %}

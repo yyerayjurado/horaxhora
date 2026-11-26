@@ -153,14 +153,14 @@ class UsuarioAdminDao
     }
 
     // * Crea un profesional desde el panel (entra ya aprobado: el valor por defecto de la BD es TRUE)
-    public function crear(string $nombre, string $apellidos, string $email, string $hash, ?string $telefono): ?int
+    public function crear(string $nombre, string $apellidos, string $email, string $hash, ?string $telefono, int $puntos): ?int
     {
         try {
             $pdo = BD::getConexion();
             $stmt = $pdo->prepare(
-                'INSERT INTO usuarios (nombre, apellidos, email, password, telefono) VALUES (?, ?, ?, ?, ?)'
+                'INSERT INTO usuarios (nombre, apellidos, email, password, telefono, puntos_saldo) VALUES (?, ?, ?, ?, ?, ?)'
             );
-            $stmt->execute([$nombre, $apellidos, $email, $hash, $telefono]);
+            $stmt->execute([$nombre, $apellidos, $email, $hash, $telefono, $puntos]);
 
             return (int) $pdo->lastInsertId();
         } catch (PDOException $e) {
