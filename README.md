@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔄 Trueque de Servicios
+# 🔄 HoraXHora
 
 **Plataforma web de trueque de servicios profesionales basada en un sistema de puntos por hora.**
 
@@ -14,7 +14,7 @@ Presta un servicio, gana puntos. Usa esos puntos para contratar el servicio que 
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)
 ![CSS3](https://img.shields.io/badge/CSS3-nativo-1572B6?logo=css3&logoColor=white)
 
-[Qué es](#-qué-es) · [Puesta en marcha](#-puesta-en-marcha-con-docker) · [Arquitectura](#-arquitectura) · [Base de datos](#-base-de-datos) · [Problemas comunes](#-problemas-comunes)
+[Qué es](#-qué-es) · [Capturas](#-capturas) · [Puesta en marcha](#-puesta-en-marcha-con-docker) · [Arquitectura](#️-arquitectura) · [Base de datos](#️-base-de-datos) · [Problemas comunes](#-problemas-comunes)
 
 </div>
 
@@ -22,13 +22,13 @@ Presta un servicio, gana puntos. Usa esos puntos para contratar el servicio que 
 
 ## 📖 Qué es
 
-**Trueque de Servicios** es una aplicación web **no lucrativa** de economía colaborativa. Fontaneros, electricistas, informáticos, profesores y otros profesionales intercambian servicios usando **puntos** en lugar de dinero.
+**HoraXHora** es una aplicación web **no lucrativa** de trueque de servicios. Fontaneros, electricistas, informáticos, profesores y otros profesionales intercambian servicios usando **puntos** en lugar de dinero.
 
 El intercambio **no tiene que ser recíproco** entre las mismas dos personas:
 
 ```
-Ana arregla el ordenador de Luis      →  Ana gana 20 puntos
-Ana usa esos puntos con Marta (clases) →  Ana gasta 20 puntos, Marta los gana.
+Ana arregla el ordenador de Luis       →  Ana gana 20 puntos
+Ana usa esos puntos con Marta (clases) →  Ana gasta 20 puntos, Marta los gana
 ```
 
 Cada usuario acumula puntos prestando servicios a cualquier miembro y los canjea después con quien quiera.
@@ -39,16 +39,51 @@ Cada usuario acumula puntos prestando servicios a cualquier miembro y los canjea
 
 ## ✨ Funcionalidades
 
-| Módulo | Qué incluye |
+| Módulo | Qué incluye | Estado |
+|---|---|---|
+| 👤 **Registro y login** | Registro en ventana modal con **50 puntos de bienvenida** · El profesional elige los servicios que sabe hacer · Login / logout con sesiones · Roles `ADMIN` y `PROFESIONAL` | ✅ |
+| ✅ **Aprobación de cuentas** | Las cuentas nuevas quedan pendientes hasta que el administrador las acepta o rechaza. Mientras, no pueden iniciar sesión ni aparecen en el buscador | ✅ |
+| 📧 **Correos y PDF** | Aviso al registrarse y al aprobar o rechazar la cuenta (PHPMailer + MailHog). Al aprobar se adjunta un PDF de bienvenida (Dompdf) | ✅ |
+| 📚 **Catálogo de servicios** | Catálogo global gestionado **solo por el administrador** (categoría + precio de referencia en puntos/hora) | ✅ |
+| 🧰 **Crear oferta** | El profesional publica uno de sus servicios con **tarifa propia** (entre el 50 % y el 150 % del precio de referencia) y una **descripción personal** | ✅ |
+| 🔎 **Buscador** | Búsqueda por texto · Filtro por **categoría** · Ordenación por valoración media o por precio, sin recargar la página | ✅ |
+| 🔄 **Solicitar un servicio** | Desde el buscador: horas (de 0,5 a 8), fecha y hora propuestas. Los puntos los calcula el servidor | ✅ |
+| 📅 **Agenda** | Calendario con vista de mes y de semana · Solicitudes pendientes · Aceptar, rechazar o cancelar | ✅ |
+| 👤 **Perfil** | Datos personales editables, saldo de puntos, valoración media y ofertas del usuario | ✅ |
+| 🛡️ **Panel de administración** | CRUD de categorías y servicios · Gestión de usuarios (alta, edición, baja sin borrar el historial) · Historial de trueques con cancelación · Moderación de reseñas | ✅ |
+| 🤝 **Completar el trueque** | **Doble confirmación** (cliente y prestador) y transferencia de puntos en una transacción | 🚧 Pendiente |
+| ⭐ **Valoraciones** | Puntuación de **1 a 5 estrellas** + comentario tras completar el servicio | 🚧 Pendiente |
+| 💰 **Saldo en tiempo real** | El saldo del header se actualiza **sin recargar la página** | 🚧 Pendiente |
+
+---
+
+## 📸 Capturas
+
+| Inicio | Buscador de servicios |
 |---|---|
-| 👤 **Usuarios y autenticación** | Registro de profesionales con **saldo de puntos de bienvenida** · Login / logout con sesiones · Roles `ADMIN` y `PROFESIONAL` |
-| 📚 **Catálogo de servicios** | Catálogo global gestionado **solo por el administrador** (categoría + precio de referencia en puntos/hora) |
-| 🧰 **Ofertas del profesional** | Cada profesional elige qué servicios ofrece, con su **tarifa propia** y una **descripción personal**, y puede activarlos o desactivarlos |
-| 🔎 **Buscador** | Filtro por **categoría** · Ordenación por **valoración media** del profesional (de mayor a menor) |
-| 🔄 **Trueques** | Solicitud con fecha propuesta · Aceptar / rechazar desde la agenda · **Doble confirmación** antes de mover puntos |
-| ⭐ **Valoraciones** | Puntuación de **1 a 5 estrellas** + comentario tras completar el servicio |
-| 💰 **Saldo en tiempo real** | El saldo del panel personal se actualiza **sin recargar la página** |
-| 🛡️ **Panel de administración** | CRUD de usuarios, categorías y servicios · Historial global de trueques · Moderación (dar de baja usuarios, cancelar solicitudes, moderar reseñas) |
+| ![Página de inicio](docs/img/capturas/inicio.png) | ![Buscador con filtros por categoría](docs/img/capturas/buscador.png) |
+| **Registro (ventana modal)** | **Solicitar un servicio** |
+| ![Registro en ventana modal](docs/img/capturas/registro-modal.png) | ![Modal para solicitar un servicio](docs/img/capturas/solicitar-servicio.png) |
+| **Mi agenda** | **Crear oferta** |
+| ![Agenda con vista de mes](docs/img/capturas/agenda-mes.png) | ![Crear oferta](docs/img/capturas/crear-oferta.png) |
+| **Perfil** | **Panel de administración** |
+| ![Perfil del profesional](docs/img/capturas/perfil.png) | ![Gestión de usuarios en el panel de administración](docs/img/capturas/admin-usuarios.png) |
+
+<details>
+<summary><b>Más capturas</b></summary>
+
+| | |
+|---|---|
+| **Login** | **Inicio en móvil** |
+| ![Inicio de sesión](docs/img/capturas/login.png) | ![Inicio en móvil](docs/img/capturas/inicio-movil.png) |
+| **Agenda (semana)** | **Admin · Historial de trueques** |
+| ![Agenda con vista de semana](docs/img/capturas/agenda-semana.png) | ![Historial de trueques](docs/img/capturas/admin-trueques.png) |
+| **Admin · Moderación de reseñas** | **Admin · Categorías** |
+| ![Moderación de reseñas](docs/img/capturas/admin-resenas.png) | ![CRUD de categorías](docs/img/capturas/admin-categorias.png) |
+| **Correo de cuenta aprobada (MailHog)** | **Bandeja de MailHog** |
+| ![Correo de cuenta aprobada](docs/img/capturas/mailhog-correo.png) | ![Bandeja de MailHog](docs/img/capturas/mailhog-bandeja.png) |
+
+</details>
 
 ---
 
@@ -59,27 +94,32 @@ Cada usuario acumula puntos prestando servicios a cualquier miembro y los canjea
 | Backend | **PHP 8.2** orientado a objetos con tipado estricto (`declare(strict_types=1)`) |
 | Servidor | **Apache 2.4** en contenedor Docker |
 | Base de datos | **MySQL 8.0** con acceso mediante **PDO** y sentencias preparadas |
-| Plantillas | **Twig 3**, instalado con **Composer** |
-| Frontend | **JavaScript Vanilla (ES6+)**: módulos, `fetch`, event listeners y manipulación del DOM |
-| Maquetación | **HTML5 semántico** + **CSS3 nativo** (Flexbox, Grid, variables CSS, responsive). **Sin frameworks CSS** |
+| Plantillas | **Twig 3** |
+| Correo y PDF | **PHPMailer 6.8** · **Dompdf 3** · **MailHog** para pruebas |
+| Dependencias | **Composer** (autoload PSR-4: `App\` → `src/`) |
+| Frontend | **JavaScript Vanilla (ES6+)**: `fetch`, `async/await`, `<template>` y manipulación del DOM |
+| Maquetación | **HTML5 semántico** + **CSS3 nativo** (Flexbox, Grid y media queries). **Sin frameworks CSS** |
 | Infraestructura | **Docker** + **Docker Compose** |
-| Depuración | **Xdebug 3** integrado con VS Code |
+| Depuración | **Xdebug 3** |
 
-**Patrones de diseño:** MVC · DAO · arquitectura híbrida SPA (Twig renderiza en el servidor y JavaScript carga módulos y datos sin recargar).
+**Patrones de diseño:** MVC · DAO · Singleton (conexión PDO) · arquitectura híbrida (Twig renderiza en el servidor y JavaScript carga datos con `fetch` sin recargar).
 
 ---
 
 ## 🚀 Puesta en marcha con Docker
 
+> 📘 La guía completa, con configuración, Xdebug y solución de problemas, está en el [**manual de despliegue**](docs/manual-despliegue.md).
+
+![Contenedores de Docker y puertos](docs/img/diagramas/despliegue.png)
+
 ### Requisitos
 
 | Herramienta | Para qué | Comprobar |
 |---|---|---|
-| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Levantar Apache + PHP + MySQL | `docker -v` |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop/) | Levantar Apache + PHP, MySQL y MailHog | `docker -v` |
 | [Git](https://git-scm.com/) | Clonar el repositorio | `git -v` |
-| [Composer](https://getcomposer.org/) *(opcional)* | Instalar Twig desde tu ordenador | `composer -V` |
 
-> No necesitas tener PHP ni MySQL instalados en tu ordenador: todo corre dentro de Docker.
+> No hace falta tener PHP, MySQL ni Composer instalados en tu ordenador: todo funciona dentro de Docker.
 
 ### 1. Clonar el repositorio
 
@@ -88,78 +128,75 @@ git clone https://github.com/yyerayjurado/proyecto-noviembre.git
 cd proyecto-noviembre
 ```
 
-### 2. Instalar dependencias (Twig)
-
-La carpeta `vendor/` no se sube al repositorio, así que hay que generarla. Puedes hacerlo de dos formas:
-
-**Con Composer instalado en tu ordenador:**
-```bash
-composer install
-```
-
-**Sin Composer, usando su imagen oficial de Docker:**
-```bash
-docker run --rm -v "$PWD":/app -w /app composer install
-```
-
-> En Windows (PowerShell) cambia `"$PWD"` por `${PWD}`.
-
-### 3. Levantar los contenedores
+### 2. Levantar los contenedores
 
 ```bash
 docker compose up -d --build
 ```
 
-La primera vez tarda unos minutos porque construye la imagen de PHP y descarga MySQL. Durante ese arranque inicial, MySQL ejecuta automáticamente los scripts de `database/`:
+La primera vez tarda unos minutos. Durante ese arranque, MySQL ejecuta automáticamente los scripts de `database/`:
 
 1. `01_schema.sql`: crea las tablas.
 2. `02_seeds.sql`: inserta los datos de prueba.
 
+### 3. Instalar las dependencias
+
+La carpeta `vendor/` no se sube al repositorio. El contenedor ya trae Composer:
+
+```bash
+docker compose exec app composer install
+```
+
 ### 4. Abrir la aplicación
 
-| Servicio | URL / Host |
+| Servicio | Dirección |
 |---|---|
 | 🌐 Aplicación | **http://localhost:8080** |
+| 📬 Correos de prueba (MailHog) | **http://localhost:8025** |
 | 🗄️ MySQL (desde fuera de Docker) | `localhost:3306` |
 
 Para comprobar que todo está en marcha:
+
 ```bash
 docker compose ps
 ```
-Los dos servicios (`app` y `db`) deben aparecer con estado **running**.
+
+Los tres servicios (`app`, `db` y `mailhog`) deben aparecer en marcha.
 
 ### 5. Usuarios de prueba
 
-<!-- TODO: actualizar cuando estén creados los seeds en database/02_seeds.sql -->
+Todos tienen la contraseña **`1234`**.
 
-| Rol | Email | Contraseña |
-|---|---|---|
-| Administrador | `admin@trueque.test` | `admin1234` |
-| Profesional | `profesional@trueque.test` | `prof1234` |
+| Rol | Email |
+|---|---|
+| Administrador | `admin@horaxhora.es` |
+| Profesional | `laura@horaxhora.es` |
+| Profesional | `carlos@horaxhora.es` |
+| Profesional | `ana@horaxhora.es` |
+| Profesional | `david@horaxhora.es` |
 
 ---
 
 ## ⚙️ Configuración
 
-Las credenciales de la base de datos se pasan a PHP como **variables de entorno** desde `docker-compose.yml`, así que no hay contraseñas escritas en el código.
+Los datos de conexión se pasan a PHP como **variables de entorno** desde `docker-compose.yml` y se leen con `getenv()`, así que no hay contraseñas escritas en el código.
 
-| Variable | Valor por defecto | Uso |
+| Variable | Valor | Dónde se usa |
 |---|---|---|
-| `DB_HOST` | `db` | Nombre del servicio MySQL en la red de Docker |
-| `DB_NAME` | `trueque_servicios` | Base de datos |
-| `DB_USER` | `usuario` | Usuario de la aplicación |
-| `DB_PASS` | `usuario` | Contraseña de la aplicación |
+| `DB_HOST` | `db` | `src/Dao/BD.php` |
+| `DB_NAME` | `sistema_trueque` | `src/Dao/BD.php` |
+| `DB_USER` | `usuario` | `src/Dao/BD.php` |
+| `DB_PASS` | `usuario` | `src/Dao/BD.php` |
+| `MAIL_HOST` | `mailhog` | `src/Service/MailOptions.php` |
 
-En PHP se leen con `getenv('DB_HOST')`, etc., desde `src/Dao/Database.php`.
-
-**Conexión a MySQL con un cliente externo** (MySQL Workbench, DBeaver, TablePlus…):
+**Conexión a MySQL con un cliente externo** (PhpStorm, MySQL Workbench, DBeaver…):
 
 | Campo | Valor |
 |---|---|
-| Host | `127.0.0.1` |
+| Host | `localhost` |
 | Puerto | `3306` |
 | Usuario / contraseña | `usuario` / `usuario` (o `root` / `root`) |
-| Base de datos | `trueque_servicios` |
+| Base de datos | `sistema_trueque` |
 
 ---
 
@@ -173,7 +210,7 @@ En PHP se leen con `getenv('DB_HOST')`, etc., desde `src/Dao/Database.php`.
 | Ver logs de PHP / Apache | `docker compose logs -f app` |
 | Ver logs de MySQL | `docker compose logs -f db` |
 | Entrar en el contenedor de PHP | `docker compose exec app bash` |
-| Abrir la consola de MySQL | `docker compose exec db mysql -u usuario -pusuario trueque_servicios` |
+| Abrir la consola de MySQL | `docker compose exec db mysql -u usuario -pusuario sistema_trueque` |
 | **Reiniciar la base de datos desde cero** ⚠️ | `docker compose down -v && docker compose up -d` |
 
 > ⚠️ `down -v` **borra el volumen de MySQL y todos sus datos**. Úsalo cuando cambies `01_schema.sql` o `02_seeds.sql`, porque esos scripts solo se ejecutan cuando la base de datos se crea por primera vez.
@@ -184,69 +221,67 @@ En PHP se leen con `getenv('DB_HOST')`, etc., desde `src/Dao/Database.php`.
 
 ### Flujo de una petición
 
-```mermaid
-flowchart LR
-    B[Navegador] -->|HTTP| A[Apache]
-    A -->|FallbackResource| I[public/index.php]
-    I --> R[Router]
-    R --> C[Controller]
-    C --> D[Dao]
-    D -->|PDO| M[(MySQL)]
-    D --> MO[Models]
-    C -->|HTML| T[Vistas Twig]
-    C -->|JSON| J[fetch en JS]
-```
+![Flujo de una petición en HoraXHora](docs/img/diagramas/arquitectura.png)
 
-- **Todas las peticiones entran por `public/index.php`** (front controller). Apache redirige cualquier ruta que no sea un archivo real con `FallbackResource`.
-- El **Router** decide qué método del **Controller** ejecutar.
-- El **Controller** pide los datos al **Dao**. El Dao es la única capa que habla con la base de datos y devuelve objetos **Model**.
+- **Todas las peticiones entran por `public/index.php`**. El `.htaccess` manda a `index.php` cualquier URL que no sea un archivo real (CSS, JS, imágenes).
+- El **Router** parte la URL en segmentos y decide con un `switch` qué método del **Controller** ejecutar.
+- El **Controller** pide los datos al **Dao**, que es la única capa que habla con la base de datos.
+- Los **Service** se encargan del envío de correos y de la generación de PDF.
 - El Controller responde de una de dos formas:
-  - **HTML** renderizado con **Twig**, para las páginas completas.
-  - **JSON**, para las peticiones `fetch` de JavaScript (la parte SPA).
+  - **HTML** renderizado con **Twig**, para las páginas y el panel de administración (formularios POST).
+  - **JSON**, para las peticiones `fetch` del buscador, crear oferta, solicitudes y agenda.
 
 ### Estructura de carpetas
 
 ```
 proyecto-noviembre/
-├── docker/
-│   ├── Dockerfile              # PHP 8.2 + Apache + pdo_mysql + Xdebug
-│   └── xdebug.ini              # Configuración de depuración
-├── docker-compose.yml          # Servicios: app (PHP/Apache) y db (MySQL)
-├── composer.json               # Dependencias (Twig)
+├── Dockerfile                  # PHP 8.2 + Apache + pdo_mysql + Xdebug + Composer
+├── docker-compose.yml          # Servicios: app, db y mailhog
+├── apache.conf                 # DocumentRoot en public/ y AllowOverride All
+├── xdebug.ini                  # Configuración de depuración
+├── composer.json               # Twig, PHPMailer y Dompdf
 │
 ├── database/
 │   ├── 01_schema.sql           # Creación de tablas
 │   └── 02_seeds.sql            # Datos de prueba
 │
+├── docs/
+│   ├── manual-despliegue.md
+│   ├── diario-ia.md
+│   └── img/                    # capturas/ y diagramas/ (E/R, clases, arquitectura...)
+│
 ├── public/                     # 🔓 Única carpeta accesible desde el navegador
-│   ├── index.php               # Front controller
+│   ├── index.php               # Punto de entrada
+│   ├── .htaccess               # Rutas amigables hacia index.php
 │   └── assets/
-│       ├── css/                # Variables, base, layout y componentes
-│       ├── js/
-│       │   ├── app.js          # Arranque de la SPA
-│       │   ├── api.js          # Envoltorio de fetch
-│       │   └── modules/        # buscador, ofertas, solicitudes, agenda, valoraciones, saldo, admin
+│       ├── css/                # base, header, footer y un CSS por página
+│       ├── js/modules/         # buscador, registro, modal, crear_oferta, agenda...
 │       └── img/
 │
 ├── src/                        # 🔒 Código PHP (namespace App\)
-│   ├── App.php                 # Arranque de la aplicación
-│   ├── Autoloader.php          # Carga automática de clases
 │   ├── Router.php              # Enrutado de URLs a controladores
-│   ├── Controllers/            # Lógica de cada sección (Controller base + uno por módulo)
-│   ├── Dao/                    # Acceso a datos con PDO (Database + un Dao por tabla)
-│   ├── Models/                 # Entidades + enums (Rol, EstadoSolicitud)
-│   └── Views/                  # Plantillas Twig
-│       ├── layout.html.twig
-│       ├── partials/           # header, nav, footer, mensajes flash
-│       ├── components/         # Fragmentos reutilizables (tarjeta de oferta, estrellas…)
-│       └── auth/ home/ perfil/ servicios/ agenda/ admin/
+│   ├── Controllers/            # Auth, Perfil, Catalogo, Oferta, Solicitud, Agenda, Admin
+│   ├── Dao/                    # BD.php (Singleton) + un Dao por tabla
+│   ├── Models/                 # Categoria, Servicio, OfertaProfesional, SolicitudTrueque, Valoracion, Usuarios
+│   └── Service/                # MailService, PdfService, MailOptions, CreateMailer
 │
-└── docs/
-    ├── manual-despliegue.md
-    └── diario-ia.md            # Diario de uso de IA
+└── templates/                  # 🔒 Plantillas
+    ├── layout/                 # base.html.twig
+    ├── partials/               # header, footer, formulario y modal de registro
+    ├── pages/                  # inicio, login, registro, servicios, perfil, crearoferta, agenda, admin
+    ├── emails/                 # Plantillas de los correos
+    └── pdf/                    # Plantilla del PDF de bienvenida
 ```
 
-> 🔒 **Seguridad:** Apache solo sirve la carpeta `public/`. El código PHP, las plantillas, `vendor/` y los scripts SQL **no son accesibles desde el navegador**.
+### Diagrama de clases MVC
+
+Capas de la aplicación: el `Router` reparte las peticiones a los **Controllers**, que usan los **Dao** (todos comparten la conexión de `BD`, patrón Singleton) y los **Service** de correo y PDF.
+
+![Diagrama de clases MVC: Router, Controllers, Dao y Service](docs/img/diagramas/clases-mvc.png)
+
+### Diagrama de clases de los modelos
+
+![Diagrama de clases de los modelos](docs/img/diagramas/clases-modelos.png)
 
 ---
 
@@ -254,102 +289,35 @@ proyecto-noviembre/
 
 ### Diagrama Entidad-Relación
 
-```mermaid
-erDiagram
-    USUARIO ||--o{ OFERTA_PROFESIONAL : "ofrece"
-    USUARIO ||--o{ SOLICITUD_TRUEQUE : "solicita (cliente)"
-    CATEGORIA ||--o{ SERVICIO : "agrupa"
-    SERVICIO ||--o{ OFERTA_PROFESIONAL : "se oferta en"
-    OFERTA_PROFESIONAL ||--o{ SOLICITUD_TRUEQUE : "recibe"
-    SOLICITUD_TRUEQUE ||--o| VALORACION : "tiene"
-
-    USUARIO {
-        int id_usuario PK
-        varchar nombre
-        varchar apellidos
-        varchar email UK
-        varchar password "hash"
-        varchar telefono
-        enum rol "ADMIN | PROFESIONAL"
-        int puntos_saldo
-        datetime fecha_registro
-    }
-    CATEGORIA {
-        int id_categoria PK
-        varchar nombre
-        text descripcion
-    }
-    SERVICIO {
-        int id_servicio PK
-        int id_categoria FK
-        varchar nombre
-        text descripcion
-        int puntos_hora_referencia
-    }
-    OFERTA_PROFESIONAL {
-        int id_oferta PK
-        int id_profesional FK
-        int id_servicio FK
-        int puntos_hora
-        text descripcion_personal
-        boolean activo
-    }
-    SOLICITUD_TRUEQUE {
-        int id_solicitud PK
-        int id_cliente FK
-        int id_oferta FK
-        int horas_estimadas
-        int puntos_totales
-        datetime fecha_propuesta
-        enum estado
-        boolean confirmado_cliente
-        boolean confirmado_prestador
-        datetime fecha_creacion
-    }
-    VALORACION {
-        int id_valoracion PK
-        int id_solicitud FK "UNIQUE"
-        tinyint puntuacion "1-5"
-        text comentario
-        datetime fecha_valoracion
-    }
-```
+![Diagrama Entidad-Relación de HoraXHora](docs/img/diagramas/er.png)
 
 **Restricciones clave:**
 - `OFERTA_PROFESIONAL`: `UNIQUE (id_profesional, id_servicio)`. Un profesional no puede ofrecer el mismo servicio dos veces.
+- `SERVICIO_PROFESIONAL` (tabla añadida al modelo del enunciado): guarda los servicios que el profesional eligió al registrarse. Solo puede crear ofertas de esos servicios.
 - `VALORACION.id_solicitud` es `UNIQUE`, así que cada trueque se valora **una sola vez**.
-- La solicitud no copia los datos de la oferta: apunta a `id_oferta` y de ahí se obtienen el prestador y el servicio. Solo se guarda `puntos_totales`, para conservar el precio acordado aunque el profesional cambie su tarifa más adelante.
+- `CHECK`: el saldo no puede ser negativo, las horas, las tarifas y los puntos tienen que ser mayores que 0 y la puntuación va de 1 a 5.
+- La solicitud no copia los datos de la oferta: apunta a `id_oferta`. Solo se guarda `puntos_totales`, para conservar el precio acordado aunque el profesional cambie su tarifa más adelante.
+- `activo` y `aprobado` en `USUARIO`: dar de baja a un usuario lo desactiva en vez de borrarlo, porque el `ON DELETE CASCADE` borraría todo su historial de trueques.
 
 ---
 
 ## 🔄 Ciclo de vida de un trueque
 
-```mermaid
-stateDiagram-v2
-    [*] --> SOLICITADO : El cliente pide el servicio
-    SOLICITADO --> ACEPTADO : El prestador acepta
-    SOLICITADO --> RECHAZADO : El prestador rechaza
-    SOLICITADO --> CANCELADO : Cancelación / moderación
-    ACEPTADO --> EN_EJECUCION : Se presta el servicio
-    EN_EJECUCION --> COMPLETADO : Cliente ✔ y prestador ✔
-    EN_EJECUCION --> CANCELADO : Moderación del admin
-    COMPLETADO --> [*] : El cliente valora (1-5 ⭐)
-    RECHAZADO --> [*]
-    CANCELADO --> [*]
-```
+![Ciclo de vida de un trueque](docs/img/diagramas/ciclo-trueque.png)
 
-**Doble confirmación antiabuso:** el trueque solo pasa a `COMPLETADO` cuando **cliente y prestador** han marcado el servicio como finalizado (`confirmado_cliente` y `confirmado_prestador`).
+**Seguridad en las acciones:** cada `UPDATE` de la agenda comprueba en el `WHERE` el estado actual **y** que el trueque pertenece a quien hace la acción. Así nadie puede aceptar o cancelar un trueque ajeno cambiando el id de la URL.
 
-**Transferencia de puntos atómica:** al completarse, se descuentan los puntos al cliente, se suman al prestador y se cambia el estado **dentro de una misma transacción PDO** (`beginTransaction` → `commit`, o `rollBack` si algo falla). Así nunca se pierden ni se duplican puntos.
+**Doble confirmación y puntos** *(pendiente)*: el trueque solo pasará a `COMPLETADO` cuando **cliente y prestador** hayan marcado el servicio como finalizado (`confirmado_cliente` y `confirmado_prestador`). En ese momento se descontarán los puntos al cliente y se sumarán al prestador **dentro de una misma transacción PDO** (`beginTransaction` → `commit`, o `rollBack` si algo falla), para que nunca se pierdan ni se dupliquen puntos.
 
 ---
 
 ## 🐞 Depuración con Xdebug
 
-El contenedor incluye **Xdebug 3**, configurado para conectar con VS Code.
+El contenedor incluye **Xdebug 3** (puerto `9003`, `client_host=host.docker.internal`).
 
-1. Instala la extensión **PHP Debug** (xdebug.php-debug).
-2. Crea `.vscode/launch.json`:
+**PhpStorm:** *Settings → PHP → Servers*, añade `localhost` en el puerto `8080`, activa **Use path mappings** y relaciona la carpeta del proyecto con `/var/www/html`. Después pulsa **Start Listening for PHP Debug Connections**.
+
+**VS Code:** instala la extensión **PHP Debug** y crea `.vscode/launch.json`:
 
 ```json
 {
@@ -368,8 +336,6 @@ El contenedor incluye **Xdebug 3**, configurado para conectar con VS Code.
 }
 ```
 
-3. Pulsa **F5**, pon un breakpoint y recarga http://localhost:8080.
-
 ---
 
 ## 🧯 Problemas comunes
@@ -377,7 +343,7 @@ El contenedor incluye **Xdebug 3**, configurado para conectar con VS Code.
 <details>
 <summary><b>❌ <code>port is already allocated</code> (puerto 8080 o 3306 ocupado)</b></summary>
 
-Hay otro programa usando ese puerto, por ejemplo un MySQL instalado en tu ordenador. Cambia el puerto de la izquierda en `docker-compose.yml`:
+Hay otro programa usando ese puerto, por ejemplo un MySQL o XAMPP instalado en tu ordenador. Cambia el puerto de la izquierda en `docker-compose.yml`:
 
 ```yaml
 ports:
@@ -388,7 +354,17 @@ ports:
 <details>
 <summary><b>❌ <code>Failed opening required '.../vendor/autoload.php'</code></b></summary>
 
-Falta instalar las dependencias. Ejecuta el [paso 2](#2-instalar-dependencias-twig).
+Faltan las dependencias. Ejecuta el [paso 3](#3-instalar-las-dependencias).
+</details>
+
+<details>
+<summary><b>❌ <code>Class "App\..." not found</code></b></summary>
+
+El nombre del archivo, de la carpeta o del `namespace` no coincide exactamente con la clase. En Mac funciona aunque no coincidan las mayúsculas, pero en Docker (Linux) no: `UsuarioDao.php` tiene que contener `class UsuarioDao`, y la carpeta es `Service`, no `service`. Después:
+
+```bash
+docker compose exec app composer dump-autoload
+```
 </details>
 
 <details>
@@ -403,19 +379,25 @@ docker compose up -d
 </details>
 
 <details>
-<summary><b>❌ <code>SQLSTATE[HY000] [2002] Connection refused</code> justo al arrancar</b></summary>
+<summary><b>❌ <code>No se ha podido conectar con la base de datos</code> justo al arrancar</b></summary>
 
 MySQL tarda unos segundos en estar listo la primera vez. Espera un poco y recarga. Puedes seguir el arranque con `docker compose logs -f db` hasta que aparezca `ready for connections`.
 </details>
 
 <details>
-<summary><b>❌ Todas las rutas dan 404 excepto la portada</b></summary>
+<summary><b>❌ Error 403 o todas las rutas dan 404 excepto la portada</b></summary>
 
-La imagen está desactualizada. Reconstrúyela para que se aplique la configuración de `FallbackResource`:
+Apache no está usando `apache.conf` (`DocumentRoot` en `public/` y `AllowOverride All`) o la imagen está desactualizada. Reconstrúyela:
 
 ```bash
 docker compose up -d --build
 ```
+</details>
+
+<details>
+<summary><b>❌ No veo el banner en los correos de MailHog</b></summary>
+
+MailHog no muestra en su pestaña HTML las imágenes incrustadas con `cid`. El correo es correcto: compruébalo en la pestaña **Source**.
 </details>
 
 ---
@@ -425,9 +407,9 @@ docker compose up -d --build
 | Documento | Contenido |
 |---|---|
 | [`docs/manual-despliegue.md`](docs/manual-despliegue.md) | Manual de despliegue del entorno Docker |
-| [`docs/diario-ia.md`](docs/diario-ia.md) | Diario de uso de IA (prompts, resultados, motivos y aprendizajes) |
-| Diagrama E/R | [Sección Base de datos](#-base-de-datos) |
-| Diagrama de clases MVC | <!-- TODO: añadir docs/diagrama-clases.png --> *Pendiente* |
+| [`docs/diario-ia.md`](docs/diario-ia.md) | Diario de uso de IA (prompt, respuesta de la IA y conclusión de cada consulta) |
+| Diagrama E/R | [Sección Base de datos](#️-base-de-datos) |
+| Diagrama de clases MVC | [Sección Arquitectura](#diagrama-de-clases-mvc) · [`docs/img/diagramas/clases-mvc.png`](docs/img/diagramas/clases-mvc.png) |
 
 ---
 
