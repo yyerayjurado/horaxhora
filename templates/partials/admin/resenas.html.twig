@@ -1,0 +1,81 @@
+{# * ===== Sección: reseñas ===== #}
+<h2 class="admin__subtitulo">Moderación de reseñas</h2>
+
+<div class="admin__resumen">
+    <div class="admin__dato">
+        <span class="admin__dato-valor">{{ resumen.total }}</span>
+        <span class="admin__dato-texto">Reseñas</span>
+    </div>
+    <div class="admin__dato admin__dato--destacado">
+        {# * 4.7 -> "4,7 ★" (con coma, como se escribe en España). Si no hay reseñas, "—" #}
+        <span class="admin__dato-valor">{{ resumen.media is not null ? resumen.media|number_format(1, ',', '.') ~ ' ★' : '—' }}</span>
+        <span class="admin__dato-texto">Valoración media</span>
+    </div>
+    <div class="admin__dato">
+        <span class="admin__dato-valor">{{ resumen.bajas }}</span>
+        <span class="admin__dato-texto">Con 1-2 estrellas</span>
+    </div>
+</div>
+
+<form method="get" action="/admin/resenas" class="admin__filtro">
+    <label for="res-filtro">Filtrar por estrellas</label>
+    <select id="res-filtro" name="puntuacion">
+        <option value="">Todas</option>
+        {% for n in 5..1 %}
+            <option value="{{ n }}" {{ n == filtro_puntuacion ? 'selected' }}>{{ n }} estrella{{ n > 1 ? 's' }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="admin__boton">Filtrar</button>
+</form>
+
+{# * Una línea por reseña:
+   * ★★★★★  Ana López sobre Laura Martínez — Reparación de tuberías
+   *        "Arregló la fuga en un momento."
+   *        10/10/26, 14:00                     [Quitar comentario] [Borrar] #}
+<div class="lista">
+    {% for r in resenas %}
+        {% set autor = r.autor_nombre ~ ' ' ~ r.autor_apellidos %}
+        {% set valorado = r.valorado_nombre ~ ' ' ~ r.valorado_apellidos %}
+
+        {# ! Las de 1-2 estrellas se marcan para que el admin las vea antes #}
+        <div class="lista__fila {{ r.puntuacion <= 2 ? 'lista__fila--aviso' }}">
+            {# * Estrellas (para el lector de pantalla decimos el número, no los símbolos) #}
+            <span class="lista__estrellas" aria-label="{{ r.puntuacion }} de 5 estrellas">
+                {%- for i in 1..5 %}{{ i <= r.puntuacion ? '★' : '☆' }}{% endfor -%}
+            </span>
+
+            <div class="lista__texto">
+                <p class="lista__frase">
+                    <strong>{{ autor }}</strong> sobre <strong>{{ valorado }}</strong>
+                    <span class="lista__secundario"> — {{ r.servicio }}</span>
+                </p>
+
+                {% if r.comentario %}
+                    <p class="lista__comentario">“{{ r.comentario }}”</p>
+                {% else %}
+                    <p class="lista__comentario lista__comentario--vacio">Sin comentario</p>
+                {% endif %}
+
+                <p class="lista__detalles">{{ r.fecha_valoracion|date('d/m/y, H:i') }}</p>
+            </div>
+
+            <div class="lista__lado">
+                {# * Quitar comentario solo si tiene comentario #}
+                {% if r.comentario %}
+                    <form method="post" action="/admin/resenas/quitar-comentario/{{ r.id_valoracion }}"
+                          onsubmit="return confirm('{{ ('¿Quitar el comentario de ' ~ autor ~ '?\n\nLas ' ~ r.puntuacion ~ ' estrellas se mantienen, así que la media de ' ~ valorado ~ ' no cambia.')|e('js') }}')">
+                        <button type="submit" class="admin__boton">Quitar comentario</button>
+                    </form>
+                {% endif %}
+
+                {# ! Borrar cambia la media del profesional: avisamos #}
+                <form method="post" action="/admin/resenas/borrar/{{ r.id_valoracion }}"
+                      onsubmit="return confirm('{{ ('¿Borrar la reseña entera de ' ~ autor ~ ' sobre ' ~ valorado ~ '?\n\nSe borran también las ' ~ r.puntuacion ~ ' estrellas y la media de ' ~ valorado ~ ' se recalculará.')|e('js') }}')">
+                    <button type="submit" class="admin__boton admin__boton--peligro">Borrar</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p class="admin__vacio">No hay reseñas con estas estrellas.</p>
+    {% endfor %}
+</div>

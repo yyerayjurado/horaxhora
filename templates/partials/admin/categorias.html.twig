@@ -1,0 +1,61 @@
+{# * ===== Sección: categorías ===== #}
+<h2 class="admin__subtitulo">Categorías</h2>
+
+{# * El mismo formulario crea (sin id en la URL) o edita (con id) #}
+<form method="post" action="/admin/categorias/guardar{{ editar ? '/' ~ editar.id_categoria }}" class="admin__form">
+    <div class="admin__campo">
+        <label for="cat-nombre">Nombre</label>
+        <input type="text" id="cat-nombre" name="nombre" maxlength="100" required
+               value="{{ editar.nombre ?? '' }}">
+    </div>
+
+    <div class="admin__campo">
+        <label for="cat-descripcion">Descripción</label>
+        <input type="text" id="cat-descripcion" name="descripcion"
+               value="{{ editar.descripcion ?? '' }}">
+    </div>
+
+    <div class="admin__botones">
+        <button type="submit" class="btn btn--primario">{{ editar ? 'Guardar cambios' : 'Añadir categoría' }}</button>
+        {% if editar %}
+            <a href="/admin/categorias" class="btn btn--secundario">Cancelar</a>
+        {% endif %}
+    </div>
+</form>
+
+<div class="admin__tabla-contenedor">
+    <table class="admin__tabla">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Servicios</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in categorias %}
+                {# ! Avisamos de que se borra todo lo que cuelga de la categoría #}
+                {% set aviso = '¿Borrar la categoría "' ~ c.nombre ~ '"?' %}
+                {% if c.num_servicios > 0 %}
+                    {% set aviso = aviso ~ '\n\nOjo: también se borrarán sus ' ~ c.num_servicios ~ ' servicios y todas las ofertas de esos servicios.' %}
+                {% endif %}
+
+                <tr>
+                    <td>{{ c.nombre }}</td>
+                    <td>{{ c.descripcion ?: '—' }}</td>
+                    <td>{{ c.num_servicios }}</td>
+                    <td class="admin__acciones">
+                        <a href="/admin/categorias?editar={{ c.id_categoria }}" class="admin__boton">Editar</a>
+                        <form method="post" action="/admin/categorias/borrar/{{ c.id_categoria }}"
+                              onsubmit="return confirm('{{ aviso|e('js') }}')">
+                            <button type="submit" class="admin__boton admin__boton--peligro">Borrar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4">Todavía no hay categorías.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,88 @@
+{# * ===== Sección: trueques ===== #}
+<h2 class="admin__subtitulo">Historial de trueques</h2>
+
+{# * Texto bonito y color de cada estado (las claves son las del ENUM de la BD) #}
+{% set estados = {
+    SOLICITADO:   {texto: 'Solicitado',   clase: 'admin__insignia--solicitado'},
+    ACEPTADO:     {texto: 'Aceptado',     clase: 'admin__insignia--aceptado'},
+    EN_EJECUCION: {texto: 'En ejecución', clase: 'admin__insignia--ejecucion'},
+    COMPLETADO:   {texto: 'Completado',   clase: 'admin__insignia--ok'},
+    RECHAZADO:    {texto: 'Rechazado',    clase: 'admin__insignia--baja'},
+    CANCELADO:    {texto: 'Cancelado',    clase: ''}
+} %}
+
+{# ! Solo estos estados se pueden cancelar (el PHP lo vuelve a comprobar) #}
+{% set cancelables = ['SOLICITADO', 'ACEPTADO', 'EN_EJECUCION'] %}
+
+<div class="admin__resumen">
+    <div class="admin__dato">
+        <span class="admin__dato-valor">{{ resumen.total }}</span>
+        <span class="admin__dato-texto">Trueques</span>
+    </div>
+    <div class="admin__dato">
+        <span class="admin__dato-valor">{{ resumen.completados }}</span>
+        <span class="admin__dato-texto">Completados</span>
+    </div>
+    <div class="admin__dato">
+        <span class="admin__dato-valor">{{ resumen.en_curso }}</span>
+        <span class="admin__dato-texto">En curso</span>
+    </div>
+    <div class="admin__dato admin__dato--destacado">
+        <span class="admin__dato-valor">{{ resumen.puntos_intercambiados }}</span>
+        <span class="admin__dato-texto">Puntos intercambiados</span>
+    </div>
+</div>
+
+<form method="get" action="/admin/trueques" class="admin__filtro">
+    <label for="tru-filtro">Filtrar por estado</label>
+    <select id="tru-filtro" name="estado">
+        <option value="">Todos los estados</option>
+        {% for clave, estado in estados %}
+            <option value="{{ clave }}" {{ clave == filtro_estado ? 'selected' }}>{{ estado.texto }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="admin__boton">Filtrar</button>
+</form>
+
+{# * Una línea por trueque:
+   * ● Ana López contrata a Carlos Ruiz — Instalación eléctrica
+   *   12/11/26 9:00 · 1 h · 18 pts                  [Solicitado] [Cancelar] #}
+<div class="lista">
+    {% for t in trueques %}
+        {% set cliente = t.cliente_nombre ~ ' ' ~ t.cliente_apellidos %}
+        {% set prestador = t.prestador_nombre ~ ' ' ~ t.prestador_apellidos %}
+
+        {# * El CSS usa data-estado para el color del punto #}
+        <div class="lista__fila" data-estado="{{ t.estado }}">
+            <span class="lista__punto" aria-hidden="true"></span>
+
+            <div class="lista__texto">
+                <p class="lista__frase">
+                    <strong>{{ cliente }}</strong> contrata a <strong>{{ prestador }}</strong>
+                    <span class="lista__secundario"> — {{ t.servicio }}</span>
+                </p>
+                <p class="lista__detalles">
+                    {# ? "+ 0" convierte "2.00" en 2 para que no salgan los ceros #}
+                    {{ t.fecha_propuesta|date('d/m/y, H:i') }} · {{ t.horas_estimadas + 0 }} h · {{ t.puntos_totales }} pts
+                    {# * En ejecución interesa saber quién ha confirmado ya que está hecho #}
+                    {% if t.estado == 'EN_EJECUCION' %}
+                        · Cliente {{ t.confirmado_cliente ? '✓' : '✗' }} · Prestador {{ t.confirmado_prestador ? '✓' : '✗' }}
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="lista__lado">
+                <span class="admin__insignia {{ estados[t.estado].clase }}">{{ estados[t.estado].texto }}</span>
+
+                {% if t.estado in cancelables %}
+                    <form method="post" action="/admin/trueques/cancelar/{{ t.id_solicitud }}"
+                          onsubmit="return confirm('{{ ('¿Cancelar este trueque?\n\n' ~ cliente ~ ' → ' ~ prestador ~ ' (' ~ t.servicio ~ ', ' ~ t.puntos_totales ~ ' puntos)\n\nNo se mueven puntos, porque solo se transfieren al completarse.')|e('js') }}')">
+                        <button type="submit" class="admin__boton admin__boton--peligro">Cancelar</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <p class="admin__vacio">No hay trueques con este estado.</p>
+    {% endfor %}
+</div>

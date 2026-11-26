@@ -1,0 +1,94 @@
+{# * ===== Sección: servicios ===== #}
+<h2 class="admin__subtitulo">Servicios del catálogo</h2>
+
+{% set categoria_elegida = editar.id_categoria ?? '' %}
+
+<form method="post" action="/admin/servicios/guardar{{ editar ? '/' ~ editar.id_servicio }}"
+      class="admin__form admin__form--servicios">
+    <div class="admin__campo">
+        <label for="serv-categoria">Categoría</label>
+        <select id="serv-categoria" name="id_categoria" required>
+            <option value="">-- Elige categoría --</option>
+            {% for c in categorias %}
+                <option value="{{ c.id_categoria }}" {{ c.id_categoria == categoria_elegida ? 'selected' }}>{{ c.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="admin__campo">
+        <label for="serv-nombre">Nombre</label>
+        <input type="text" id="serv-nombre" name="nombre" maxlength="150" required
+               value="{{ editar.nombre ?? '' }}">
+    </div>
+
+    <div class="admin__campo">
+        <label for="serv-puntos">Pts/hora de referencia</label>
+        <input type="number" id="serv-puntos" name="puntos" min="1" max="1000" required
+               value="{{ editar.puntos_hora_referencia ?? 10 }}">
+    </div>
+
+    <div class="admin__campo admin__campo--completo">
+        <label for="serv-descripcion">Descripción</label>
+        <input type="text" id="serv-descripcion" name="descripcion"
+               value="{{ editar.descripcion ?? '' }}">
+    </div>
+
+    <div class="admin__botones admin__campo--completo">
+        <button type="submit" class="btn btn--primario">{{ editar ? 'Guardar cambios' : 'Añadir servicio' }}</button>
+        {% if editar %}
+            <a href="/admin/servicios" class="btn btn--secundario">Cancelar</a>
+        {% endif %}
+    </div>
+</form>
+
+{# * Filtro: formulario GET normal, la categoría viaja en la URL (?categoria=3) #}
+<form method="get" action="/admin/servicios" class="admin__filtro">
+    <label for="serv-filtro">Filtrar por categoría</label>
+    <select id="serv-filtro" name="categoria">
+        <option value="">Todas las categorías</option>
+        {% for c in categorias %}
+            <option value="{{ c.id_categoria }}" {{ c.id_categoria == filtro_categoria ? 'selected' }}>{{ c.nombre }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="admin__boton">Filtrar</button>
+</form>
+
+<div class="admin__tabla-contenedor">
+    <table class="admin__tabla">
+        <thead>
+            <tr>
+                <th>Servicio</th>
+                <th>Categoría</th>
+                <th>Pts/h ref.</th>
+                <th>Ofertas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in servicios %}
+                {# ! Si hay profesionales ofreciendo este servicio, perderán su oferta #}
+                {% set aviso = '¿Borrar el servicio "' ~ s.nombre ~ '"?' %}
+                {% if s.num_ofertas > 0 %}
+                    {% set aviso = aviso ~ '\n\nOjo: ' ~ s.num_ofertas ~ ' profesional(es) lo ofrecen. Se borrarán sus ofertas, solicitudes y valoraciones.' %}
+                {% endif %}
+
+                <tr>
+                    <td>{{ s.nombre }}</td>
+                    <td>{{ s.categoria }}</td>
+                    <td>{{ s.puntos_hora_referencia }}</td>
+                    <td>{{ s.num_ofertas }}</td>
+                    <td class="admin__acciones">
+                        {# * Mantenemos el filtro al editar para que el servicio siga en la lista #}
+                        <a href="/admin/servicios?{{ {categoria: filtro_categoria ?: null, editar: s.id_servicio}|url_encode }}" class="admin__boton">Editar</a>
+                        <form method="post" action="/admin/servicios/borrar/{{ s.id_servicio }}"
+                              onsubmit="return confirm('{{ aviso|e('js') }}')">
+                            <button type="submit" class="admin__boton admin__boton--peligro">Borrar</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5">No hay servicios en esta categoría.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,166 @@
+{# * ===== Sección: usuarios ===== #}
+
+{# ! Registros pendientes de aprobar: solo sale si hay alguno #}
+{% if lista_pendientes|length > 0 %}
+    <div class="admin__pendientes">
+        <h2 class="admin__subtitulo">
+            Registros pendientes
+            <span class="admin__badge">{{ lista_pendientes|length }}</span>
+        </h2>
+        <p class="admin__pendientes-texto">Estas personas se han registrado y esperan a que aceptes su cuenta.</p>
+
+        <div class="lista">
+            {% for p in lista_pendientes %}
+                {% set nombre = p.nombre ~ ' ' ~ p.apellidos %}
+
+                {# ? Reutilizamos el color ámbar de "solicitado" para el punto #}
+                <div class="lista__fila" data-estado="SOLICITADO">
+                    <span class="lista__punto" aria-hidden="true"></span>
+
+                    <div class="lista__texto">
+                        <p class="lista__frase">
+                            <strong>{{ nombre }}</strong>
+                            <span class="lista__secundario"> — {{ p.email }}</span>
+                        </p>
+                        <p class="lista__detalles">
+                            Registrado el {{ p.fecha_registro|date('d/m/y, H:i') }} · Servicios: {{ p.servicios ?: 'ninguno' }}
+                        </p>
+                    </div>
+
+                    <div class="lista__lado">
+                        <form method="post" action="/admin/usuarios/aprobar/{{ p.id_usuario }}">
+                            <button type="submit" class="admin__boton admin__boton--ok">Aceptar</button>
+                        </form>
+                        {# ! Rechazar borra la cuenta: avisamos #}
+                        <form method="post" action="/admin/usuarios/rechazar/{{ p.id_usuario }}"
+                              onsubmit="return confirm('{{ ('¿Rechazar el registro de ' ~ nombre ~ '?\n\nSe borrará su cuenta. Podrá volver a registrarse con el mismo email.')|e('js') }}')">
+                            <button type="submit" class="admin__boton admin__boton--peligro">Rechazar</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+<h2 class="admin__subtitulo">Usuarios</h2>
+
+<form method="post" action="/admin/usuarios/guardar{{ editar ? '/' ~ editar.id_usuario }}"
+      class="admin__form admin__form--usuarios">
+    <div class="admin__campo">
+        <label for="usu-nombre">Nombre</label>
+        <input type="text" id="usu-nombre" name="nombre" maxlength="100" required
+               value="{{ editar.nombre ?? '' }}">
+    </div>
+
+    <div class="admin__campo">
+        <label for="usu-apellidos">Apellidos</label>
+        <input type="text" id="usu-apellidos" name="apellidos" maxlength="100" required
+               value="{{ editar.apellidos ?? '' }}">
+    </div>
+
+    <div class="admin__campo">
+        <label for="usu-email">Email</label>
+        <input type="email" id="usu-email" name="email" maxlength="150" required
+               value="{{ editar.email ?? '' }}">
+    </div>
+
+    <div class="admin__campo">
+        <label for="usu-telefono">Teléfono</label>
+        <input type="tel" id="usu-telefono" name="telefono" maxlength="20"
+               value="{{ editar.telefono ?? '' }}">
+    </div>
+
+    <div class="admin__campo">
+        <label for="usu-puntos">Puntos</label>
+        <input type="number" id="usu-puntos" name="puntos" min="0" required
+               value="{{ editar.puntos_saldo ?? 50 }}">
+    </div>
+
+    {# ! La contraseña solo se pide al crear: al editar no sale el campo #}
+    {% if not editar %}
+        <div class="admin__campo">
+            <label for="usu-password">Contraseña (mín. 8)</label>
+            <input type="password" id="usu-password" name="password" minlength="8" required autocomplete="new-password">
+        </div>
+    {% endif %}
+
+    <div class="admin__botones admin__campo--completo">
+        <button type="submit" class="btn btn--primario">{{ editar ? 'Guardar cambios' : 'Añadir usuario' }}</button>
+        {% if editar %}
+            <a href="/admin/usuarios" class="btn btn--secundario">Cancelar</a>
+        {% endif %}
+    </div>
+</form>
+
+{# * Buscador: formulario GET normal (?busqueda=texto) #}
+<form method="get" action="/admin/usuarios" class="admin__filtro">
+    <label for="usu-buscador">Buscar</label>
+    <input type="search" id="usu-buscador" name="busqueda" value="{{ busqueda }}" placeholder="Nombre, apellidos o email">
+    <button type="submit" class="admin__boton">Buscar</button>
+    {% if busqueda != '' %}
+        <a href="/admin/usuarios" class="admin__boton">Quitar filtro</a>
+    {% endif %}
+</form>
+
+<div class="admin__tabla-contenedor">
+    <table class="admin__tabla">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Puntos</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+                {% set activo = u.activo == 1 %}
+                {% set nombre = u.nombre ~ ' ' ~ u.apellidos %}
+
+                <tr class="{{ not activo ? 'admin__fila--baja' }}">
+                    <td>{{ nombre }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>
+                        <span class="admin__insignia {{ u.rol == 'ADMIN' ? 'admin__insignia--admin' }}">
+                            {{ u.rol == 'ADMIN' ? 'Admin' : 'Profesional' }}
+                        </span>
+                    </td>
+                    <td>{{ u.puntos_saldo }}</td>
+                    <td>
+                        <span class="admin__insignia {{ activo ? 'admin__insignia--ok' : 'admin__insignia--baja' }}">
+                            {{ activo ? 'Activo' : 'De baja' }}
+                        </span>
+                    </td>
+                    <td class="admin__acciones">
+                        <a href="/admin/usuarios?{{ {busqueda: busqueda ?: null, editar: u.id_usuario}|url_encode }}" class="admin__boton">Editar</a>
+
+                        {# ! Al admin (yo) no le ponemos botones de baja ni de borrar #}
+                        {% if u.id_usuario != id_admin %}
+                            {% if activo %}
+                                <form method="post" action="/admin/usuarios/baja/{{ u.id_usuario }}"
+                                      onsubmit="return confirm('{{ ('¿Dar de baja a ' ~ nombre ~ '?\n\nNo podrá entrar y sus ofertas dejarán de salir en el buscador. Su historial se mantiene.')|e('js') }}')">
+                                    <button type="submit" class="admin__boton">Dar de baja</button>
+                                </form>
+                            {% else %}
+                                <form method="post" action="/admin/usuarios/reactivar/{{ u.id_usuario }}">
+                                    <button type="submit" class="admin__boton">Reactivar</button>
+                                </form>
+                            {% endif %}
+
+                            {# ! Borrar es definitivo: avisamos bien #}
+                            <form method="post" action="/admin/usuarios/borrar/{{ u.id_usuario }}"
+                                  onsubmit="return confirm('{{ ('¿Borrar DEFINITIVAMENTE a ' ~ nombre ~ '?\n\nSe borrarán también sus ofertas, sus solicitudes y sus valoraciones. Si solo quieres que no entre, usa "Dar de baja".')|e('js') }}')">
+                                <button type="submit" class="admin__boton admin__boton--peligro">Borrar</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6">No hay usuarios que coincidan.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
