@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-class SolicitudTrueque extends Modelo
+class SolicitudTrueque
 {
     // * Los mismos estados que el ENUM de la base de datos
     public const ESTADOS = ['SOLICITADO', 'ACEPTADO', 'RECHAZADO', 'EN_EJECUCION', 'COMPLETADO', 'CANCELADO'];

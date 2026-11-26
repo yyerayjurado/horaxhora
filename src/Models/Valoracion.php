@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // * Reseña que deja el cliente cuando el trueque se completa (1 por solicitud)
-class Valoracion extends Modelo
+class Valoracion
 {
     protected int $id;
     protected int $idSolicitud;

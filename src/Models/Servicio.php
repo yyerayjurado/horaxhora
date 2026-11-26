@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // * Servicio del catálogo oficial (solo lo gestiona el admin)
-class Servicio extends Modelo
+class Servicio
 {
     protected int $id;
     protected int $idCategoria;

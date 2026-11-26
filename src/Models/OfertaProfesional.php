@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 // * Servicio del catálogo que ofrece un profesional con su propia tarifa
-class OfertaProfesional extends Modelo
+class OfertaProfesional
 {
     protected int $id;
     protected int $idProfesional;

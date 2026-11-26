@@ -14,11 +14,7 @@ La aplicación se compone de tres contenedores definidos en `docker-compose.yml`
 | `db` | `mysql:8.0` | Base de datos `sistema_trueque` | `3306` |
 | `mailhog` | `mailhog/mailhog` | Servidor de correo de pruebas: recoge los correos que envía la app sin mandarlos de verdad | `1025` (SMTP) y `8025` (web) |
 
-```
-Navegador ──► localhost:8080 ──► app (Apache + PHP) ──► db (MySQL)
-                                        │
-                                        └──► mailhog (correos) ◄── localhost:8025
-```
+![Contenedores de Docker, puertos y conexiones](img/diagramas/despliegue.png)
 
 Dentro de Docker los contenedores se comunican por el **nombre del servicio** (`db`, `mailhog`), no por `localhost`.
 
@@ -115,6 +111,10 @@ Esto instala **Twig**, **PHPMailer** y **Dompdf** y genera el autoload PSR-4 (`A
 | Bandeja de correo (MailHog) | **http://localhost:8025** |
 | MySQL desde fuera de Docker | `localhost:3306` |
 
+Si todo ha ido bien, en http://localhost:8080 verás la página de inicio:
+
+![Página de inicio de HoraXHora en http://localhost:8080](img/capturas/inicio.png)
+
 ### Usuarios de prueba
 
 Todos los usuarios de los seeds tienen la contraseña **`1234`**.
@@ -128,6 +128,10 @@ Todos los usuarios de los seeds tienen la contraseña **`1234`**.
 | Profesional | `david@horaxhora.es` |
 
 Las contraseñas están guardadas en la base de datos con hash bcrypt, nunca en texto plano.
+
+Para comprobar que la base de datos está bien cargada, entra como `admin@horaxhora.es` y abre el **Panel Admin**: deben aparecer los 5 usuarios de prueba.
+
+![Panel de administración con los usuarios de prueba](img/capturas/admin-usuarios.png)
 
 ---
 
@@ -193,7 +197,13 @@ La aplicación envía correos al registrarse un usuario y cuando el administrado
 
 En este entorno los correos **no se envían de verdad**: los recoge MailHog y se ven en **http://localhost:8025**.
 
-- MailHog no muestra bien en la pestaña HTML los correos con imágenes incrustadas (el banner con `cid`). El correo es correcto: se puede comprobar en la pestaña **Source**.
+![Bandeja de MailHog con los correos de registro y de cuenta aprobada](img/capturas/mailhog-bandeja.png)
+
+Al abrir el correo de cuenta aprobada se ve el mensaje con el botón de iniciar sesión:
+
+![Correo de cuenta aprobada abierto en MailHog](img/capturas/mailhog-correo.png)
+
+- MailHog no muestra bien en la pestaña HTML los correos con imágenes incrustadas (el banner con `cid`): en la captura se ve que el banner no carga y que aparecen las cabeceras de las partes del mensaje. El correo es correcto: se puede comprobar en la pestaña **Source** o descargándolo y abriéndolo en un cliente de correo.
 - Si el envío de un correo falla, la acción no se bloquea (el usuario se aprueba igualmente) y el error queda en el log de PHP.
 
 Para usar un servidor de correo real habría que cambiar `MAIL_HOST` y `MAIL_PORT` y añadir usuario, contraseña y cifrado (`tls` o `ssl`) en `MailOptions`.

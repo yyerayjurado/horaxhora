@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-class Categoria extends Modelo
+class Categoria
 {
     protected int $id;
     protected string $nombre;
