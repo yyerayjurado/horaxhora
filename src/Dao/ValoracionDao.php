@@ -110,4 +110,27 @@ class ValoracionDao
             return false;
         }
     }
+
+    // * El cliente valora un trueque suyo ya COMPLETADO
+    // ! INSERT ... SELECT: solo inserta si existe un trueque con ese id, de ese cliente y COMPLETADO.
+    // ! Si no cumple las condiciones, el SELECT no devuelve filas y no se inserta nada (rowCount = 0)
+    // ! Si ya estaba valorado, el UNIQUE de id_solicitud da error y salta al catch
+    public function crear(int $idSolicitud, int $idCliente, int $puntuacion, ?string $comentario): bool
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                "INSERT INTO valoraciones (id_solicitud, puntuacion, comentario)
+                 SELECT id_solicitud, ?, ?
+                 FROM solicitudes_trueque
+                 WHERE id_solicitud = ? AND id_cliente = ? AND estado = 'COMPLETADO'"
+            );
+            $stmt->execute([$puntuacion, $comentario, $idSolicitud, $idCliente]);
+
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
 }

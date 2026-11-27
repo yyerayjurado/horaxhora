@@ -1,201 +1,197 @@
 /* * ===== Mi agenda ===== */
 
-/* * Separación entre el calendario y "Pendientes de responder" */
-.agenda__pendientes {
-    margin-top: 24px;
-}
-
-/* * Las filas de pendientes se pueden pulsar */
-#lista-pendientes .lista__fila {
-    cursor: pointer;
-}
-
-/* * ===== Cabecera: ‹ noviembre 2026 › ===== */
-.calendario__cabecera {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.calendario__titulo {
-    margin: 0;
-    font-size: 1.25em;
-}
-
-/* * Botones Mes / Semana a la izquierda y la leyenda a la derecha */
-.calendario__opciones {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-.calendario__vistas {
-    display: flex;
-}
-
-.calendario__vista {
-    padding: 6px 14px;
-    border: 1px solid #e2e8f0;
-    background-color: #ffffff;
-    font-family: inherit;
-    font-size: 0.9em;
-    font-weight: 600;
+.agenda__intro {
+    margin-bottom: 24px;
     color: #64748b;
-    cursor: pointer;
 }
 
-.calendario__vista.is-active {
-    background-color: #16a34a;
-    border-color: #16a34a;
+/* * Cada bloque: "Te toca responder", "Próximos y en curso" e "Historial" */
+.agenda__seccion {
+    margin-bottom: 32px;
+}
+
+.agenda__subtitulo {
+    margin-bottom: 12px;
+    font-size: 1.25em;
+    font-weight: 700;
+}
+
+/* * Numerito al lado del título */
+.agenda__contador {
+    padding: 2px 8px;
+    border-radius: 10px;
+    background-color: #e2e8f0;
+    font-size: 0.7em;
+}
+
+/* * Naranja si hay algo por responder */
+.agenda__contador--aviso {
+    background-color: #f59e0b;
     color: #ffffff;
 }
 
-.calendario__leyenda {
-    display: flex;
-    gap: 16px;
-    margin: 0;
-    font-size: 0.85em;
+.agenda__vacio {
+    padding: 20px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
     color: #64748b;
+    text-align: center;
 }
 
-/* * ===== Lista de días (la usan la vista Mes y la vista Semana) ===== */
-.semana__dia {
-    margin-bottom: 18px;
-}
-
-/* * "MIÉRCOLES, 25 NOV" */
-.semana__fecha {
-    margin: 0 0 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 0.8em;
-    color: #64748b;
-    text-transform: uppercase;
-}
-
-.semana__dia--hoy .semana__fecha {
-    border-bottom-color: #16a34a;
-    color: #16a34a;
-}
-
-.semana__vacio {
-    margin: 0;
-    padding-left: 16px;
-    font-size: 0.85em;
-    color: #94a3b8;
-}
-
-/* * Una fila: horas · servicio · persona · estado */
-.semana__trueque {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    margin-bottom: 4px;
-    padding: 10px 12px;
-    border: none;
-    border-left: 4px solid #94a3b8;
-    border-radius: 6px;
-    background-color: #ffffff;
-    font-family: inherit;
-    font-size: 1em;
-    color: #1e293b;
-    text-align: left;
+.agenda__historial summary {
     cursor: pointer;
 }
 
-.semana__trueque:hover {
-    background-color: #f1f5f9;
-}
-
-.semana__horas {
-    width: 110px;
-    color: #475569;
-}
-
-.semana__servicio {
-    flex: 1;
-}
-
-.semana__persona {
-    width: 200px;
-    font-size: 0.9em;
-    color: #64748b;
-}
-
-/* * ===== Color de cada estado (la raya de la izquierda) ===== */
-.semana__trueque[data-estado="SOLICITADO"] {
-    border-left-color: #f59e0b;
-}
-
-.semana__trueque[data-estado="ACEPTADO"] {
-    border-left-color: #3b82f6;
-}
-
-.semana__trueque[data-estado="EN_EJECUCION"] {
-    border-left-color: #8b5cf6;
-}
-
-.semana__trueque[data-estado="COMPLETADO"] {
-    border-left-color: #16a34a;
-}
-
-.semana__trueque[data-estado="RECHAZADO"] {
-    border-left-color: #dc2626;
-}
-
-/* * Rechazados y cancelados, tachados */
-.semana__trueque[data-estado="RECHAZADO"] .semana__servicio,
-.semana__trueque[data-estado="CANCELADO"] .semana__servicio {
-    text-decoration: line-through;
-    color: #94a3b8;
-}
-
-/* * ===== Detalle de un trueque (modal) ===== */
-.detalle__estado {
-    margin: 0 0 12px;
-}
-
-/* * "Servicio: Clases de inglés" en dos columnas */
-.detalle__datos {
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 8px;
-    margin: 0 0 16px;
-}
-
-.detalle__datos dt {
-    font-size: 0.85em;
-    font-weight: 600;
-    color: #64748b;
-}
-
-.detalle__datos dd {
-    margin: 0;
-}
-
-.detalle__botones {
+/* * ===== Tarjeta de un trueque ===== */
+.tarjeta {
     display: flex;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+    padding: 16px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
 }
 
-.detalle__botones .btn {
+/* * Fecha: día grande y mes debajo */
+.tarjeta__fecha {
+    width: 56px;
+    padding: 6px 0;
+    border-radius: 10px;
+    background-color: #f1f5f9;
+    text-align: center;
+}
+
+.tarjeta__dia {
+    display: block;
+    font-size: 1.5em;
+    font-weight: 800;
+}
+
+.tarjeta__mes {
+    color: #64748b;
+    font-size: 0.8em;
+}
+
+/* * El texto ocupa todo el hueco del centro */
+.tarjeta__cuerpo {
     flex: 1;
 }
 
-/* * ===== Móvil ===== */
-@media (max-width: 700px) {
-    /* * Cada trueque en varias líneas */
-    .semana__trueque {
+.tarjeta__titulo {
+    margin: 6px 0 2px;
+    font-size: 1.1em;
+}
+
+.tarjeta__info {
+    color: #475569;
+    font-size: 0.9em;
+}
+
+/* * Quién hace el servicio: azul si te lo hacen, verde si lo haces tú */
+.tarjeta__rol {
+    padding: 3px 10px;
+    border-radius: 20px;
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-size: 0.8em;
+    font-weight: 700;
+}
+
+.tarjeta__rol--prestas {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+/* * Frase de "qué toca hacer ahora" */
+.tarjeta__estado {
+    margin-top: 10px;
+    color: #64748b;
+    font-size: 0.9em;
+}
+
+/* * Si te toca hacer algo a ti, se resalta en amarillo */
+.tarjeta__estado--accion {
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.tarjeta__valoracion,
+.tarjeta__error {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #f0fdf4;
+    font-size: 0.9em;
+}
+
+.tarjeta__error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.tarjeta__estrellas {
+    color: #f59e0b;
+}
+
+/* * Formulario de valorar */
+.tarjeta__valorar {
+    margin-top: 12px;
+}
+
+.tarjeta__valorar label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.tarjeta__valorar select,
+.tarjeta__valorar textarea {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+/* * Columna derecha: puntos y botones */
+.tarjeta__lado {
+    text-align: right;
+}
+
+.tarjeta__puntos {
+    font-size: 1.1em;
+    font-weight: 800;
+}
+
+.tarjeta__puntos--gana {
+    color: #16a34a;
+}
+
+.tarjeta__puntos--paga {
+    color: #dc2626;
+}
+
+.tarjeta__botones .btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* * ===== Móvil: la columna de la derecha pasa abajo ===== */
+@media (max-width: 640px) {
+    .tarjeta {
         flex-wrap: wrap;
     }
 
-    .semana__servicio {
+    .tarjeta__lado {
         width: 100%;
-        flex: none;
+        text-align: left;
     }
 }

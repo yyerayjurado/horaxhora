@@ -68,3 +68,4 @@ Modal.prototype.cargarLogica = function (url) {
     this.codigo.src = url + "?v=" + Date.now();
     this.modal.appendChild(this.codigo);
 };
+

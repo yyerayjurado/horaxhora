@@ -113,11 +113,13 @@ class TruequeDao
         $sql = 'SELECT st.id_solicitud, st.horas_estimadas, st.puntos_totales, st.fecha_propuesta,
                        st.estado, st.confirmado_cliente, st.confirmado_prestador,
                        s.nombre AS servicio,
-                       cli.nombre AS otro_nombre, cli.apellidos AS otro_apellidos
+                       cli.nombre AS otro_nombre, cli.apellidos AS otro_apellidos,
+                       v.puntuacion, v.comentario
                 FROM solicitudes_trueque st
                 JOIN ofertas_profesionales o ON o.id_oferta = st.id_oferta
                 JOIN servicios s ON s.id_servicio = o.id_servicio
                 JOIN usuarios cli ON cli.id_usuario = st.id_cliente
+                LEFT JOIN valoraciones v ON v.id_solicitud = st.id_solicitud
                 WHERE o.id_profesional = ?
                 ORDER BY st.fecha_propuesta DESC';
 
@@ -145,11 +147,13 @@ class TruequeDao
         $sql = 'SELECT st.id_solicitud, st.horas_estimadas, st.puntos_totales, st.fecha_propuesta,
                        st.estado, st.confirmado_cliente, st.confirmado_prestador,
                        s.nombre AS servicio,
-                       pro.nombre AS otro_nombre, pro.apellidos AS otro_apellidos
+                       pro.nombre AS otro_nombre, pro.apellidos AS otro_apellidos,
+                       v.puntuacion, v.comentario
                 FROM solicitudes_trueque st
                 JOIN ofertas_profesionales o ON o.id_oferta = st.id_oferta
                 JOIN servicios s ON s.id_servicio = o.id_servicio
                 JOIN usuarios pro ON pro.id_usuario = o.id_profesional
+                LEFT JOIN valoraciones v ON v.id_solicitud = st.id_solicitud
                 WHERE st.id_cliente = ?
                 ORDER BY st.fecha_propuesta DESC';
 
@@ -195,65 +199,151 @@ class TruequeDao
 // * Devuelven true si se ha cambiado la fila
 
 // * El prestador acepta una solicitud que le han hecho
-public function aceptar(int $idSolicitud, int $idPrestador): bool
-{
-    try {
-        $pdo = BD::getConexion();
-        $stmt = $pdo->prepare(
-            "UPDATE solicitudes_trueque
+    public function aceptar(int $idSolicitud, int $idPrestador): bool
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                "UPDATE solicitudes_trueque
                  SET estado = 'ACEPTADO'
                  WHERE id_solicitud = ?
                    AND estado = 'SOLICITADO'
                    AND id_oferta IN (SELECT id_oferta FROM ofertas_profesionales WHERE id_profesional = ?)"
-        );
-        $stmt->execute([$idSolicitud, $idPrestador]);
+            );
+            $stmt->execute([$idSolicitud, $idPrestador]);
 
-        return $stmt->rowCount() > 0;
-    } catch (PDOException $e) {
-        error_log($e->getMessage());
-        return false;
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
     }
-}
 
 // * El prestador rechaza una solicitud que le han hecho
-public function rechazar(int $idSolicitud, int $idPrestador): bool
-{
-    try {
-        $pdo = BD::getConexion();
-        $stmt = $pdo->prepare(
-            "UPDATE solicitudes_trueque
+    public function rechazar(int $idSolicitud, int $idPrestador): bool
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                "UPDATE solicitudes_trueque
                  SET estado = 'RECHAZADO'
                  WHERE id_solicitud = ?
                    AND estado = 'SOLICITADO'
                    AND id_oferta IN (SELECT id_oferta FROM ofertas_profesionales WHERE id_profesional = ?)"
-        );
-        $stmt->execute([$idSolicitud, $idPrestador]);
+            );
+            $stmt->execute([$idSolicitud, $idPrestador]);
 
-        return $stmt->rowCount() > 0;
-    } catch (PDOException $e) {
-        error_log($e->getMessage());
-        return false;
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
     }
-}
 
 // * El cliente cancela una solicitud suya que todavía no se ha empezado
-public function cancelarDeCliente(int $idSolicitud, int $idCliente): bool
-{
-    try {
-        $pdo = BD::getConexion();
-        $stmt = $pdo->prepare(
-            "UPDATE solicitudes_trueque
+    public function cancelarDeCliente(int $idSolicitud, int $idCliente): bool
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                "UPDATE solicitudes_trueque
                  SET estado = 'CANCELADO'
                  WHERE id_solicitud = ?
                    AND estado IN ('SOLICITADO', 'ACEPTADO')
                    AND id_cliente = ?"
-        );
-        $stmt->execute([$idSolicitud, $idCliente]);
+            );
+            $stmt->execute([$idSolicitud, $idCliente]);
 
-        return $stmt->rowCount() > 0;
-    } catch (PDOException $e) {
-        error_log($e->getMessage());
-        return false;
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
     }
-}
+
+// * ===== Completar un trueque (doble confirmación) =====
+
+// * Datos que hacen falta para confirmar: quién es el cliente, quién el prestador y cómo va
+    public function buscarParaConfirmar(int $idSolicitud): ?array
+    {
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare(
+                "SELECT st.id_cliente, o.id_profesional, st.puntos_totales,
+                    st.confirmado_cliente, st.confirmado_prestador
+             FROM solicitudes_trueque st
+             JOIN ofertas_profesionales o ON o.id_oferta = st.id_oferta
+             WHERE st.id_solicitud = ?
+               AND st.estado IN ('ACEPTADO', 'EN_EJECUCION')"
+            );
+            $stmt->execute([$idSolicitud]);
+            $fila = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$fila) {
+                return null;
+            }
+            return $fila;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return null;
+        }
+    }
+
+// * Primera confirmación: se marca la de uno y el trueque pasa a EN_EJECUCION
+// * $quien: 'cliente' o 'prestador'
+    public function marcarConfirmado(int $idSolicitud, string $quien): bool
+    {
+        if ($quien == 'cliente') {
+            $sql = "UPDATE solicitudes_trueque SET confirmado_cliente = TRUE, estado = 'EN_EJECUCION' WHERE id_solicitud = ?";
+        } else {
+            $sql = "UPDATE solicitudes_trueque SET confirmado_prestador = TRUE, estado = 'EN_EJECUCION' WHERE id_solicitud = ?";
+        }
+
+        try {
+            $pdo = BD::getConexion();
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([$idSolicitud]);
+
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+
+// * Segunda confirmación: se cierra el trueque y se pasan los puntos
+// ! Son 3 UPDATE que tienen que hacerse los 3 o ninguno, por eso van en una transacción
+    public function completar(int $idSolicitud, int $idCliente, int $idPrestador, int $puntos): bool
+    {
+        try {
+            $pdo = BD::getConexion();
+            $pdo->beginTransaction();
+
+            // * 1. El trueque pasa a COMPLETADO con las dos confirmaciones
+            $stmt = $pdo->prepare(
+                "UPDATE solicitudes_trueque
+             SET confirmado_cliente = TRUE, confirmado_prestador = TRUE, estado = 'COMPLETADO'
+             WHERE id_solicitud = ?"
+            );
+            $stmt->execute([$idSolicitud]);
+
+            // * 2. Le quitamos los puntos al cliente
+            // ! Si no tiene suficientes, el CHECK (puntos_saldo >= 0) de la tabla da error y salta al catch
+            $stmt = $pdo->prepare('UPDATE usuarios SET puntos_saldo = puntos_saldo - ? WHERE id_usuario = ?');
+            $stmt->execute([$puntos, $idCliente]);
+
+            // * 3. Se los damos al prestador
+            $stmt = $pdo->prepare('UPDATE usuarios SET puntos_saldo = puntos_saldo + ? WHERE id_usuario = ?');
+            $stmt->execute([$puntos, $idPrestador]);
+
+            // * Todo bien: guardamos los 3 cambios
+            $pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            // ! Algo ha fallado: deshacemos todo, nadie pierde ni gana puntos
+            $pdo->rollBack();
+            error_log($e->getMessage());
+            return false;
+        }
+    }
 }

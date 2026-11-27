@@ -3,7 +3,7 @@
 {% block title %}Mi agenda | {{ app_nombre }}{% endblock %}
 
 {% block styles %}
-    {# ? admin.css tiene los estilos de las listas e insignias; agenda.css los del calendario #}
+    {# ? admin.css tiene las cajas, mensajes e insignias; agenda.css las tarjetas de la agenda #}
     <link rel="stylesheet" href="/assets/css/admin.css">
     <link rel="stylesheet" href="/assets/css/agenda.css">
 {% endblock %}
@@ -11,87 +11,96 @@
 {% block content %}
     <div class="admin">
         <h1 class="admin__titulo">Mi agenda</h1>
+        <p class="agenda__intro">Aquí tienes los servicios que te piden y los que has pedido tú.</p>
 
         {# * Mensaje verde (acción hecha) o rojo (error). Lo enseña agenda.js #}
-        <p class="admin__mensaje admin__mensaje--error" id="agenda-mensaje" hidden></p>
+        <p class="admin__mensaje" id="agenda-mensaje" hidden></p>
 
-        {# * ===== Calendario: lo rellena agenda.js ===== #}
-        <section class="admin__contenido calendario" aria-live="polite">
-            <div class="calendario__cabecera">
-                <button type="button" class="admin__boton" id="anterior" aria-label="Anterior">‹</button>
-                <h2 class="calendario__titulo" id="calendario-titulo"></h2>
-                <button type="button" class="admin__boton" id="siguiente" aria-label="Siguiente">›</button>
-            </div>
-
-            <div class="calendario__opciones">
-                {# * Botones para cambiar de vista #}
-                <div class="calendario__vistas" role="group" aria-label="Vista del calendario">
-                    <button type="button" class="calendario__vista is-active" data-vista="mes">Mes</button>
-                    <button type="button" class="calendario__vista" data-vista="semana">Semana</button>
-                </div>
-
-                {# * Leyenda: qué significa cada flecha #}
-                <p class="calendario__leyenda">
-                    <span>↓ Te lo piden a ti</span>
-                    <span>↑ Lo has pedido tú</span>
-                </p>
-            </div>
-
-            {# * Aquí agenda.js pinta el mes o la semana #}
-            <div id="calendario"></div>
+        {# * ===== 1. Solicitudes que me han hecho y tengo que contestar ===== #}
+        <section class="agenda__seccion">
+            <h2 class="agenda__subtitulo">
+                Te toca responder
+                <span class="agenda__contador" id="contador-responder">0</span>
+            </h2>
+            <div id="lista-responder"></div>
+            <p class="agenda__vacio" id="vacio-responder" hidden>No tienes solicitudes por responder.</p>
         </section>
 
-        {# * ===== Solicitudes que me han hecho y aún no he contestado ===== #}
-        <section class="admin__contenido agenda__pendientes">
-            <h2 class="admin__subtitulo">Pendientes de responder</h2>
-            <div class="lista" id="lista-pendientes"></div>
-            <p class="admin__vacio" id="vacio-pendientes" hidden>No tienes solicitudes pendientes de responder.</p>
+        {# * ===== 2. Trueques que todavía no han terminado ===== #}
+        <section class="agenda__seccion">
+            <h2 class="agenda__subtitulo">
+                Próximos y en curso
+                <span class="agenda__contador" id="contador-proximos">0</span>
+            </h2>
+            <div id="lista-proximos"></div>
+            <p class="agenda__vacio" id="vacio-proximos" hidden>
+                No tienes trueques en marcha. <a href="/servicios">Busca un servicio</a>
+            </p>
         </section>
+
+        {# * ===== 3. Historial: completados, rechazados y cancelados (plegado) ===== #}
+        <details class="agenda__seccion agenda__historial">
+            <summary class="agenda__subtitulo">
+                Historial
+                <span class="agenda__contador" id="contador-historial">0</span>
+            </summary>
+            <div id="lista-historial"></div>
+            <p class="agenda__vacio" id="vacio-historial" hidden>Todavía no tienes trueques terminados.</p>
+        </details>
     </div>
 
-    {# * Molde de una fila de la lista de pendientes. agenda.js lo copia y lo rellena #}
-    <template id="plantilla-pendiente">
-        <div class="lista__fila" data-estado="SOLICITADO">
-            <span class="lista__punto" aria-hidden="true"></span>
-
-            <div class="lista__texto">
-                <p class="lista__frase">
-                    <strong class="pendiente__persona"></strong>
-                    <span class="lista__secundario pendiente__servicio"></span>
-                </p>
-                <p class="lista__detalles pendiente__detalles"></p>
+    {# * Molde de una tarjeta. agenda.js lo copia y lo rellena con cada trueque #}
+    <template id="plantilla-tarjeta">
+        <article class="tarjeta">
+            {# * Fecha grande a la izquierda, como una hoja de calendario #}
+            <div class="tarjeta__fecha">
+                <span class="tarjeta__dia"></span>
+                <span class="tarjeta__mes"></span>
             </div>
-        </div>
-    </template>
 
-    {# * Molde del detalle de un trueque. agenda.js lo mete en el modal al pulsar un trueque #}
-    <template id="plantilla-detalle">
-        <div class="detalle">
-            <p class="detalle__estado"><span class="admin__insignia"></span></p>
+            <div class="tarjeta__cuerpo">
+                <p class="tarjeta__etiquetas">
+                    <span class="tarjeta__rol"></span>
+                    <span class="admin__insignia"></span>
+                </p>
+                <h3 class="tarjeta__titulo"></h3>
+                <p class="tarjeta__info"></p>
 
-            <dl class="detalle__datos">
-                <dt>Servicio</dt>
-                <dd class="detalle__servicio"></dd>
+                {# * Frase que explica en qué punto está y qué hay que hacer #}
+                <p class="tarjeta__estado"></p>
 
-                <dt class="detalle__rol"></dt>
-                <dd class="detalle__persona"></dd>
+                {# * Valoración ya hecha (solo en trueques completados) #}
+                <p class="tarjeta__valoracion" hidden></p>
 
-                <dt>Cuándo</dt>
-                <dd class="detalle__fecha"></dd>
+                {# * Formulario para valorar (solo el cliente, en trueques completados) #}
+                <form class="tarjeta__valorar" hidden>
+                    <label>
+                        Puntuación
+                        <select name="puntuacion" required>
+                            <option value="5">★★★★★ Excelente</option>
+                            <option value="4">★★★★☆ Muy bien</option>
+                            <option value="3">★★★☆☆ Bien</option>
+                            <option value="2">★★☆☆☆ Regular</option>
+                            <option value="1">★☆☆☆☆ Mal</option>
+                        </select>
+                    </label>
+                    <label>
+                        Comentario (opcional)
+                        <textarea name="comentario" rows="2" maxlength="500"
+                                  placeholder="¿Qué tal ha ido el servicio?"></textarea>
+                    </label>
+                    <button type="submit" class="btn btn--primario">Enviar valoración</button>
+                </form>
 
-                <dt>Duración</dt>
-                <dd class="detalle__horas"></dd>
+                <p class="tarjeta__error" hidden></p>
+            </div>
 
-                <dt>Puntos</dt>
-                <dd class="detalle__puntos"></dd>
-            </dl>
-
-            <p class="modal-form__error detalle__error" hidden></p>
-
-            {# * Aquí agenda.js pone los botones que tocan según el estado #}
-            <div class="detalle__botones"></div>
-            <p class="modal-form__nota detalle__nota"></p>
-        </div>
+            {# * Puntos y botones a la derecha #}
+            <div class="tarjeta__lado">
+                <span class="tarjeta__puntos"></span>
+                <div class="tarjeta__botones"></div>
+            </div>
+        </article>
     </template>
 {% endblock %}
 

@@ -10,6 +10,7 @@ use App\Controllers\CatalogoController;
 use App\Controllers\OfertaController;
 use App\Controllers\PerfilController;
 use App\Controllers\SolicitudController;
+use App\Dao\UsuarioDao;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -20,6 +21,12 @@ class Router
     public function __construct()
     {
         session_start();
+
+        // * El saldo puede cambiar aunque el usuario no haga nada (cuando le pagan un trueque),
+        // * así que en cada página lo volvemos a leer de la BD para que el header salga bien
+        if (isset($_SESSION['usuario'])) {
+            $_SESSION['usuario']['puntos_saldo'] = (new UsuarioDao())->obtenerSaldo($_SESSION['usuario']['id']);
+        }
 
         // * Configuración de Twig
         $loader = new FilesystemLoader(__DIR__ . '/../templates');
