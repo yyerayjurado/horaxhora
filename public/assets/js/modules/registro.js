@@ -29,7 +29,7 @@ function iniciarRegistro() {
         let chip = document.createElement("label");
         chip.className = "registro__chip";
 
-        // * Si está marcado, lo pintamos en verde (registro.css)
+        // * Si está marcado, lo pintamos en verde (estilos.css, sección REGISTRO)
         if (marcado) {
             chip.className = "registro__chip registro__chip--marcado";
         }

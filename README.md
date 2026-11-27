@@ -254,7 +254,7 @@ proyecto-noviembre/
 │   ├── index.php               # Punto de entrada
 │   ├── .htaccess               # Rutas amigables hacia index.php
 │   └── assets/
-│       ├── css/                # base, header, footer y un CSS por página
+│       ├── css/                # estilos.css: todo el CSS en un solo archivo, por secciones
 │       ├── js/modules/         # buscador, registro, modal, crear_oferta, agenda...
 │       └── img/
 │

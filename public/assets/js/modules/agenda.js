@@ -98,7 +98,7 @@ function pintarBloque(bloque, trueques) {
 // * ===== Tarjeta de un trueque =====
 
 function crearTarjeta(trueque) {
-    const tarjeta = plantilla.content.cloneNode(true).querySelector('.tarjeta');
+    const tarjeta = plantilla.content.cloneNode(true).querySelector('.trueque');
     const estado = estados[trueque.estado];
     const fecha = new Date(trueque.fecha_propuesta.replace(' ', 'T'));
     const recibida = trueque.tipo === 'recibida';
@@ -107,14 +107,14 @@ function crearTarjeta(trueque) {
 
 
     // * Hoja de calendario
-    tarjeta.querySelector('.tarjeta__dia').textContent = fecha.getDate();
-    tarjeta.querySelector('.tarjeta__mes').textContent = meses[fecha.getMonth()];
+    tarjeta.querySelector('.trueque__dia').textContent = fecha.getDate();
+    tarjeta.querySelector('.trueque__mes').textContent = meses[fecha.getMonth()];
 
     // * Quién hace el servicio
-    const rol = tarjeta.querySelector('.tarjeta__rol');
+    const rol = tarjeta.querySelector('.trueque__rol');
     if (recibida) {
         rol.textContent = 'Tú haces el servicio';
-        rol.classList.add('tarjeta__rol--prestas');
+        rol.classList.add('trueque__rol--prestas');
     } else {
         rol.textContent = 'Te hacen el servicio';
     }
@@ -127,36 +127,36 @@ function crearTarjeta(trueque) {
     }
 
     // * Datos (textContent: así no se puede colar código en los textos)
-    tarjeta.querySelector('.tarjeta__titulo').textContent = trueque.servicio;
+    tarjeta.querySelector('.trueque__titulo').textContent = trueque.servicio;
 
     const quien = recibida ? `Te lo pide ${persona}` : `Lo hace ${persona}`;
     const horas = Number(trueque.horas_estimadas);
     // ? toLocaleString('es-ES') escribe 1.5 como "1,5"
-    tarjeta.querySelector('.tarjeta__info').textContent =
+    tarjeta.querySelector('.trueque__info').textContent =
         `${quien} · ${diasSemana[fecha.getDay()]}, ${hora(fecha)}–${horaFin(fecha, horas)} · ${horas.toLocaleString('es-ES')} h`;
 
     // * Puntos: en verde lo que ganas y en rojo lo que pagas (en gris si no se movieron)
-    const puntos = tarjeta.querySelector('.tarjeta__puntos');
+    const puntos = tarjeta.querySelector('.trueque__puntos');
     if (trueque.estado === 'RECHAZADO' || trueque.estado === 'CANCELADO') {
         puntos.textContent = `${trueque.puntos_totales} pts`;
     } else if (recibida) {
         puntos.textContent = `+${trueque.puntos_totales} pts`;
-        puntos.classList.add('tarjeta__puntos--gana');
+        puntos.classList.add('trueque__puntos--gana');
     } else {
         puntos.textContent = `−${trueque.puntos_totales} pts`;
-        puntos.classList.add('tarjeta__puntos--paga');
+        puntos.classList.add('trueque__puntos--paga');
     }
 
     // * Lo que se ve y los botones dependen del estado y de quién soy
-    const textoEstado = tarjeta.querySelector('.tarjeta__estado');
-    const botones = tarjeta.querySelector('.tarjeta__botones');
-    const error = tarjeta.querySelector('.tarjeta__error');
+    const textoEstado = tarjeta.querySelector('.trueque__estado');
+    const botones = tarjeta.querySelector('.trueque__botones');
+    const error = tarjeta.querySelector('.trueque__error');
 
     // ? "accion": si es true, la frase se resalta porque te toca hacer algo a ti
     function ponerEstado(texto, accion) {
         textoEstado.textContent = texto;
         if (accion) {
-            textoEstado.classList.add('tarjeta__estado--accion');
+            textoEstado.classList.add('trueque__estado--accion');
         }
     }
 
@@ -211,15 +211,15 @@ function crearTarjeta(trueque) {
     function pintarCompletado() {
         ponerEstado(recibida ? `Hecho. Has ganado ${trueque.puntos_totales} pts.` : `Hecho. Has pagado ${trueque.puntos_totales} pts.`, false);
 
-        const valoracion = tarjeta.querySelector('.tarjeta__valoracion');
-        const formulario = tarjeta.querySelector('.tarjeta__valorar');
+        const valoracion = tarjeta.querySelector('.trueque__valoracion');
+        const formulario = tarjeta.querySelector('.trueque__valorar');
 
         if (trueque.puntuacion !== null) {
             const titulo = document.createElement('strong');
             titulo.textContent = recibida ? `${nombre} te ha valorado: ` : 'Tu valoración: ';
 
             const estrellas = document.createElement('span');
-            estrellas.className = 'tarjeta__estrellas';
+            estrellas.className = 'trueque__estrellas';
             estrellas.textContent = textoEstrellas(Number(trueque.puntuacion));
 
             valoracion.appendChild(titulo);

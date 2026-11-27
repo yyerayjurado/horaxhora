@@ -8,7 +8,7 @@ function Modal(titulo) {
     this.contenido = document.createElement("div");
     this.codigo = document.createElement("script");
 
-    // * Clases para darle estilo desde modal.css
+    // * Clases para darle estilo desde estilos.css (sección MODAL)
     this.velo.className = "modal-velo";
     this.modal.className = "modal";
     this.cabecera.className = "modal__cabecera";

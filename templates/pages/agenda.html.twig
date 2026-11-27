@@ -2,12 +2,6 @@
 
 {% block title %}Mi agenda | {{ app_nombre }}{% endblock %}
 
-{% block styles %}
-    {# ? admin.css tiene las cajas, mensajes e insignias; agenda.css las tarjetas de la agenda #}
-    <link rel="stylesheet" href="/assets/css/admin.css">
-    <link rel="stylesheet" href="/assets/css/agenda.css">
-{% endblock %}
-
 {% block content %}
     <div class="admin">
         <h1 class="admin__titulo">Mi agenda</h1>
@@ -51,29 +45,29 @@
 
     {# * Molde de una tarjeta. agenda.js lo copia y lo rellena con cada trueque #}
     <template id="plantilla-tarjeta">
-        <article class="tarjeta">
+        <article class="trueque">
             {# * Fecha grande a la izquierda, como una hoja de calendario #}
-            <div class="tarjeta__fecha">
-                <span class="tarjeta__dia"></span>
-                <span class="tarjeta__mes"></span>
+            <div class="trueque__fecha">
+                <span class="trueque__dia"></span>
+                <span class="trueque__mes"></span>
             </div>
 
-            <div class="tarjeta__cuerpo">
-                <p class="tarjeta__etiquetas">
-                    <span class="tarjeta__rol"></span>
+            <div class="trueque__cuerpo">
+                <p class="trueque__etiquetas">
+                    <span class="trueque__rol"></span>
                     <span class="admin__insignia"></span>
                 </p>
-                <h3 class="tarjeta__titulo"></h3>
-                <p class="tarjeta__info"></p>
+                <h3 class="trueque__titulo"></h3>
+                <p class="trueque__info"></p>
 
                 {# * Frase que explica en qué punto está y qué hay que hacer #}
-                <p class="tarjeta__estado"></p>
+                <p class="trueque__estado"></p>
 
                 {# * Valoración ya hecha (solo en trueques completados) #}
-                <p class="tarjeta__valoracion" hidden></p>
+                <p class="trueque__valoracion" hidden></p>
 
                 {# * Formulario para valorar (solo el cliente, en trueques completados) #}
-                <form class="tarjeta__valorar" hidden>
+                <form class="trueque__valorar" hidden>
                     <label>
                         Puntuación
                         <select name="puntuacion" required>
@@ -92,13 +86,13 @@
                     <button type="submit" class="btn btn--primario">Enviar valoración</button>
                 </form>
 
-                <p class="tarjeta__error" hidden></p>
+                <p class="trueque__error" hidden></p>
             </div>
 
             {# * Puntos y botones a la derecha #}
-            <div class="tarjeta__lado">
-                <span class="tarjeta__puntos"></span>
-                <div class="tarjeta__botones"></div>
+            <div class="trueque__lado">
+                <span class="trueque__puntos"></span>
+                <div class="trueque__botones"></div>
             </div>
         </article>
     </template>

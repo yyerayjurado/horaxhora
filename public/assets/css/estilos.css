@@ -1,0 +1,2097 @@
+/* * ============================================================
+ * * HoraXHora · hoja de estilos única
+ * * Todo el CSS de la web en un solo archivo, separado por secciones.
+ * * Orden: base → header/footer → modal → páginas.
+ * * ============================================================ */
+
+
+/* * ============================================================
+ * * BASE: reset, tipografía, botones
+ * * ============================================================ */
+
+/* * ===== Estilos comunes de toda la web ===== */
+
+/* * Colores que usamos en toda la web:
+   * verde #16a34a · verde oscuro #15803d · texto #1e293b · gris #64748b · bordes #e2e8f0 · fondo #f8fafc */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: "Plus Jakarta Sans", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+/* * El main ocupa el espacio libre para que el footer quede abajo */
+main {
+    flex: 1;
+}
+
+h1, h2, h3, h4 {
+    margin: 0 0 16px;
+    line-height: 1.2;
+    color: #1e293b;
+}
+
+h1 {
+    font-size: 2.2em;
+}
+
+h2 {
+    font-size: 1.7em;
+}
+
+h3 {
+    font-size: 1.25em;
+}
+
+p {
+    margin: 0 0 16px;
+}
+
+a {
+    color: #16a34a;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+/* ! Lo que lleva el atributo hidden no se ve nunca, aunque otra regla le ponga display */
+[hidden] {
+    display: none !important;
+}
+
+/* * ===== Botones ===== */
+.btn {
+    display: inline-block;
+    padding: 9px 18px;
+    border: 2px solid #16a34a;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1em;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn--primario {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.btn--primario:hover {
+    background-color: #15803d;
+    border-color: #15803d;
+}
+
+.btn--secundario {
+    background-color: #ffffff;
+    color: #16a34a;
+}
+
+.btn--secundario:hover {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+
+/* * ============================================================
+ * * HEADER
+ * * ============================================================ */
+
+/* * ===== Header ===== */
+.site-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 16px;
+}
+
+.navbar__logo {
+    font-size: 1.25em;
+    font-weight: 800;
+    color: #1e293b;
+    text-decoration: none;
+}
+
+/* ? El botón de menú para móvil todavía no hace nada, así que lo escondemos */
+.navbar__toggle {
+    display: none;
+}
+
+/* * Menú */
+.navbar__links {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.navbar__links a {
+    display: block;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #64748b;
+    text-decoration: none;
+}
+
+.navbar__links a:hover {
+    color: #1e293b;
+}
+
+/* * Página en la que estás */
+.navbar__links a.is-active {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+/* * Zona del usuario: puntos, nombre y Salir */
+.navbar__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar__puntos {
+    padding: 4px 12px;
+    border-radius: 20px;
+    background-color: #fef3c7;
+    color: #b45309;
+    font-size: 0.85em;
+    font-weight: 700;
+}
+
+.navbar__perfil {
+    font-weight: 600;
+    color: #1e293b;
+    text-decoration: none;
+}
+
+.navbar__perfil:hover {
+    color: #16a34a;
+}
+
+/* * "Entrar" y "Salir" sin borde, solo texto */
+.navbar__user .btn--secundario {
+    border-color: #ffffff;
+    color: #1e293b;
+}
+
+.navbar__user .btn--secundario:hover {
+    background-color: #f1f5f9;
+    color: #16a34a;
+}
+
+
+/* * ============================================================
+ * * FOOTER
+ * * ============================================================ */
+
+/* * ===== Footer ===== */
+.site-footer {
+    margin-top: 48px;
+    padding: 32px 16px 16px;
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+.footer__contenido {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer__logo {
+    font-size: 1.2em;
+    font-weight: 800;
+    color: #16a34a;
+}
+
+.footer__marca p {
+    max-width: 320px;
+    margin: 8px 0 0;
+    color: #64748b;
+}
+
+.footer__nav ul {
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.footer__nav a {
+    color: #1e293b;
+    text-decoration: none;
+}
+
+.footer__nav a:hover {
+    color: #16a34a;
+}
+
+.footer__copy {
+    max-width: 1200px;
+    margin: 24px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.85em;
+    color: #64748b;
+    text-align: center;
+}
+
+
+/* * ============================================================
+ * * MODAL (ventanas emergentes)
+ * * ============================================================ */
+
+/* * ===== Modal ===== */
+
+/* * Fondo oscuro que tapa la página */
+.modal-velo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+/* * Caja blanca centrada (margin auto la centra a lo ancho) */
+.modal {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    width: 480px;
+    max-width: 90%;
+    max-height: 85vh;
+    margin: 0 auto;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    z-index: 101;
+}
+
+/* * El del registro es más ancho porque tiene dos columnas (la clase la pone principal.js) */
+.modal--ancho {
+    width: 920px;
+}
+
+.modal__cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0;
+}
+
+.modal__titulo {
+    margin: 0;
+    font-size: 1.4em;
+}
+
+.modal__cerrar {
+    border: none;
+    background: none;
+    font-size: 1.8em;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.modal__cerrar:hover {
+    color: #1e293b;
+}
+
+.modal__contenido {
+    padding: 16px 24px 24px;
+}
+
+/* * Formularios dentro del modal (solicitar servicio) */
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.modal-form label {
+    margin-top: 6px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95em;
+}
+
+.modal-form input:focus,
+.modal-form select:focus,
+.modal-form textarea:focus {
+    outline: none;
+    border-color: #16a34a;
+}
+
+.modal-form .btn {
+    margin-top: 16px;
+}
+
+.modal-form__error {
+    margin: 0 0 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.modal-form__nota {
+    margin: 8px 0 0;
+    font-size: 0.85em;
+    color: #64748b;
+    text-align: center;
+}
+
+
+/* * ============================================================
+ * * LOGIN Y FORMULARIOS DE ACCESO
+ * * ============================================================ */
+
+/* * ===== Login y registro ===== */
+
+/* * Centra la tarjeta del login */
+.auth-contenedor {
+    display: flex;
+    justify-content: center;
+    padding: 48px 16px;
+}
+
+/* * Tarjeta blanca con una raya verde arriba */
+.auth {
+    width: 100%;
+    max-width: 440px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-top: 4px solid #16a34a;
+    border-radius: 12px;
+}
+
+.auth__form {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 32px;
+    text-align: center;
+}
+
+.auth__titulo {
+    margin-bottom: 4px;
+    font-size: 2em;
+}
+
+.auth__subtitulo {
+    margin-bottom: 16px;
+    color: #64748b;
+}
+
+/* ? Las etiquetas no se ven: cada campo ya dice lo que es con su placeholder */
+.auth__label {
+    display: none;
+}
+
+.auth__campo {
+    padding: 12px 0;
+    text-align: left;
+}
+
+/* * Campos con solo la línea de abajo */
+.auth__input {
+    width: 100%;
+    padding: 10px 4px;
+    border: none;
+    border-bottom: 2px solid #e2e8f0;
+    background: none;
+    font-family: inherit;
+    font-size: 1em;
+    color: #1e293b;
+}
+
+.auth__input:focus {
+    outline: none;
+    border-bottom-color: #16a34a;
+}
+
+/* ! Mensaje de error */
+.auth__error {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border-left: 3px solid #dc2626;
+    border-radius: 6px;
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-size: 0.9em;
+    text-align: left;
+}
+
+/* * Botón grande y redondo */
+.auth__boton {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 30px;
+    background-color: #16a34a;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 1em;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.auth__boton:hover {
+    background-color: #15803d;
+}
+
+.auth__boton:disabled {
+    opacity: 0.6;
+}
+
+/* * "¿No tienes cuenta? Regístrate" */
+.auth__pie {
+    margin: 24px 0 0;
+    font-size: 0.9em;
+    color: #64748b;
+}
+
+.auth__pie a {
+    font-weight: 700;
+    color: #16a34a;
+}
+
+
+/* * ============================================================
+ * * REGISTRO
+ * * ============================================================ */
+
+/* * ===== Formulario de registro (va dentro del modal) ===== */
+
+/* * Dentro del modal el formulario no necesita padding: el modal ya tiene el suyo */
+.modal .auth__form {
+    padding: 0;
+}
+
+.registro__columnas {
+    display: flex;
+    gap: 32px;
+}
+
+/* * Cada columna ocupa la mitad */
+.registro__col {
+    width: 50%;
+}
+
+/* * Línea fina separando las dos columnas */
+.registro__col--servicios {
+    padding-left: 32px;
+    border-left: 1px solid #e2e8f0;
+}
+
+/* * "1. TUS DATOS" / "2. QUÉ SABES HACER" */
+.registro__paso {
+    margin: 8px 0 4px;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #16a34a;
+    text-align: left;
+}
+
+/* * Dos campos en la misma fila (nombre y apellidos, email y teléfono...) */
+.registro__fila {
+    display: flex;
+    gap: 16px;
+}
+
+.registro__fila .auth__campo {
+    width: 50%;
+}
+
+#form-registro .auth__campo {
+    padding: 8px 0;
+}
+
+/* * Quitamos el borde que el navegador pone a los fieldset */
+.registro__servicios {
+    margin: 8px 0 0;
+    padding: 0;
+    border: none;
+    text-align: left;
+}
+
+.registro__titulo-servicios {
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+/* * Los servicios van uno al lado del otro y saltan de línea si no caben */
+.registro__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 230px;
+    overflow-y: auto;
+}
+
+/* * Cada servicio: casilla + nombre + precio */
+.registro__chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background-color: #ffffff;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.registro__chip:hover {
+    border-color: #16a34a;
+}
+
+.registro__chip small {
+    font-weight: 400;
+    color: #64748b;
+}
+
+/* * Servicio marcado (la clase la pone registro.js) */
+.registro__chip--marcado {
+    border-color: #16a34a;
+    background-color: #dcfce7;
+}
+
+/* * "Elige una categoría para ver sus servicios" */
+.registro__ayuda {
+    width: 100%;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px dashed #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.9em;
+    color: #64748b;
+    text-align: center;
+}
+
+/* * ===== Mensaje de "solicitud enviada" ===== */
+.registro__exito {
+    padding: 16px 0;
+    text-align: center;
+}
+
+.registro__exito-icono {
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background-color: #dcfce7;
+    color: #16a34a;
+    font-size: 2em;
+    font-weight: 800;
+    line-height: 64px;
+}
+
+.registro__exito-titulo {
+    margin: 0 0 8px;
+    font-size: 1.4em;
+}
+
+.registro__exito-texto {
+    color: #64748b;
+}
+
+/* * En el móvil, todo en una columna */
+@media (max-width: 800px) {
+    .registro__columnas,
+    .registro__fila {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .registro__col,
+    .registro__fila .auth__campo {
+        width: 100%;
+    }
+
+    .registro__col--servicios {
+        padding-left: 0;
+        border-left: none;
+    }
+}
+
+
+/* * ============================================================
+ * * PÁGINA DE INICIO
+ * * ============================================================ */
+
+/* * ===== Página de inicio ===== */
+
+/* * Portada: texto a la izquierda e imagen a la derecha */
+.hero {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 64px 16px 48px;
+    text-align: center;
+}
+
+.hero--imagen {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    max-width: 1100px;
+    text-align: left;
+}
+
+.hero__contenido,
+.hero__imagen {
+    width: 50%;
+}
+
+.hero__titulo {
+    margin-bottom: 16px;
+    font-size: 3em;
+    line-height: 1.1;
+}
+
+/* * La palabra destacada del título va en verde */
+.hero__titulo span {
+    color: #16a34a;
+}
+
+.hero__texto {
+    margin-bottom: 32px;
+    font-size: 1.1em;
+    color: #475569;
+}
+
+.hero__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.hero__imagen {
+    margin: 0;
+}
+
+.hero__imagen img {
+    width: 100%;
+    border-radius: 20px;
+}
+
+/* * ===== Secciones ===== */
+.pasos,
+.comunidad,
+.categorias,
+.cta {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 16px;
+}
+
+.pasos h2,
+.comunidad h2,
+.categorias h2 {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+/* * Cómo funciona: 3 tarjetas en fila */
+.pasos__lista {
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.paso {
+    flex: 1;
+    padding: 28px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+}
+
+.paso:hover {
+    border-color: #16a34a;
+}
+
+/* * Número del paso en un cuadrado verde */
+.paso__numero {
+    display: block;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background-color: #dcfce7;
+    color: #16a34a;
+    font-size: 1.2em;
+    font-weight: 800;
+    line-height: 48px;
+    text-align: center;
+}
+
+.paso h3 {
+    margin-bottom: 8px;
+}
+
+.paso p {
+    margin: 0;
+    color: #64748b;
+}
+
+/* * Comunidad: 3 fotos en fila */
+.comunidad {
+    text-align: center;
+}
+
+.comunidad h2 {
+    margin-bottom: 8px;
+}
+
+.comunidad__intro {
+    max-width: 560px;
+    margin: 0 auto 32px;
+    color: #64748b;
+}
+
+.comunidad__grid {
+    display: flex;
+    gap: 24px;
+}
+
+.comunidad__item {
+    flex: 1;
+    margin: 0;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.comunidad__item img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+/* * Texto debajo de la foto */
+.comunidad__item figcaption {
+    padding: 14px 18px;
+    font-weight: 700;
+    text-align: left;
+}
+
+/* * Categorías: cuadrícula de 4 columnas */
+.categorias__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.categoria {
+    display: block;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    text-align: center;
+    text-decoration: none;
+}
+
+.categoria:hover {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+/* * Franja verde del final */
+.cta {
+    margin: 32px auto 48px;
+    padding: 56px 24px;
+    background-color: #16a34a;
+    border-radius: 24px;
+    text-align: center;
+}
+
+.cta h2 {
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.cta p {
+    margin-bottom: 28px;
+    font-size: 1.1em;
+    color: #ffffff;
+}
+
+/* * Botón blanco con texto verde */
+.cta .btn {
+    padding: 14px 32px;
+    border-color: #ffffff;
+    border-radius: 30px;
+    background-color: #ffffff;
+    color: #15803d;
+}
+
+/* * ===== Móvil: todo en una columna ===== */
+@media (max-width: 800px) {
+    .hero--imagen,
+    .pasos__lista,
+    .comunidad__grid {
+        flex-direction: column;
+    }
+
+    .hero__contenido,
+    .hero__imagen {
+        width: 100%;
+    }
+
+    .hero__titulo {
+        font-size: 2.2em;
+    }
+
+    .categorias__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* * ============================================================
+ * * BUSCADOR DE SERVICIOS
+ * * ============================================================ */
+
+/* * ===== Página de servicios (buscador) ===== */
+
+.buscador {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 56px 16px 24px;
+    text-align: center;
+}
+
+.buscador__titulo {
+    margin-bottom: 8px;
+    font-size: 2.4em;
+}
+
+.buscador__texto {
+    margin-bottom: 28px;
+    color: #64748b;
+}
+
+/* ? Las etiquetas no se ven: el campo ya lo explica su placeholder */
+.buscador__label {
+    display: none;
+}
+
+/* * Barra de búsqueda: texto + desplegable en una sola caja */
+.buscador__form {
+    display: flex;
+    gap: 8px;
+    padding: 6px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 30px;
+}
+
+.buscador__input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 1em;
+    color: #1e293b;
+}
+
+.buscador__input:focus,
+.buscador__select:focus {
+    outline: none;
+}
+
+.buscador__select {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 30px;
+    background-color: #f1f5f9;
+    font-family: inherit;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+}
+
+/* * Botones de categoría */
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.filtro {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.filtro:hover {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+.filtro.is-active {
+    background-color: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+}
+
+/* * ===== Resultados ===== */
+.resultados {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px 16px 56px;
+}
+
+.resultados__contador {
+    margin-bottom: 16px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+/* * 3 tarjetas por fila */
+.resultados__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* * Cuando no hay ofertas */
+.resultados__vacio {
+    padding: 48px 16px;
+    background-color: #ffffff;
+    border: 2px dashed #e2e8f0;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.resultados__vacio p {
+    margin: 0;
+    color: #64748b;
+}
+
+/* * ===== Tarjeta de una oferta ===== */
+.oferta {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+}
+
+.oferta:hover {
+    border-color: #16a34a;
+}
+
+/* * Arriba: categoría a la izquierda y precio a la derecha */
+.oferta__cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.oferta__categoria {
+    padding: 4px 12px;
+    border-radius: 20px;
+    background-color: #dcfce7;
+    color: #15803d;
+    font-size: 0.8em;
+    font-weight: 700;
+}
+
+.oferta__puntos {
+    font-weight: 800;
+    color: #b45309;
+}
+
+.oferta__servicio {
+    margin-bottom: 8px;
+    font-size: 1.2em;
+}
+
+/* * flex: 1 empuja el pie de la tarjeta hacia abajo */
+.oferta__descripcion {
+    flex: 1;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    color: #64748b;
+}
+
+/* * Abajo: profesional a la izquierda y botón a la derecha */
+.oferta__pie {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.oferta__profesional {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1e293b;
+    text-decoration: none;
+}
+
+/* * Círculo verde con la inicial */
+.oferta__avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #16a34a;
+    color: #ffffff;
+    font-weight: 800;
+    line-height: 38px;
+    text-align: center;
+}
+
+.oferta__nombre {
+    display: block;
+    font-size: 0.95em;
+    font-weight: 700;
+}
+
+.oferta__valoracion {
+    display: block;
+    font-size: 0.8em;
+    color: #64748b;
+}
+
+.oferta__boton {
+    padding: 8px 16px;
+    white-space: nowrap; /* ? Que "Es tu oferta" no se parta en dos líneas */
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+/* * ===== Modal "Solicitar servicio" ===== */
+.solicitud__resumen {
+    margin-bottom: 8px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background-color: #f0fdf4;
+}
+
+.solicitud__servicio {
+    margin: 0;
+    font-weight: 700;
+}
+
+.solicitud__profesional {
+    margin: 2px 0 0;
+    font-size: 0.9em;
+    color: #64748b;
+}
+
+.solicitud__total {
+    margin: 12px 0 0;
+}
+
+.solicitud__total strong {
+    color: #16a34a;
+}
+
+/* * "¡Solicitud enviada!" */
+.solicitud__ok {
+    text-align: center;
+}
+
+.solicitud__ok-icono {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background-color: #dcfce7;
+    color: #16a34a;
+    font-size: 1.8em;
+    font-weight: 700;
+    line-height: 56px;
+}
+
+/* * ===== Pantallas más pequeñas ===== */
+@media (max-width: 1000px) {
+    .resultados__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .resultados__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* * ============================================================
+ * * PERFIL
+ * * ============================================================ */
+
+/* * ===== Página de perfil ===== */
+.perfil {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 16px;
+}
+
+/* * Avisos después de guardar */
+.aviso {
+    margin-bottom: 24px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.aviso--ok {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.aviso--error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+/* * Cabecera: avatar + nombre + números */
+.perfil__cabecera {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.perfil__avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #16a34a;
+    color: #ffffff;
+    font-size: 1.75em;
+    font-weight: 700;
+    line-height: 80px;
+    text-align: center;
+}
+
+.perfil__info {
+    flex: 1;
+}
+
+.perfil__info h1 {
+    margin-bottom: 4px;
+    font-size: 1.7em;
+}
+
+.perfil__meta {
+    margin: 0;
+    font-size: 0.9em;
+    color: #64748b;
+}
+
+.perfil__stats {
+    display: flex;
+    gap: 16px;
+}
+
+.stat {
+    min-width: 110px;
+    padding: 12px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat__titulo {
+    margin: 0;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.stat__valor {
+    margin: 4px 0 0;
+    font-size: 1.75em;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.stat__unidad {
+    margin: 0;
+    font-size: 0.8em;
+    color: #64748b;
+}
+
+/* * Datos a la izquierda (1 parte) y ofertas a la derecha (2 partes) */
+.perfil__grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.tarjeta {
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.tarjeta h2 {
+    font-size: 1.25em;
+}
+
+/* * Formulario de mis datos */
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.formulario label {
+    margin-top: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
+.formulario input {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95em;
+}
+
+.formulario input:focus {
+    outline: none;
+    border-color: #16a34a;
+}
+
+.boton {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background-color: #16a34a;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 1em;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background-color: #15803d;
+}
+
+/* * Mis ofertas: 2 por fila */
+.ofertas {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* ! Empiezan por .perfil para no pisar las tarjetas de la página de servicios */
+.perfil .oferta {
+    padding: 16px;
+    border-radius: 12px;
+}
+
+/* * La etiqueta de la categoría no se estira a todo el ancho */
+.perfil .oferta__categoria {
+    align-self: flex-start;
+}
+
+.perfil .oferta h3 {
+    margin: 8px 0 4px;
+    font-size: 1.05em;
+}
+
+.perfil .oferta p {
+    margin: 4px 0;
+    font-size: 0.9em;
+    color: #64748b;
+}
+
+/* * Ofertas pausadas: más apagadas */
+.oferta--inactiva {
+    opacity: 0.55;
+}
+
+.oferta__precio strong {
+    font-size: 1.2em;
+    color: #1e293b;
+}
+
+.vacio {
+    font-style: italic;
+    color: #64748b;
+}
+
+/* * Móvil: todo en una columna */
+@media (max-width: 768px) {
+    .perfil__grid,
+    .ofertas {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil__cabecera {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+
+/* * ============================================================
+ * * PANEL DE ADMINISTRACIÓN, CREAR OFERTA Y CAJAS COMUNES
+ * * ============================================================ */
+
+/* * ===== Panel de administración ===== */
+/* ? Crear oferta y Mi agenda también usan estas clases (cajas, formularios, listas y etiquetas) */
+
+.admin {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 16px 64px;
+}
+
+.admin__titulo {
+    margin-bottom: 24px;
+    font-size: 2em;
+}
+
+.admin__subtitulo {
+    margin-bottom: 16px;
+    font-size: 1.3em;
+}
+
+/* * Caja blanca donde va cada sección */
+.admin__contenido {
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+}
+
+/* * ===== Pestañas ===== */
+.admin__pestanas {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.admin__pestana {
+    padding: 12px 18px;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    color: #64748b;
+    text-decoration: none;
+}
+
+.admin__pestana:hover {
+    color: #1e293b;
+}
+
+.admin__pestana.is-active {
+    border-bottom-color: #16a34a;
+    color: #16a34a;
+}
+
+/* * Numerito rojo (pendientes de aprobar) */
+.admin__badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 0 7px;
+    border-radius: 10px;
+    background-color: #dc2626;
+    color: #ffffff;
+    font-size: 0.75em;
+    font-weight: 800;
+}
+
+/* * ===== Formularios ===== */
+.admin__form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+/* * Cada campo ocupa lo que haya libre (mínimo 200px) */
+.admin__campo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+    min-width: 200px;
+}
+
+/* * Campos que ocupan toda la fila (descripción y botones) */
+.admin__campo--completo {
+    width: 100%;
+    flex: none;
+}
+
+.admin__campo label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.admin__campo input,
+.admin__campo select,
+.admin__campo textarea {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1em;
+    color: #1e293b;
+}
+
+.admin__campo input:focus,
+.admin__campo select:focus,
+.admin__campo textarea:focus {
+    outline: none;
+    border-color: #16a34a;
+}
+
+/* * Los botones se pegan abajo, a la altura de los campos */
+.admin__botones {
+    display: flex;
+    align-self: flex-end;
+    gap: 8px;
+}
+
+/* * Texto pequeño debajo del precio en Crear oferta */
+.oferta-ayuda {
+    font-size: 0.8em;
+    color: #64748b;
+}
+
+/* * Separación entre "Nueva oferta" y "Mis ofertas" */
+.oferta-mias {
+    margin-top: 24px;
+}
+
+/* * ===== Mensajes ===== */
+.admin__mensaje {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    border-left: 3px solid #16a34a;
+    border-radius: 6px;
+    background-color: #dcfce7;
+    color: #15803d;
+    font-weight: 600;
+}
+
+.admin__mensaje--error {
+    border-left-color: #dc2626;
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.admin__vacio {
+    margin: 0;
+    padding: 32px;
+    color: #64748b;
+    text-align: center;
+}
+
+/* * ===== Filtro encima de la tabla ===== */
+.admin__filtro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 12px;
+}
+
+.admin__filtro label {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.admin__filtro select,
+.admin__filtro input {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1em;
+}
+
+/* * ===== Tablas ===== */
+
+/* * En el móvil la tabla se puede mover a los lados */
+.admin__tabla-contenedor {
+    overflow-x: auto;
+}
+
+.admin__tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin__tabla th,
+.admin__tabla td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.admin__tabla th {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.admin__tabla tr:hover {
+    background-color: #f8fafc;
+}
+
+/* * Usuarios dados de baja: más apagados */
+.admin__fila--baja td {
+    color: #94a3b8;
+}
+
+.admin__acciones {
+    white-space: nowrap;
+}
+
+/* * Cada botón va en su propio formulario: los ponemos en línea */
+.admin__acciones form,
+.lista__lado form {
+    display: inline;
+    margin: 0 0 0 6px;
+}
+
+/* * ===== Botones pequeños ===== */
+.admin__boton {
+    display: inline-block;
+    padding: 6px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #1e293b;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin__boton:hover {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+.admin__boton--ok {
+    border-color: #16a34a;
+    color: #16a34a;
+}
+
+.admin__boton--ok:hover {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.admin__boton--peligro:hover {
+    border-color: #dc2626;
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+/* * ===== Etiquetas de estado ===== */
+.admin__insignia {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 0.8em;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.admin__insignia--ok {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.admin__insignia--baja {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.admin__insignia--admin {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+.admin__insignia--solicitado {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.admin__insignia--aceptado {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.admin__insignia--ejecucion {
+    background-color: #ede9fe;
+    color: #5b21b6;
+}
+
+/* * ===== Tarjetas con números (resumen) ===== */
+.admin__resumen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.admin__dato {
+    flex: 1;
+    min-width: 150px;
+    padding: 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.admin__dato-valor {
+    display: block;
+    font-size: 1.8em;
+    font-weight: 800;
+}
+
+.admin__dato-texto {
+    display: block;
+    font-size: 0.85em;
+    color: #64748b;
+}
+
+.admin__dato--destacado {
+    background-color: #f0fdf4;
+    border-color: #16a34a;
+}
+
+.admin__dato--destacado .admin__dato-valor {
+    color: #16a34a;
+}
+
+/* * ===== Caja de registros pendientes de aprobar ===== */
+.admin__pendientes {
+    margin-bottom: 32px;
+    padding: 20px;
+    background-color: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+}
+
+.admin__pendientes .admin__subtitulo {
+    margin-bottom: 4px;
+}
+
+.admin__pendientes-texto {
+    margin: 0 0 12px;
+    font-size: 0.9em;
+    color: #92400e;
+}
+
+/* * ===== Lista (trueques, reseñas, mis ofertas, pendientes) ===== */
+.lista__fila {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.lista__fila:last-child {
+    border-bottom: none;
+}
+
+.lista__fila:hover {
+    background-color: #f8fafc;
+}
+
+/* * Reseñas de 1-2 estrellas: fondo rojizo */
+.lista__fila--aviso {
+    background-color: #fef2f2;
+}
+
+/* * Punto de color a la izquierda (gris por defecto) */
+.lista__punto {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #94a3b8;
+}
+
+/* * Color del punto según el estado del trueque */
+.lista__fila[data-estado="SOLICITADO"] .lista__punto {
+    background-color: #f59e0b;
+}
+
+.lista__fila[data-estado="ACEPTADO"] .lista__punto {
+    background-color: #3b82f6;
+}
+
+.lista__fila[data-estado="EN_EJECUCION"] .lista__punto {
+    background-color: #8b5cf6;
+}
+
+.lista__fila[data-estado="COMPLETADO"] .lista__punto {
+    background-color: #16a34a;
+}
+
+.lista__fila[data-estado="RECHAZADO"] .lista__punto {
+    background-color: #dc2626;
+}
+
+/* * Estrellas de las reseñas */
+.lista__estrellas {
+    color: #f59e0b;
+    white-space: nowrap;
+}
+
+/* * El texto ocupa todo el espacio del medio */
+.lista__texto {
+    flex: 1;
+}
+
+.lista__frase {
+    margin: 0;
+}
+
+.lista__secundario {
+    color: #64748b;
+}
+
+.lista__comentario {
+    margin: 4px 0 0;
+    font-style: italic;
+    color: #334155;
+}
+
+.lista__comentario--vacio {
+    color: #94a3b8;
+}
+
+.lista__detalles {
+    margin: 2px 0 0;
+    font-size: 0.85em;
+    color: #64748b;
+}
+
+/* * Estado y botones a la derecha */
+.lista__lado {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* * Móvil: los botones bajan debajo del texto */
+@media (max-width: 600px) {
+    .lista__fila {
+        flex-wrap: wrap;
+    }
+}
+
+
+/* * ============================================================
+ * * MI AGENDA
+ * * ============================================================ */
+
+/* * ===== Mi agenda ===== */
+
+.agenda__intro {
+    margin-bottom: 24px;
+    color: #64748b;
+}
+
+/* * Cada bloque: "Te toca responder", "Próximos y en curso" e "Historial" */
+.agenda__seccion {
+    margin-bottom: 32px;
+}
+
+.agenda__subtitulo {
+    margin-bottom: 12px;
+    font-size: 1.25em;
+    font-weight: 700;
+}
+
+/* * Numerito al lado del título */
+.agenda__contador {
+    padding: 2px 8px;
+    border-radius: 10px;
+    background-color: #e2e8f0;
+    font-size: 0.7em;
+}
+
+/* * Naranja si hay algo por responder */
+.agenda__contador--aviso {
+    background-color: #f59e0b;
+    color: #ffffff;
+}
+
+.agenda__vacio {
+    padding: 20px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    color: #64748b;
+    text-align: center;
+}
+
+.agenda__historial summary {
+    cursor: pointer;
+}
+
+/* * ===== Tarjeta de un trueque ===== */
+.trueque {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+    padding: 16px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+/* * Fecha: día grande y mes debajo */
+.trueque__fecha {
+    width: 56px;
+    padding: 6px 0;
+    border-radius: 10px;
+    background-color: #f1f5f9;
+    text-align: center;
+}
+
+.trueque__dia {
+    display: block;
+    font-size: 1.5em;
+    font-weight: 800;
+}
+
+.trueque__mes {
+    color: #64748b;
+    font-size: 0.8em;
+}
+
+/* * El texto ocupa todo el hueco del centro */
+.trueque__cuerpo {
+    flex: 1;
+}
+
+.trueque__titulo {
+    margin: 6px 0 2px;
+    font-size: 1.1em;
+}
+
+.trueque__info {
+    color: #475569;
+    font-size: 0.9em;
+}
+
+/* * Quién hace el servicio: azul si te lo hacen, verde si lo haces tú */
+.trueque__rol {
+    padding: 3px 10px;
+    border-radius: 20px;
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-size: 0.8em;
+    font-weight: 700;
+}
+
+.trueque__rol--prestas {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+/* * Frase de "qué toca hacer ahora" */
+.trueque__estado {
+    margin-top: 10px;
+    color: #64748b;
+    font-size: 0.9em;
+}
+
+/* * Si te toca hacer algo a ti, se resalta en amarillo */
+.trueque__estado--accion {
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.trueque__valoracion,
+.trueque__error {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #f0fdf4;
+    font-size: 0.9em;
+}
+
+.trueque__error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.trueque__estrellas {
+    color: #f59e0b;
+}
+
+/* * Formulario de valorar */
+.trueque__valorar {
+    margin-top: 12px;
+}
+
+.trueque__valorar label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.trueque__valorar select,
+.trueque__valorar textarea {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+/* * Columna derecha: puntos y botones */
+.trueque__lado {
+    text-align: right;
+}
+
+.trueque__puntos {
+    font-size: 1.1em;
+    font-weight: 800;
+}
+
+.trueque__puntos--gana {
+    color: #16a34a;
+}
+
+.trueque__puntos--paga {
+    color: #dc2626;
+}
+
+.trueque__botones .btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+}
+
+/* * ===== Móvil: la columna de la derecha pasa abajo ===== */
+@media (max-width: 640px) {
+    .trueque {
+        flex-wrap: wrap;
+    }
+
+    .trueque__lado {
+        width: 100%;
+        text-align: left;
+    }
+}

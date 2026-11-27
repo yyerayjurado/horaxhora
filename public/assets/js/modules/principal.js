@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ev.preventDefault();
 
         let modal = new Modal("Crear cuenta");
-        // * El registro tiene dos columnas: el modal tiene que ser más ancho (modal.css)
+        // * El registro tiene dos columnas: el modal tiene que ser más ancho (estilos.css, sección MODAL)
         modal.modal.classList.add("modal--ancho");
 
         try {
