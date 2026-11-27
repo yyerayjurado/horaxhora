@@ -505,3 +505,114 @@ Todos los CSS reescritos sin variables ni propiedades avanzadas y con los colore
 
 **Conclusión:**
 Ahora entiendo cada línea del CSS, que es lo que necesito para la defensa. Lo que pierdo es que, si quiero cambiar un color, tengo que cambiarlo en todos los archivos donde sale y no en un único sitio. Para un proyecto de este tamaño compensa. Solo queda `text-transform: uppercase`, que es una propiedad de texto normal y no tiene nada que ver con `transform`. En el mismo commit renombré la carpeta `service` a `Service` para que coincida con el namespace `App\Service`: es otra vez el problema de las mayúsculas de la entrada 27.
+
+---
+
+## 33. ¿Cómo documento el despliegue y el proyecto para que cualquiera lo entienda?
+**Fecha:** 26/11/2026
+
+**Prompt del alumno:**
+> Ayúdame a escribir el manual de despliegue (`docs/manual-despliegue.md`) y a poner al día el README a partir de mi `docker-compose.yml`, el `Dockerfile` y los seeds. Tienen que explicar cómo levantar el proyecto desde cero, los usuarios de prueba, la configuración y los problemas más comunes. ¿Qué datos del README actual están mal? ¿Me ayudas también a añadir capturas de la app y diagramas como imagen, incluido el diagrama de clases MVC que pide el enunciado?
+
+**Respuesta de la IA:**
+- Manual con los tres contenedores (app, MySQL y MailHog), puertos, variables de entorno, usuarios de prueba, Xdebug, comandos útiles y una tabla de problemas comunes.
+- Detectó que el README tenía datos que ya no eran verdad: otro email y contraseña de admin, otro nombre de base de datos, carpetas que ya no existen y funcionalidades que se daban por hechas sin estarlo. Añadió una columna "Estado" para no vender como terminado lo que faltaba.
+- Levantó la app con los seeds, sacó capturas de cada pantalla y generó los diagramas (arquitectura, despliegue, E/R, ciclo del trueque y diagramas de clases) como PNG en `docs/img/`.
+- Al probarlo encontró que las plantillas `templates/partials/admin/` no estaban subidas a GitHub y que los modelos extendían de una clase `Modelo` que no existía.
+
+**Conclusión:**
+Muy útil. La tabla de problemas comunes recoge casi todos los errores que me han pasado durante el proyecto (puerto ocupado, 403, mayúsculas en Linux), así que también me sirve como resumen de lo aprendido. Lo más importante fue lo del README: tenía credenciales que no funcionaban y prometía cosas sin hacer, y eso en una corrección queda fatal. Además, que levantara la app de verdad para sacar las capturas sirvió para encontrar dos fallos reales que en mi Mac no se veían.
+
+---
+
+## 34. ¿Tengo que usar un archivo `.env` para las variables de entorno?
+**Fecha:** 26/11/2026
+
+**Prompt del alumno:**
+> Las variables de entorno no las tengo, ¿no? ¿Dónde están definidas las credenciales de la base de datos en mi proyecto? ¿Me compensa pasarlas a un archivo `.env`?
+
+**Respuesta de la IA:**
+Sí las tengo: están en el bloque `environment` del servicio `app` en `docker-compose.yml`, y PHP las lee con `getenv()` en `BD.php` y `MailOptions.php`. Además hay valores por defecto (`getenv('DB_HOST') ?: 'db'`). Pasarlas a un `.env` es lo normal en un proyecto real, pero aquí obligaría al profesor a crear ese archivo antes de arrancar, y son credenciales de un entorno de pruebas.
+
+**Conclusión:**
+Pensaba que "variables de entorno" significaba tener un archivo `.env`, pero el `environment` de Docker Compose ya cumple esa función: las contraseñas no están escritas en el código PHP. Me quedo con la explicación de cuándo sí usaría un `.env` (producción, con un `.env.example` de plantilla) para poder contarlo en la defensa.
+
+---
+
+## 35. ¿Qué hago con una clase que no hemos visto en clase?
+**Fecha:** 26/11/2026
+
+**Prompt del alumno:**
+> Mis modelos extienden de una clase `Modelo` que no existe. La IA me propuso crearla como clase abstracta, pero eso no lo hemos dado y no lo voy a poner. ¿Cómo lo arreglo sin usar herencia y qué tengo que cambiar en el diagrama de clases?
+
+**Respuesta de la IA:**
+Quitar el `extends Modelo` de los cinco modelos (`Categoria`, `Servicio`, `OfertaProfesional`, `SolicitudTrueque` y `Valoracion`). Cada uno ya tiene su propio `desdeArray()`, así que funcionan igual sin clase padre. Actualizó también el diagrama de clases de los modelos para quitar `Modelo`.
+
+**Conclusión:**
+Decidí no meter una clase abstracta solo porque la IA la proponía: si no la hemos visto, no la sabría defender. Quitar la herencia era la solución más sencilla y el código queda igual de claro. Es otro ejemplo de que la IA tiende a proponer la solución "más completa" y me toca a mí elegir la que está a mi nivel.
+
+---
+
+## 36. ¿Cómo completo un trueque con doble confirmación sin perder puntos?
+**Fecha:** 27/11/2026
+
+**Prompt del alumno:**
+> Ayúdame a hacer la parte más importante del enunciado: que el cliente y el prestador marquen cada uno que el servicio está terminado y, cuando lo hayan hecho los dos, el trueque pase a `COMPLETADO` y se pasen los puntos del cliente al prestador. ¿Por qué hace falta una transacción PDO? ¿Qué pasa si el cliente ya no tiene puntos suficientes? Quiero que el saldo del header se actualice sin recargar la página.
+
+**Respuesta de la IA:**
+- Tres métodos en `TruequeDao`: `buscarParaConfirmar()`, `marcarConfirmado()` (primera confirmación, pasa a `EN_EJECUCION`) y `completar()` (segunda confirmación).
+- `completar()` hace tres `UPDATE` dentro de una transacción (`beginTransaction`, `commit` y `rollBack` en el `catch`): cerrar el trueque, restar puntos al cliente y sumárselos al prestador.
+- Si el cliente no tiene saldo, el `CHECK (puntos_saldo >= 0)` de la tabla da error, salta el `catch` y el `rollBack()` deshace todo.
+- El controlador decide si eres el cliente o el prestador, impide confirmar dos veces y devuelve el saldo nuevo en el JSON. `agenda.js` cambia el `#saldo-puntos` sin recargar, y el `Router` vuelve a leer el saldo en cada página para que al otro usuario también le salga bien.
+
+**Conclusión:**
+La primera versión que me dio era un único método enorme con toda la lógica dentro y le pedí que lo simplificara. La segunda la entiendo entera: el DAO solo hace consultas y el controlador decide con `if` normales. Lo que más me ha gustado es aprovechar el `CHECK` de la base de datos para el saldo: en vez de comprobarlo a mano, si no hay puntos MySQL da error y la transacción se deshace sola. Ahora tengo claro para qué sirve una transacción: o se hacen los tres `UPDATE` o ninguno, así nunca se pierden ni se inventan puntos.
+
+---
+
+## 37. ¿Cómo hago que solo se pueda valorar una vez y solo quien debe?
+**Fecha:** 27/11/2026
+
+**Prompt del alumno:**
+> Ayúdame a añadir las valoraciones: cuando un trueque está completado, el cliente puede puntuar de 1 a 5 y dejar un comentario opcional, una sola vez. El prestador tiene que ver la valoración que le han dejado. ¿Cómo me aseguro en el servidor de que solo valora el cliente de ese trueque y de que no puede hacerlo dos veces?
+
+**Respuesta de la IA:**
+- `ValoracionDao::crear()` con un `INSERT ... SELECT` que solo inserta si existe un trueque con ese id, de ese cliente y `COMPLETADO`. Si no se cumple, no se inserta nada (`rowCount() = 0`).
+- Valorar dos veces lo impide el `UNIQUE` de `id_solicitud` en la tabla: da error y salta al `catch`.
+- El controlador valida la puntuación (1 a 5) y el comentario (máximo 500 caracteres con `mb_strlen`), y guarda `NULL` si el comentario está vacío.
+- `recibidas()` y `enviadas()` traen la valoración con un `LEFT JOIN`, para pintar "Tu valoración" o "Te ha valorado" con estrellas.
+
+**Conclusión:**
+Reutilicé el `INSERT ... SELECT` que ya había usado en los seeds (entrada 23), y aquí se ve para qué sirve de verdad: la comprobación de permisos va en la propia consulta. El `LEFT JOIN` también lo entiendo mejor: con un `JOIN` normal desaparecerían los trueques sin valorar. Usar `mb_strlen` en vez de `strlen` arregla el fallo de las tildes que vi en "Crear oferta".
+
+---
+
+## 38. ¿Cómo hago que la agenda se entienda a primera vista?
+**Fecha:** 27/11/2026
+
+**Prompt del alumno:**
+> La página "Mi agenda" es poco estética y no se entiende: hay un calendario con flechas ↓ y ↑ y las acciones están escondidas en un modal. Ayúdame a rediseñarla para que se vea enseguida qué tengo que hacer. ¿Qué es mejor, un calendario de verdad o separarla por lo que toca hacer?
+
+**Respuesta de la IA:**
+Me dio a elegir entre tres opciones y escogí separar por tareas:
+- Tres bloques: "Te toca responder" (con un contador en naranja), "Próximos y en curso" e "Historial" (plegado con `<details>`).
+- Cada trueque es una tarjeta con la fecha como hoja de calendario, una etiqueta "Tú haces el servicio" o "Te hacen el servicio", los puntos con signo y color (+ verde, − rojo) y los botones dentro de la propia tarjeta.
+- Una frase explica qué falta. Por ejemplo: "Ana ya ha marcado que está terminado. Confírmalo tú para cerrar el trueque." Se resalta en amarillo cuando te toca a ti.
+- `agenda.js` bajó de unas 460 líneas a unas 300 al quitar el calendario.
+
+**Conclusión:**
+Es el cambio que más mejora la app de cara al usuario. Las flechas ↓↑ las entendía yo porque las había hecho, pero nadie más. Ahora cada tarjeta dice con palabras quién hace qué y qué hay que hacer. Al probarla me salió "No se ha podido cargar la agenda": era la caché del navegador, pero me di cuenta de que el `catch` se comía el error, y añadí un `console.error(e)` para poder ver la causa en la consola.
+
+---
+
+## 39. ¿Cómo dejo el CSS de la agenda a mi nivel?
+**Fecha:** 27/11/2026
+
+**Prompt del alumno:**
+> El CSS de la nueva agenda es demasiado complicado para lo que hemos visto. Ayúdame a simplificarlo: menos reglas, nada de pseudo-elementos ni propiedades raras, y usando los botones que ya tengo. ¿Qué se puede quitar sin que se note?
+
+**Respuesta de la IA:**
+Pasó de unas 300 a unas 200 líneas. Quitó los bordes de color por estado (ya lo indica la insignia), la flecha del historial con `::before`, el botón rojo nuevo (ahora se usa `btn--secundario`) y propiedades como `letter-spacing`, `text-transform` o `white-space`. Casi todo se coloca con `display: block`, `text-align` y `width: 100%`, con un solo `display: flex` en la tarjeta y una media query para el móvil.
+
+**Conclusión:**
+La agenda se ve prácticamente igual y ahora entiendo cada regla. Lo que más me sirve es ver cuántas cosas eran "decoración" que se podía quitar sin perder nada. Para la próxima vez, le pondré el límite del CSS desde el primer prompt y no al final.

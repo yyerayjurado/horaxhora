@@ -48,12 +48,12 @@ Cada usuario acumula puntos prestando servicios a cualquier miembro y los canjea
 | 🧰 **Crear oferta** | El profesional publica uno de sus servicios con **tarifa propia** (entre el 50 % y el 150 % del precio de referencia) y una **descripción personal** | ✅ |
 | 🔎 **Buscador** | Búsqueda por texto · Filtro por **categoría** · Ordenación por valoración media o por precio, sin recargar la página | ✅ |
 | 🔄 **Solicitar un servicio** | Desde el buscador: horas (de 0,5 a 8), fecha y hora propuestas. Los puntos los calcula el servidor | ✅ |
-| 📅 **Agenda** | Calendario con vista de mes y de semana · Solicitudes pendientes · Aceptar, rechazar o cancelar | ✅ |
+| 📅 **Mi agenda** | Tres bloques: **Te toca responder**, **Próximos y en curso** e **Historial** · Cada tarjeta explica qué falta y lleva sus botones (aceptar, rechazar, cancelar, terminar, valorar) | ✅ |
 | 👤 **Perfil** | Datos personales editables, saldo de puntos, valoración media y ofertas del usuario | ✅ |
 | 🛡️ **Panel de administración** | CRUD de categorías y servicios · Gestión de usuarios (alta, edición, baja sin borrar el historial) · Historial de trueques con cancelación · Moderación de reseñas | ✅ |
-| 🤝 **Completar el trueque** | **Doble confirmación** (cliente y prestador) y transferencia de puntos en una transacción | 🚧 Pendiente |
-| ⭐ **Valoraciones** | Puntuación de **1 a 5 estrellas** + comentario tras completar el servicio | 🚧 Pendiente |
-| 💰 **Saldo en tiempo real** | El saldo del header se actualiza **sin recargar la página** | 🚧 Pendiente |
+| 🤝 **Completar el trueque** | **Doble confirmación** (cliente y prestador) y transferencia de puntos en una **transacción PDO** | ✅ |
+| ⭐ **Valoraciones** | El cliente puntúa de **1 a 5 estrellas** + comentario opcional, una sola vez por trueque completado | ✅ |
+| 💰 **Saldo en tiempo real** | El saldo del header se actualiza **sin recargar la página** al completar un trueque | ✅ |
 
 ---
 
@@ -65,7 +65,7 @@ Cada usuario acumula puntos prestando servicios a cualquier miembro y los canjea
 | **Registro (ventana modal)** | **Solicitar un servicio** |
 | ![Registro en ventana modal](docs/img/capturas/registro-modal.png) | ![Modal para solicitar un servicio](docs/img/capturas/solicitar-servicio.png) |
 | **Mi agenda** | **Crear oferta** |
-| ![Agenda con vista de mes](docs/img/capturas/agenda-mes.png) | ![Crear oferta](docs/img/capturas/crear-oferta.png) |
+| ![Mi agenda por bloques](docs/img/capturas/agenda.png) | ![Crear oferta](docs/img/capturas/crear-oferta.png) |
 | **Perfil** | **Panel de administración** |
 | ![Perfil del profesional](docs/img/capturas/perfil.png) | ![Gestión de usuarios en el panel de administración](docs/img/capturas/admin-usuarios.png) |
 
@@ -76,8 +76,8 @@ Cada usuario acumula puntos prestando servicios a cualquier miembro y los canjea
 |---|---|
 | **Login** | **Inicio en móvil** |
 | ![Inicio de sesión](docs/img/capturas/login.png) | ![Inicio en móvil](docs/img/capturas/inicio-movil.png) |
-| **Agenda (semana)** | **Admin · Historial de trueques** |
-| ![Agenda con vista de semana](docs/img/capturas/agenda-semana.png) | ![Historial de trueques](docs/img/capturas/admin-trueques.png) |
+| **Valorar un trueque** | **Admin · Historial de trueques** |
+| ![Formulario para valorar un trueque completado](docs/img/capturas/agenda-valorar.png) | ![Historial de trueques](docs/img/capturas/admin-trueques.png) |
 | **Admin · Moderación de reseñas** | **Admin · Categorías** |
 | ![Moderación de reseñas](docs/img/capturas/admin-resenas.png) | ![CRUD de categorías](docs/img/capturas/admin-categorias.png) |
 | **Correo de cuenta aprobada (MailHog)** | **Bandeja de MailHog** |
@@ -307,7 +307,9 @@ Capas de la aplicación: el `Router` reparte las peticiones a los **Controllers*
 
 **Seguridad en las acciones:** cada `UPDATE` de la agenda comprueba en el `WHERE` el estado actual **y** que el trueque pertenece a quien hace la acción. Así nadie puede aceptar o cancelar un trueque ajeno cambiando el id de la URL.
 
-**Doble confirmación y puntos** *(pendiente)*: el trueque solo pasará a `COMPLETADO` cuando **cliente y prestador** hayan marcado el servicio como finalizado (`confirmado_cliente` y `confirmado_prestador`). En ese momento se descontarán los puntos al cliente y se sumarán al prestador **dentro de una misma transacción PDO** (`beginTransaction` → `commit`, o `rollBack` si algo falla), para que nunca se pierdan ni se dupliquen puntos.
+**Doble confirmación y puntos:** cuando uno de los dos marca el servicio como terminado, el trueque pasa a `EN_EJECUCION`. Cuando lo marca el otro, pasa a `COMPLETADO` y se descuentan los puntos al cliente y se suman al prestador **dentro de una misma transacción PDO** (`beginTransaction` → `commit`, o `rollBack` si algo falla), para que nunca se pierdan ni se dupliquen puntos. Si el cliente no tiene saldo suficiente, el `CHECK (puntos_saldo >= 0)` de la tabla hace fallar la transacción y no se mueve nada.
+
+**Valoración:** con el trueque completado, el cliente puede valorarlo una vez. El `INSERT ... SELECT` solo inserta si el trueque es suyo y está `COMPLETADO`, y el `UNIQUE` de `id_solicitud` impide valorar dos veces.
 
 ---
 

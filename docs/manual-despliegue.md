@@ -133,6 +133,18 @@ Para comprobar que la base de datos está bien cargada, entra como `admin@horaxh
 
 ![Panel de administración con los usuarios de prueba](img/capturas/admin-usuarios.png)
 
+### Prueba rápida de un trueque completo
+
+Con los datos de prueba se puede probar el ciclo entero en un par de minutos:
+
+1. Entra como `carlos@horaxhora.es` → **Mi agenda**. En "Próximos y en curso", en *Clases de matemáticas*, pulsa **Marcar como terminado**.
+2. Sal y entra como `ana@horaxhora.es` → **Mi agenda**. En la misma tarjeta, pulsa **Marcar como terminado**. El trueque pasa a *Completado* y el saldo del header cambia sin recargar (Ana pasa de 35 a 55 puntos).
+3. Vuelve a entrar como Carlos. En **Historial**, pulsa **Valorar**, elige las estrellas y envía la valoración.
+
+![Mi agenda con los bloques de trueques](img/capturas/agenda.png)
+
+> Para repetir la prueba desde cero, reinicia la base de datos (apartado 8).
+
 ---
 
 ## 7. Configuración
